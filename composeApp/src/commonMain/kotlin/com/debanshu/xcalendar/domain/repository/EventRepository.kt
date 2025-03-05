@@ -6,7 +6,9 @@ import com.debanshu.xcalendar.data.model.EventReminderEntity
 import com.debanshu.xcalendar.domain.model.Event
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Singleton
 
+@Singleton
 class EventRepository(private val eventDao: EventDao) {
     fun getEventsForCalendarsInRange(calendarIds: List<String>, start: Long, end: Long): Flow<List<Event>> =
         eventDao.getEventsBetweenDates(calendarIds, start, end).map { entities -> entities.map { it.toEvent() } }

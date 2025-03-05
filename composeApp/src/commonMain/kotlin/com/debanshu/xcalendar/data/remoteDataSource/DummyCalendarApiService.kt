@@ -12,9 +12,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import org.koin.core.annotation.Singleton
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.minutes
 
+@Singleton
 class DummyCalendarApiService : CalendarApiService {
     override suspend fun fetchCalendarsForUser(userId: String): List<Calendar> {
         // Generate dummy calendars with different colors

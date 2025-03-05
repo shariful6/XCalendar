@@ -18,7 +18,7 @@ interface EventDao {
     fun getEventsBetweenDates(calendarIds: List<String>, startTime: Long, endTime: Long): Flow<List<EventEntity>>
 
     @Query("SELECT * FROM events WHERE id = :eventId")
-    fun getEventById(eventId: String): EventEntity?
+    suspend fun getEventById(eventId: String): EventEntity?
 
     @Upsert
     suspend fun upsertEvent(event: EventEntity): Long

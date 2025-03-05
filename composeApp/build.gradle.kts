@@ -91,6 +91,7 @@ dependencies {
 ksp {
     arg("KOIN_USE_COMPOSE_VIEWMODEL","true")
     arg("KOIN_CONFIG_CHECK","true")
+    arg("KOIN_DEFAULT_MODULE", "false")
 }
 
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {

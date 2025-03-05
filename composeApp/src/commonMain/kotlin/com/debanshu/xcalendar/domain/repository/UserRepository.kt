@@ -5,7 +5,9 @@ import com.debanshu.xcalendar.data.model.UserEntity
 import com.debanshu.xcalendar.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Singleton
 
+@Singleton
 class UserRepository(private val userDao: UserDao) {
     fun getAllUsers(): Flow<List<User>> =
         userDao.getAllUsers().map { entities -> entities.map { it.toUser() } }
