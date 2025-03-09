@@ -26,6 +26,7 @@ class PlatformModule {
 expect fun getDatabase(): AppDatabase
 
 @Module
+@ComponentScan("com.debanshu.xcalendar.data")
 class DataModule {
 
     @Single
@@ -55,7 +56,11 @@ class DataModule {
 @ComponentScan("com.debanshu.xcalendar.ui")
 class ViewModelModule
 
-@Module(includes = [PlatformModule::class, DataModule::class, ViewModelModule::class])
+@Module
+@ComponentScan("com.debanshu.xcalendar.domain.repository")
+class DomainModule
+
+@Module(includes = [PlatformModule::class, DataModule::class, ViewModelModule::class, DomainModule::class])
 class AppModule
 
 fun initKoin(config: KoinAppDeclaration? = null) {
