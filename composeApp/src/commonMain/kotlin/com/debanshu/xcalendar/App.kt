@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,8 +34,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -55,28 +54,34 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.debanshu.xcalendar.common.lengthOfMonth
+import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.model.User
+import com.debanshu.xcalendar.ui.CalendarUiState
 import com.debanshu.xcalendar.ui.CalendarView
 import com.debanshu.xcalendar.ui.CalendarViewModel
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
@@ -90,10 +95,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
-        val viewModel = koinViewModel<CalendarViewModel>()
-        CalendarApp(viewModel)
-    }
+    val viewModel = koinViewModel<CalendarViewModel>()
+    CalendarApp(viewModel)
 }
 
 @Composable
@@ -101,90 +104,34 @@ fun CalendarApp(
     viewModel: CalendarViewModel
 ) {
     val calendarUiState by viewModel.uiState.collectAsState()
-    var showDrawer by remember { mutableStateOf(false) }
-
+    val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
     MaterialTheme {
         Scaffold(
+            scaffoldState = scaffoldState,
             topBar = {
                 TopAppBar(
-                    title = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = { showDrawer = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = "Menu"
-                                )
-                            }
-                            Text(
-                                text = when (calendarUiState.currentView) {
-                                    is CalendarView.Month -> calendarUiState.selectedMonth.month.name
-                                    is CalendarView.Week -> "Week of ${calendarUiState.selectedDay}"
-                                    is CalendarView.Day -> calendarUiState.selectedDay.toString()
-                                    is CalendarView.Schedule -> "Schedule"
-                                    is CalendarView.ThreeDay -> "3 Day"
-                                },
-                                style = MaterialTheme.typography.h3
-                            )
-                            if (calendarUiState.currentView is CalendarView.Month) {
-                                IconButton(onClick = { viewModel.toggleMonthDropdown() }) {
-                                    Icon(
-                                        imageVector = if (calendarUiState.showMonthDropdown)
-                                            Icons.Default.KeyboardArrowUp else Icons.Default.ArrowDropDown,
-                                        contentDescription = "Toggle Month Dropdown"
-                                    )
-                                }
-
-                                DropdownMenu(
-                                    expanded = calendarUiState.showMonthDropdown,
-                                    onDismissRequest = { viewModel.toggleMonthDropdown() }
-                                ) {
-                                    // Generate months for dropdown
-                                    val currentYear = Clock.System.now()
-                                        .toLocalDateTime(TimeZone.currentSystemDefault()).year
-                                    for (monthNum in 1..12) {
-                                        val monthName = Month(monthNum).name
-                                        DropdownMenuItem(
-                                            content = { Text(monthName) },
-                                            onClick = {
-                                                scope.launch {
-                                                    viewModel.selectMonth(
-                                                        Month(monthNum),
-                                                        currentYear
-                                                    )
-                                                    viewModel.toggleMonthDropdown()
-                                                }
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                    viewModel = viewModel,
+                    calendarUiState = calendarUiState,
+                    onMenuClick = {
+                        scope.launch { scaffoldState.drawerState.open() }
+                    }
+                )
+            },
+            drawerContent = {
+                CalendarDrawer(
+                    selectedView = calendarUiState.currentView,
+                    onViewSelect = { view ->
+                        viewModel.selectView(view)
+                        scope.launch { scaffoldState.drawerState.close() }
                     },
-                    actions = {
-                        IconButton(onClick = { viewModel.selectToday() }) {
-                            Text(
-                                text = calendarUiState.currentDate.dayOfMonth.toString(),
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        IconButton(onClick = { /* Handle search */ }) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
-                            )
-                        }
-                        IconButton(onClick = { /* Open account menu */ }) {
-                            // User profile picture
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colors.primary)
-                            )
-                        }
+                    accounts = calendarUiState.accounts,
+                    calendars = calendarUiState.calendars,
+                    onCalendarToggle = { calendar ->
+                        viewModel.toggleCalendarVisibility(
+                            calendar
+                        )
                     }
                 )
             },
@@ -201,94 +148,76 @@ fun CalendarApp(
                 }
             }
         ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                // Main content
-                Row {
-                    // Only show drawer when open
-                    AnimatedVisibility(
-                        visible = showDrawer,
-                        enter = slideInHorizontally() + expandHorizontally(),
-                        exit = slideOutHorizontally() + shrinkHorizontally()
-                    ) {
-                        CalendarDrawer(
-                            selectedView = calendarUiState.currentView,
-                            onViewSelect = { view ->
-                                viewModel.selectView(view)
-                                showDrawer = false
-                            },
-                            accounts = calendarUiState.accounts,
-                            calendars = calendarUiState.calendars,
-                            onCalendarToggle = { calendar ->
-                                viewModel.toggleCalendarVisibility(
-                                    calendar
-                                )
-                            },
-                            onDrawerClose = { showDrawer = false }
-                        )
+            LazyColumn(
+                modifier = Modifier.consumeWindowInsets(paddingValues),
+                contentPadding = paddingValues
+            ) {
+                when (calendarUiState.currentView) {
+                    is CalendarView.Month -> {
+//                        MonthView(
+//                            month = calendarUiState.selectedMonth,
+//                            events = calendarUiState.events,
+//                            holidays = calendarUiState.holidays,
+//                            onDayClick = { date -> viewModel.selectDay(date) },
+//                            selectedDay = calendarUiState.selectedDay
+//                        )
                     }
 
-                    // Calendar view
-                    Box(modifier = Modifier.weight(1f)) {
-                        when (calendarUiState.currentView) {
-                            is CalendarView.Month -> MonthView(
-                                month = calendarUiState.selectedMonth,
-                                events = calendarUiState.events,
-                                holidays = calendarUiState.holidays,
-                                onDayClick = { date -> viewModel.selectDay(date) },
-                                selectedDay = calendarUiState.selectedDay
-                            )
+                    is CalendarView.Week -> {
+//                            WeekView(
+//                                startDate = calendarUiState.weekStartDate,
+//                                events = calendarUiState.events,
+//                                holidays = calendarUiState.holidays,
+//                                onEventClick = { event -> viewModel.selectEvent(event) }
+//                            )
+                    }
 
-                            is CalendarView.Week -> WeekView(
-                                startDate = calendarUiState.weekStartDate,
-                                events = calendarUiState.events,
-                                holidays = calendarUiState.holidays,
-                                onEventClick = { event -> viewModel.selectEvent(event) }
-                            )
+                    is CalendarView.Day -> {
+//                            DayView(
+//                                date = calendarUiState.selectedDay,
+//                                events = calendarUiState.events.filter {
+//                                    it.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date ==
+//                                            calendarUiState.selectedDay
+//                                },
+//                                onEventClick = { event -> viewModel.selectEvent(event) }
+//                            )
+                    }
 
-                            is CalendarView.Day -> DayView(
-                                date = calendarUiState.selectedDay,
-                                events = calendarUiState.events.filter {
-                                    it.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date ==
-                                            calendarUiState.selectedDay
-                                },
-                                onEventClick = { event -> viewModel.selectEvent(event) }
-                            )
+                    is CalendarView.Schedule -> {
+//                            ScheduleView(
+//                                events = calendarUiState.upcomingEvents,
+//                                onEventClick = { event -> viewModel.selectEvent(event) }
+//                            )
+                    }
 
-                            is CalendarView.Schedule -> ScheduleView(
-                                events = calendarUiState.upcomingEvents,
-                                onEventClick = { event -> viewModel.selectEvent(event) }
-                            )
-
-                            is CalendarView.ThreeDay -> ThreeDayView(
-                                startDate = calendarUiState.threeDayStartDate,
-                                events = calendarUiState.events,
-                                onEventClick = { event -> viewModel.selectEvent(event) }
-                            )
-                        }
+                    is CalendarView.ThreeDay -> {
+//                            ThreeDayView(
+//                                startDate = calendarUiState.threeDayStartDate,
+//                                events = calendarUiState.events,
+//                                onEventClick = { event -> viewModel.selectEvent(event) }
+//                            )
                     }
                 }
+            }
+            if (calendarUiState.showAddEventDialog) {
+                AddEventDialog(
+                    calendars = calendarUiState.calendars.filter { it.isVisible },
+                    selectedDate = calendarUiState.selectedDay,
+                    onSave = { event ->
+                        viewModel.addEvent(event)
+                        viewModel.hideAddEventDialog()
+                    },
+                    onDismiss = { viewModel.hideAddEventDialog() }
+                )
+            }
 
-                // Dialogs
-                if (calendarUiState.showAddEventDialog) {
-                    AddEventDialog(
-                        calendars = calendarUiState.calendars.filter { it.isVisible },
-                        selectedDate = calendarUiState.selectedDay,
-                        onSave = { event ->
-                            viewModel.addEvent(event)
-                            viewModel.hideAddEventDialog()
-                        },
-                        onDismiss = { viewModel.hideAddEventDialog() }
-                    )
-                }
-
-                if (calendarUiState.selectedEvent != null) {
-                    EventDetailsDialog(
-                        event = calendarUiState.selectedEvent!!,
-                        onEdit = { viewModel.editEvent(it) },
-                        onDelete = { viewModel.deleteEvent(it) },
-                        onDismiss = { viewModel.clearSelectedEvent() }
-                    )
-                }
+            if (calendarUiState.selectedEvent != null) {
+                EventDetailsDialog(
+                    event = calendarUiState.selectedEvent!!,
+                    onEdit = { viewModel.editEvent(it) },
+                    onDelete = { viewModel.deleteEvent(it) },
+                    onDismiss = { viewModel.clearSelectedEvent() }
+                )
             }
         }
     }
@@ -305,7 +234,6 @@ fun CalendarDrawer(
     accounts: List<User>,
     calendars: List<Calendar>,
     onCalendarToggle: (Calendar) -> Unit,
-    onDrawerClose: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -393,6 +321,70 @@ fun CalendarDrawer(
             )
         }
     }
+}
+
+@Composable
+fun TopAppBar(
+    viewModel: CalendarViewModel,
+    calendarUiState: CalendarUiState,
+    onMenuClick: () -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    TopAppBar(
+        navigationIcon = {
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Menu"
+                )
+            }
+        },
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = calendarUiState.selectedMonth.month.name.lowercase().replaceFirstChar {
+                        if (it
+                                .isLowerCase()
+                        ) it.titlecase() else it.toString()
+                    },
+                    style = MaterialTheme.typography.subtitle1
+                )
+                IconButton(onClick = { viewModel.toggleMonthDropdown() }) {
+                    Icon(
+                        imageVector = if (calendarUiState.showMonthDropdown)
+                            Icons.Default.KeyboardArrowUp else Icons.Default.ArrowDropDown,
+                        contentDescription = "Toggle Month Dropdown"
+                    )
+                }
+            }
+
+        },
+        actions = {
+            IconButton(onClick = { viewModel.selectToday() }) {
+                Text(
+                    text = calendarUiState.currentDate.dayOfMonth.toString(),
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            IconButton(onClick = { /* Handle search */ }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search"
+                )
+            }
+            KamelImage(
+                resource = asyncPainterResource(
+                    "https://t4.ftcdn.net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA.jpg"
+                ),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+            )
+        }
+    )
 }
 
 @Composable
@@ -509,14 +501,13 @@ fun MonthView(
     onDayClick: (LocalDate) -> Unit,
     selectedDay: LocalDate
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column() {
         // Day of week headers
         WeekdayHeader()
 
         // Calendar grid
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
-            modifier = Modifier.fillMaxSize()
         ) {
             // Calculate days to display (including padding days from previous/next months)
             val firstDayOfMonth = LocalDate(month.year, month.month, 1)
@@ -1457,19 +1448,5 @@ fun ScheduleView(
                 }
             }
         }
-    }
-}
-
-fun Long.toLocalDateTime(timeZone: TimeZone): LocalDateTime {
-    return Instant.fromEpochMilliseconds(this).toLocalDateTime(timeZone)
-}
-
-fun Month.lengthOfMonth(isLeap:Boolean): Int {
-    return when (this) {
-        Month.JANUARY, Month.MARCH, Month.MAY, Month.JULY,
-        Month.AUGUST, Month.OCTOBER, Month.DECEMBER -> 31
-        Month.APRIL, Month.JUNE, Month.SEPTEMBER, Month.NOVEMBER -> 30
-        Month.FEBRUARY -> if (isLeap) 29 else 28
-        else -> 0
     }
 }
