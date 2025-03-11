@@ -7,3 +7,9 @@ sealed class CalendarView {
     data object Week : CalendarView()
     data object Month : CalendarView()
 }
+
+sealed class TopBarCalendarView {
+    data object NoView: TopBarCalendarView()
+    data object Week : TopBarCalendarView()
+    data object Month : TopBarCalendarView()
+}
