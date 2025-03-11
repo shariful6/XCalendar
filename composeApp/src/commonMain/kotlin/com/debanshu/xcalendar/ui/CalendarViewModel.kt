@@ -203,8 +203,8 @@ class CalendarViewModel(
         _uiState.update { it.copy(currentView = view) }
     }
 
-    fun toggleMonthDropdown() {
-        _uiState.update { it.copy(showMonthDropdown = !it.showMonthDropdown) }
+    fun setTopAppBarMonthDropdown(viewType: TopBarCalendarView) {
+        _uiState.update { it.copy(showMonthDropdown = viewType) }
     }
 
     fun toggleCalendarVisibility(calendar: Calendar) {

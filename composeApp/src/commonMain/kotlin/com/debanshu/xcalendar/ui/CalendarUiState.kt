@@ -23,7 +23,7 @@ data class CalendarUiState(
 
     // View state
     val currentView: CalendarView = CalendarView.Month,
-    val showMonthDropdown: Boolean = false,
+    val showMonthDropdown: TopBarCalendarView = TopBarCalendarView.NoView,
 
     // Data
     val accounts: List<User> = emptyList(),
