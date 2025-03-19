@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,29 +12,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
+import com.debanshu.xcalendar.common.getBottomSystemBarHeight
+import com.debanshu.xcalendar.common.getScreenHeight
+import com.debanshu.xcalendar.common.getScreenWidth
+import com.debanshu.xcalendar.common.getTopSystemBarHeight
 import com.debanshu.xcalendar.common.lengthOfMonth
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
@@ -54,92 +50,82 @@ fun MonthView(
     onDayClick: (LocalDate) -> Unit,
     selectedDay: LocalDate
 ) {
-    var parentSize by remember { mutableStateOf(Size.Zero)}
-    Column(
-        modifier = Modifier
-            .background(Color.Red)
+    val firstDayOfMonth = LocalDate(month.year, month.month, 1)
+    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal + 1
+    val daysInMonth = month.month.lengthOfMonth(month.year.isLeap())
+    val totalDays = firstDayOfWeek + daysInMonth
+    val remainingCells = 42 - totalDays
+
+    // Calendar grid with fixed height based on number of rows
+    LazyVerticalGrid(
+        modifier = Modifier.fillMaxSize(),
+        columns = GridCells.Fixed(7),
+        userScrollEnabled = false
     ) {
-        // Day of week headers
-        WeekdayHeader()
+        item(span = { GridItemSpan(7) }) {
+            WeekdayHeader()
+        }
+        // Previous month padding days
+        items(firstDayOfWeek) { index ->
+            val prevMonth =
+                if (month.month.ordinal == 1) Month(12) else Month(month.month.ordinal - 1)
+            val prevYear = if (month.month.ordinal == 1) month.year - 1 else month.year
+            val daysInPrevMonth = prevMonth.lengthOfMonth(prevYear.isLeap())
+            val day = daysInPrevMonth - (firstDayOfWeek - index - 1)
+            val date = LocalDate(prevYear, prevMonth, day)
 
-        val firstDayOfMonth = LocalDate(month.year, month.month, 1)
-        val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal + 1
-        val daysInMonth = month.month.lengthOfMonth(month.year.isLeap())
-        val totalDays = firstDayOfWeek + daysInMonth
-        val remainingCells = 42 - totalDays
-        val numberOfRow = 42/7
+            DayCell(
+                modifier = Modifier,
+                date = date,
+                events = events.filter { event ->
+                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                holidays = holidays.filter { holiday ->
+                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                isCurrentMonth = false,
+                isSelected = false,
+                onDayClick = onDayClick
+            )
+        }
 
-        // Calendar grid with fixed height based on number of rows
-        LazyVerticalGrid(
-            modifier = Modifier
-                .fillMaxSize()
-                .onGloballyPositioned { coordinates ->
-                    parentSize = coordinates.size.toSize()
-                }
-                .background(Color.Blue),
-            columns = GridCells.Fixed(7),
-            contentPadding = PaddingValues(0.dp)
-        ) {
-            // Previous month padding days
-            items(firstDayOfWeek) { index ->
-                val prevMonth = if (month.month.ordinal == 1) Month(12) else Month(month.month.ordinal - 1)
-                val prevYear = if (month.month.ordinal == 1) month.year - 1 else month.year
-                val daysInPrevMonth = prevMonth.lengthOfMonth(prevYear.isLeap())
-                val day = daysInPrevMonth - (firstDayOfWeek - index - 1)
-                val date = LocalDate(prevYear, prevMonth, day)
+        // Current month days
+        items(daysInMonth) { day ->
+            val date = LocalDate(month.year, month.month, day + 1)
+            DayCell(
+                modifier = Modifier,
+                date = date,
+                events = events.filter { event ->
+                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                holidays = holidays.filter { holiday ->
+                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                isCurrentMonth = true,
+                isSelected = date == selectedDay,
+                onDayClick = onDayClick
+            )
+        }
 
-                DayCell(
-                    modifier = Modifier.height((parentSize.height / numberOfRow).dp),
-                    date = date,
-                    events = events.filter { event ->
-                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    holidays = holidays.filter { holiday ->
-                        holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    isCurrentMonth = false,
-                    isSelected = false,
-                    onDayClick = onDayClick
-                )
-            }
+        items(remainingCells) { day ->
+            val nextMonth =
+                if (month.month.ordinal == 12) Month(1) else Month(month.month.ordinal + 1)
+            val nextYear = if (month.month.ordinal == 12) month.year + 1 else month.year
+            val date = LocalDate(nextYear, nextMonth, day + 1)
 
-            // Current month days
-            items(daysInMonth) { day ->
-                val date = LocalDate(month.year, month.month, day + 1)
-                DayCell(
-                    modifier = Modifier.height((parentSize.height / numberOfRow).dp),
-                    date = date,
-                    events = events.filter { event ->
-                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    holidays = holidays.filter { holiday ->
-                        holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    isCurrentMonth = true,
-                    isSelected = date == selectedDay,
-                    onDayClick = onDayClick
-                )
-            }
-
-            items(remainingCells) { day ->
-                val nextMonth = if (month.month.ordinal == 12) Month(1) else Month(month.month.ordinal + 1)
-                val nextYear = if (month.month.ordinal == 12) month.year + 1 else month.year
-                val date = LocalDate(nextYear, nextMonth, day + 1)
-
-                DayCell(
-                    modifier = Modifier.height((parentSize.height / numberOfRow).dp),
-                    date = date,
-                    events = events.filter { event ->
-                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    holidays = holidays.filter { holiday ->
-                        holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    isCurrentMonth = false,
-                    isSelected = false,
-                    onDayClick = onDayClick
-                )
-            }
+            DayCell(
+                modifier = Modifier,
+                date = date,
+                events = events.filter { event ->
+                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                holidays = holidays.filter { holiday ->
+                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                isCurrentMonth = false,
+                isSelected = false,
+                onDayClick = onDayClick
+            )
         }
     }
 }
@@ -157,19 +143,16 @@ fun WeekdayHeader() {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(40.dp),
-//                    .border(
-//                        width = 0.5.dp,
-//                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
-//                    ),
+                    .height(30.dp)
+                    .border(
+                        width = 0.5.dp,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = day,
                     style = MaterialTheme.typography.caption,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center,
-                    color = if (day == "W") Color(0xFF4285F4) else MaterialTheme.colors.onSurface
                 )
             }
         }
@@ -188,6 +171,10 @@ fun DayCell(
 ) {
     val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     val isToday = date == today
+    val screenWidth = getScreenWidth()
+    val screenHeight =
+        getScreenHeight().plus(30.dp) - getTopSystemBarHeight() - getBottomSystemBarHeight()
+
 
     Box(
         modifier = modifier
@@ -195,6 +182,7 @@ fun DayCell(
                 width = 0.5.dp,
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
             )
+            .aspectRatio(screenWidth / screenHeight)
             .background(
                 when {
                     isSelected -> MaterialTheme.colors.primary.copy(alpha = 0.2f)

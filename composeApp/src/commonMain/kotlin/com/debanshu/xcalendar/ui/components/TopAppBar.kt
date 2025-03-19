@@ -118,17 +118,17 @@ fun TopAppBar(
                 }
             },
             actions = {
+                IconButton(onClick = { /* Handle search */ }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search"
+                    )
+                }
                 IconButton(onClick = { onSelectToday() }) {
                     Text(
                         text = calendarUiState.currentDate.dayOfMonth.toString(),
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Bold
-                    )
-                }
-                IconButton(onClick = { /* Handle search */ }) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search"
                     )
                 }
                 KamelImage(
@@ -142,7 +142,8 @@ fun TopAppBar(
                         .clip(CircleShape)
                 )
             },
-            elevation = 0.dp
+            elevation = 0.dp,
+            backgroundColor = MaterialTheme.colors.onPrimary,
         )
         when (calendarUiState.showMonthDropdown) {
             TopBarCalendarView.Month -> {
