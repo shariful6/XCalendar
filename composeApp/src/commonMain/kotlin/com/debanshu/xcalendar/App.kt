@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,8 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,7 +34,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
@@ -59,25 +54,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.debanshu.xcalendar.common.lengthOfMonth
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.domain.model.User
 import com.debanshu.xcalendar.ui.CalendarView
 import com.debanshu.xcalendar.ui.CalendarViewModel
-import com.debanshu.xcalendar.ui.YearMonth
+import com.debanshu.xcalendar.ui.MonthView
 import com.debanshu.xcalendar.ui.components.CalendarDrawer
 import com.debanshu.xcalendar.ui.components.TopAppBar
-import com.debanshu.xcalendar.ui.isLeap
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
@@ -111,8 +101,7 @@ fun CalendarApp(
                     },
                     onSelectToday = { viewModel.selectToday() },
                     onToggleMonthDropdown = { viewModel.setTopAppBarMonthDropdown(it) },
-                    onDayClick = { date -> viewModel.selectDay(date) }
-                )
+                    onDayClick = { date -> viewModel.selectDay(date) })
             },
             drawerContent = {
                 CalendarDrawer(
@@ -127,8 +116,7 @@ fun CalendarApp(
                         viewModel.toggleCalendarVisibility(
                             calendar
                         )
-                    }
-                )
+                    })
             },
             floatingActionButton = {
                 FloatingActionButton(
@@ -141,59 +129,49 @@ fun CalendarApp(
                         tint = Color.White
                     )
                 }
-            }
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier.consumeWindowInsets(paddingValues),
-                contentPadding = paddingValues
-            ) {
-                when (calendarUiState.currentView) {
-                    is CalendarView.Month -> {
-//                        MonthView(
-//                            month = calendarUiState.selectedMonth,
-//                            events = calendarUiState.events,
-//                            holidays = calendarUiState.holidays,
-//                            onDayClick = { date -> viewModel.selectDay(date) },
-//                            selectedDay = calendarUiState.selectedDay
-//                        )
-                    }
+            }) { paddingValues ->
+            when (calendarUiState.currentView) {
+                is CalendarView.Month -> {
+                    MonthView(
+                        month = calendarUiState.selectedMonth,
+                        events = calendarUiState.events,
+                        holidays = calendarUiState.holidays,
+                        onDayClick = { date -> viewModel.selectDay(date) },
+                        selectedDay = calendarUiState.selectedDay
+                    )
+                }
 
-                    is CalendarView.Week -> {
-//                            WeekView(
-//                                startDate = calendarUiState.weekStartDate,
-//                                events = calendarUiState.events,
-//                                holidays = calendarUiState.holidays,
-//                                onEventClick = { event -> viewModel.selectEvent(event) }
-//                            )
-                    }
+                is CalendarView.Week -> {
+                    WeekView(
+                        startDate = calendarUiState.weekStartDate,
+                        events = calendarUiState.events,
+                        holidays = calendarUiState.holidays,
+                        onEventClick = { event -> viewModel.selectEvent(event) })
+                }
 
-                    is CalendarView.Day -> {
-//                            DayView(
-//                                date = calendarUiState.selectedDay,
-//                                events = calendarUiState.events.filter {
-//                                    it.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date ==
-//                                            calendarUiState.selectedDay
-//                                },
-//                                onEventClick = { event -> viewModel.selectEvent(event) }
-//                            )
-                    }
+                is CalendarView.Day -> {
+                    DayView(
+                        date = calendarUiState.selectedDay,
+                        events = calendarUiState.events.filter {
+                            it.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == calendarUiState.selectedDay
+                        },
+                        onEventClick = { event -> viewModel.selectEvent(event) })
+                }
 
-                    is CalendarView.Schedule -> {
-//                            ScheduleView(
-//                                events = calendarUiState.upcomingEvents,
-//                                onEventClick = { event -> viewModel.selectEvent(event) }
-//                            )
-                    }
+                is CalendarView.Schedule -> {
+                    ScheduleView(
+                        events = calendarUiState.upcomingEvents,
+                        onEventClick = { event -> viewModel.selectEvent(event) })
+                }
 
-                    is CalendarView.ThreeDay -> {
-//                            ThreeDayView(
-//                                startDate = calendarUiState.threeDayStartDate,
-//                                events = calendarUiState.events,
-//                                onEventClick = { event -> viewModel.selectEvent(event) }
-//                            )
-                    }
+                is CalendarView.ThreeDay -> {
+                    ThreeDayView(
+                        startDate = calendarUiState.threeDayStartDate,
+                        events = calendarUiState.events,
+                        onEventClick = { event -> viewModel.selectEvent(event) })
                 }
             }
+
             if (calendarUiState.showAddEventDialog) {
                 AddEventDialog(
                     calendars = calendarUiState.calendars.filter { it.isVisible },
@@ -202,8 +180,7 @@ fun CalendarApp(
                         viewModel.addEvent(event)
                         viewModel.hideAddEventDialog()
                     },
-                    onDismiss = { viewModel.hideAddEventDialog() }
-                )
+                    onDismiss = { viewModel.hideAddEventDialog() })
             }
 
             if (calendarUiState.selectedEvent != null) {
@@ -211,234 +188,19 @@ fun CalendarApp(
                     event = calendarUiState.selectedEvent!!,
                     onEdit = { viewModel.editEvent(it) },
                     onDelete = { viewModel.deleteEvent(it) },
-                    onDismiss = { viewModel.clearSelectedEvent() }
-                )
+                    onDismiss = { viewModel.clearSelectedEvent() })
             }
         }
     }
 }
 
-@Composable
-fun MonthView(
-    month: YearMonth,
-    events: List<Event>,
-    holidays: List<Holiday>,
-    onDayClick: (LocalDate) -> Unit,
-    selectedDay: LocalDate
-) {
-    Column() {
-        // Day of week headers
-        WeekdayHeader()
-
-        // Calendar grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(7),
-        ) {
-            // Calculate days to display (including padding days from previous/next months)
-            val firstDayOfMonth = LocalDate(month.year, month.month, 1)
-            val firstDayOfWeek =
-                firstDayOfMonth.dayOfWeek.ordinal % 7 // Adjust for Sunday start (0-based)
-            val daysInMonth = month.month.lengthOfMonth(month.year.isLeap())
-
-            // Previous month padding days
-            for (i in 0 until firstDayOfWeek) {
-                item {
-                    val prevMonth =
-                        if (month.month.ordinal == 1) Month(12) else Month(month.month.ordinal - 1)
-                    val prevYear = if (month.month.ordinal == 1) month.year - 1 else month.year
-                    val daysInPrevMonth = prevMonth.lengthOfMonth(prevYear.isLeap())
-                    val day = daysInPrevMonth - (firstDayOfWeek - i - 1)
-                    val date = LocalDate(prevYear, prevMonth, day)
-
-                    DayCell(
-                        date = date,
-                        events = events.filter { event ->
-                            event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                        },
-                        holidays = holidays.filter { holiday ->
-                            holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                        },
-                        isCurrentMonth = false,
-                        isSelected = false,
-                        onDayClick = onDayClick
-                    )
-                }
-            }
-
-            // Current month days
-            for (day in 1..daysInMonth) {
-                item {
-                    val date = LocalDate(month.year, month.month, day)
-
-                    DayCell(
-                        date = date,
-                        events = events.filter { event ->
-                            event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                        },
-                        holidays = holidays.filter { holiday ->
-                            holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                        },
-                        isCurrentMonth = true,
-                        isSelected = date == selectedDay,
-                        onDayClick = onDayClick
-                    )
-                }
-            }
-
-            // Next month padding days
-            val totalCells = (firstDayOfWeek + daysInMonth)
-            val remainingCells = 7 - (totalCells % 7)
-            if (remainingCells < 7) {
-                for (day in 1..remainingCells) {
-                    item {
-                        val nextMonth =
-                            if (month.month.ordinal == 12) Month(1) else Month(month.month.ordinal + 1)
-                        val nextYear = if (month.month.ordinal == 12) month.year + 1 else month.year
-                        val date = LocalDate(nextYear, nextMonth, day)
-
-                        DayCell(
-                            date = date,
-                            events = events.filter { event ->
-                                event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                            },
-                            holidays = holidays.filter { holiday ->
-                                holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                            },
-                            isCurrentMonth = false,
-                            isSelected = false,
-                            onDayClick = onDayClick
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun WeekdayHeader() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
-
-        daysOfWeek.forEach { day ->
-            Text(
-                text = day,
-                style = MaterialTheme.typography.body1,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
-}
-
-@Composable
-fun DayCell(
-    date: LocalDate,
-    events: List<Event>,
-    holidays: List<Holiday>,
-    isCurrentMonth: Boolean,
-    isSelected: Boolean,
-    onDayClick: (LocalDate) -> Unit
-) {
-    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val isToday = date == today
-
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .padding(2.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(
-                when {
-                    isSelected -> MaterialTheme.colors.primary.copy(alpha = 0.3f)
-                    isToday -> MaterialTheme.colors.primary.copy(alpha = 0.1f)
-                    else -> Color.Transparent
-                }
-            )
-            .clickable { onDayClick(date) }
-            .padding(4.dp)
-    ) {
-        Column {
-            // Day number
-            Text(
-                text = date.dayOfMonth.toString(),
-                style = MaterialTheme.typography.body1,
-                color = when {
-                    isToday -> MaterialTheme.colors.primary
-                    isCurrentMonth -> MaterialTheme.colors.onSurface
-                    else -> MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
-                },
-                fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            // Holidays
-            holidays.firstOrNull()?.let { holiday ->
-                Text(
-                    text = holiday.name,
-                    style = MaterialTheme.typography.body2,
-                    color = Color(0xFF2196F3),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    fontSize = 10.sp,
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .fillMaxWidth()
-                        .background(Color(0xFF2196F3).copy(alpha = 0.1f), RoundedCornerShape(2.dp))
-                        .padding(2.dp)
-                )
-            }
-
-            // Events (show up to 3 dots for events)
-            val maxEventsToDisplay = 3
-            val displayedEvents = events.take(maxEventsToDisplay)
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 2.dp)
-            ) {
-                displayedEvents.forEach { event ->
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .background(
-                                Color((event.color ?: 0xFFE91E63) as Int),
-                                CircleShape
-                            )
-                            .padding(1.dp)
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                }
-
-                // If there are more events than we can display
-                if (events.size > maxEventsToDisplay) {
-                    Text(
-                        text = "+${events.size - maxEventsToDisplay}",
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-            }
-        }
-    }
-}
 
 /*
  * DAY VIEW
  */
 
-@Composable
-fun DayView(
-    date: LocalDate,
-    events: List<Event>,
-    onEventClick: (Event) -> Unit
+@Composable fun DayView(
+    date: LocalDate, events: List<Event>, onEventClick: (Event) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Date header
@@ -452,9 +214,7 @@ fun DayView(
         val allDayEvents = events.filter { it.isAllDay }
         if (allDayEvents.isNotEmpty()) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = "All-day",
@@ -465,9 +225,7 @@ fun DayView(
 
                 allDayEvents.forEach { event ->
                     EventItem(
-                        event = event,
-                        onClick = { onEventClick(event) }
-                    )
+                        event = event, onClick = { onEventClick(event) })
                 }
             }
 
@@ -482,27 +240,21 @@ fun DayView(
                 for (hour in 0..23) {
                     Row(
                         verticalAlignment = Alignment.Top,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp) // 1 hour = 60dp
+                        modifier = Modifier.fillMaxWidth().height(60.dp) // 1 hour = 60dp
                     ) {
                         // Time label
                         Text(
                             text = "${if (hour == 0) 12 else if (hour > 12) hour - 12 else hour} ${if (hour >= 12) "PM" else "AM"}",
                             style = MaterialTheme.typography.body2,
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier
-                                .width(60.dp)
-                                .padding(end = 8.dp)
+                            modifier = Modifier.width(60.dp).padding(end = 8.dp)
                                 .padding(top = 4.dp),
                             textAlign = TextAlign.End
                         )
 
                         // Hour divider
                         Divider(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(top = 12.dp),
+                            modifier = Modifier.weight(1f).padding(top = 12.dp),
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
                         )
                     }
@@ -511,8 +263,7 @@ fun DayView(
 
             // Events
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 8.dp)
+                modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(top = 8.dp)
             ) {
                 // Group events by start hour for better layout
                 val eventsByHour = timeEvents.groupBy {
@@ -535,16 +286,12 @@ fun DayView(
 
                             item {
                                 Box(
-                                    modifier = Modifier
-                                        .offset(y = (startMinute).dp)
-                                        .padding(start = 68.dp, end = 8.dp)
-                                        .fillMaxWidth()
+                                    modifier = Modifier.offset(y = (startMinute).dp)
+                                        .padding(start = 68.dp, end = 8.dp).fillMaxWidth()
                                         .height(durationMinutes.dp)
                                 ) {
                                     TimeEventItem(
-                                        event = event,
-                                        onClick = { onEventClick(event) }
-                                    )
+                                        event = event, onClick = { onEventClick(event) })
                                 }
                             }
                         }
@@ -560,38 +307,27 @@ fun DayView(
                 val currentMinute = now.hour * 60 + now.minute
 
                 Box(
-                    modifier = Modifier
-                        .offset(y = currentMinute.dp)
-                        .padding(start = 60.dp)
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .background(MaterialTheme.colors.primary)
+                    modifier = Modifier.offset(y = currentMinute.dp).padding(start = 60.dp)
+                        .fillMaxWidth().height(2.dp).background(MaterialTheme.colors.primary)
                 )
             }
         }
     }
 }
 
-@Composable
-fun EventItem(
-    event: Event,
-    onClick: () -> Unit
+@Composable fun EventItem(
+    event: Event, onClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color((event.color ?: 0xFFE91E63) as Int).copy(alpha = 0.1f))
-            .clickable(onClick = onClick)
-            .padding(8.dp)
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp).clip(RoundedCornerShape(4.dp))
+            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
+            .clickable(onClick = onClick).padding(8.dp)
     ) {
         // Color indicator
         Box(
-            modifier = Modifier
-                .size(12.dp)
-                .background(Color((event.color ?: 0xFFE91E63) as Int), CircleShape)
+            modifier = Modifier.size(12.dp)
+                .background(MaterialTheme.colors.onSurface, CircleShape)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -618,10 +354,8 @@ fun EventItem(
     }
 }
 
-@Composable
-fun TimeEventItem(
-    event: Event,
-    onClick: () -> Unit
+@Composable fun TimeEventItem(
+    event: Event, onClick: () -> Unit
 ) {
     val startTime = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
     val endTime = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -634,24 +368,19 @@ fun TimeEventItem(
     } ${if (endTime.hour >= 12) "PM" else "AM"}"
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color((event.color ?: 0xFFE91E63) as Int).copy(alpha = 0.2f))
-            .border(
+        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(4.dp))
+            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f)).border(
                 width = 1.dp,
-                color = Color((event.color ?: 0xFFE91E63) as Int),
+                color = MaterialTheme.colors.onSurface,
                 shape = RoundedCornerShape(4.dp)
-            )
-            .clickable(onClick = onClick)
-            .padding(8.dp)
+            ).clickable(onClick = onClick).padding(8.dp)
     ) {
         Column {
             Text(
                 text = event.title,
                 style = MaterialTheme.typography.body2,
                 fontWeight = FontWeight.Medium,
-                color = Color((event.color ?: 0xFFE91E63) as Int).copy(alpha = 0.8f)
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f)
             )
 
             Text(
@@ -677,8 +406,7 @@ fun TimeEventItem(
  * DIALOGS - EVENT MANAGEMENT
  */
 
-@Composable
-fun AddEventDialog(
+@Composable fun AddEventDialog(
     calendars: List<Calendar>,
     selectedDate: LocalDate,
     onSave: (Event) -> Unit,
@@ -694,199 +422,165 @@ fun AddEventDialog(
     var startDateTime by remember {
         mutableStateOf(
             LocalDateTime(
-                selectedDate.year,
-                selectedDate.month,
-                selectedDate.dayOfMonth,
-                9,
-                0
+                selectedDate.year, selectedDate.month, selectedDate.dayOfMonth, 9, 0
             )
         )
     }
     var endDateTime by remember {
         mutableStateOf(
             LocalDateTime(
-                selectedDate.year,
-                selectedDate.month,
-                selectedDate.dayOfMonth,
-                10,
-                0
+                selectedDate.year, selectedDate.month, selectedDate.dayOfMonth, 10, 0
             )
         )
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Add Event") },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+    AlertDialog(onDismissRequest = onDismiss, title = { Text("Add Event") }, text = {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        ) {
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Title") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Description") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = location,
+                onValueChange = { location = it },
+                label = { Text("Location") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Calendar selection
+            Text(
+                text = "Calendar",
+                style = MaterialTheme.typography.body1,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                items(calendars) { calendar ->
+                    Box(
+                        modifier = Modifier.size(24.dp).clip(CircleShape)
+                            .background(Color(calendar.color)).border(
+                                width = 2.dp,
+                                color = if (selectedCalendarId == calendar.id) MaterialTheme.colors.primary else Color.Transparent,
+                                shape = CircleShape
+                            ).clickable { selectedCalendarId = calendar.id })
+                }
+            }
 
-                Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Description") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = location,
-                    onValueChange = { location = it },
-                    label = { Text("Location") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Calendar selection
+            // All day toggle
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
-                    text = "Calendar",
+                    text = "All day", style = MaterialTheme.typography.body1
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Switch(
+                    checked = isAllDay, onCheckedChange = { isAllDay = it })
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Date and time pickers (simplified for this example)
+            if (!isAllDay) {
+                Text(
+                    text = "Start time",
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(calendars) { calendar ->
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clip(CircleShape)
-                                .background(Color(calendar.color))
-                                .border(
-                                    width = 2.dp,
-                                    color = if (selectedCalendarId == calendar.id)
-                                        MaterialTheme.colors.primary else Color.Transparent,
-                                    shape = CircleShape
-                                )
-                                .clickable { selectedCalendarId = calendar.id }
-                        )
-                    }
-                }
+                // Simplified time picker - in a real app you'd use a proper time picker
+                Text(
+                    text = "${startDateTime.hour}:${
+                        startDateTime.minute.toString().padStart(2, '0')
+                    }",
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.clip(RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colors.surface).padding(8.dp)
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // All day toggle
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "All day",
-                        style = MaterialTheme.typography.body1
-                    )
+                Text(
+                    text = "End time",
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.Bold
+                )
 
-                    Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                    Switch(
-                        checked = isAllDay,
-                        onCheckedChange = { isAllDay = it }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Date and time pickers (simplified for this example)
-                if (!isAllDay) {
-                    Text(
-                        text = "Start time",
-                        style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Simplified time picker - in a real app you'd use a proper time picker
-                    Text(
-                        text = "${startDateTime.hour}:${
-                            startDateTime.minute.toString().padStart(2, '0')
-                        }",
-                        style = MaterialTheme.typography.body1,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colors.surface)
-                            .padding(8.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "End time",
-                        style = MaterialTheme.typography.body2,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "${endDateTime.hour}:${
-                            endDateTime.minute.toString().padStart(2, '0')
-                        }",
-                        style = MaterialTheme.typography.body1,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colors.surface)
-                            .padding(8.dp)
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    val calendar = calendars.first { it.id == selectedCalendarId }
-                    val startInstant = startDateTime.toInstant(TimeZone.currentSystemDefault())
-                    val endInstant = endDateTime.toInstant(TimeZone.currentSystemDefault())
-
-                    val event = Event(
-                        id = "efjbewkbfkjbewkjfb",
-                        calendarId = selectedCalendarId,
-                        title = title,
-                        description = description,
-                        location = location.takeIf { it.isNotEmpty() },
-                        startTime = startInstant.toEpochMilliseconds(),
-                        endTime = endInstant.toEpochMilliseconds(),
-                        isAllDay = isAllDay,
-                        color = calendar.color
-                    )
-
-                    onSave(event)
-                },
-                enabled = title.isNotEmpty() && selectedCalendarId.isNotEmpty()
-            ) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(
+                    text = "${endDateTime.hour}:${
+                        endDateTime.minute.toString().padStart(2, '0')
+                    }",
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.clip(RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colors.surface).padding(8.dp)
+                )
             }
         }
-    )
+    }, confirmButton = {
+        Button(
+            onClick = {
+                val calendar = calendars.first { it.id == selectedCalendarId }
+                val startInstant = startDateTime.toInstant(TimeZone.currentSystemDefault())
+                val endInstant = endDateTime.toInstant(TimeZone.currentSystemDefault())
+
+                val event = Event(
+                    id = "efjbewkbfkjbewkjfb",
+                    calendarId = selectedCalendarId,
+                    title = title,
+                    description = description,
+                    location = location.takeIf { it.isNotEmpty() },
+                    startTime = startInstant.toEpochMilliseconds(),
+                    endTime = endInstant.toEpochMilliseconds(),
+                    isAllDay = isAllDay,
+                    color = calendar.color
+                )
+
+                onSave(event)
+            }, enabled = title.isNotEmpty() && selectedCalendarId.isNotEmpty()
+        ) {
+            Text("Save")
+        }
+    }, dismissButton = {
+        TextButton(onClick = onDismiss) {
+            Text("Cancel")
+        }
+    })
 }
 
-@Composable
-fun EventDetailsDialog(
-    event: Event,
-    onEdit: (Event) -> Unit,
-    onDelete: (Event) -> Unit,
-    onDismiss: () -> Unit
+@Composable fun EventDetailsDialog(
+    event: Event, onEdit: (Event) -> Unit, onDelete: (Event) -> Unit, onDismiss: () -> Unit
 ) {
     val startDateTime = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
     val endDateTime = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -900,134 +594,116 @@ fun EventDetailsDialog(
         endDateTime.minute.toString().padStart(2, '0')
     } ${if (endDateTime.hour >= 12) "PM" else "AM"}"
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = null,
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+    AlertDialog(onDismissRequest = onDismiss, title = null, text = {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        ) {
+            // Event color bar
+            Box(
+                modifier = Modifier.fillMaxWidth().height(8.dp)
+                    .background(Color((event.color ?: 0xFFE91E63) as Int))
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Event title
+            Text(
+                text = event.title,
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Date and time
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                // Event color bar
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .background(Color((event.color ?: 0xFFE91E63) as Int))
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                 )
 
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column {
+                    Text(
+                        text = formattedDate, style = MaterialTheme.typography.body2
+                    )
+
+                    if (!event.isAllDay) {
+                        Text(
+                            text = "$formattedStartTime - $formattedEndTime",
+                            style = MaterialTheme.typography.body2
+                        )
+                    } else {
+                        Text(
+                            text = "All day", style = MaterialTheme.typography.body2
+                        )
+                    }
+                }
+            }
+
+            // Location if available
+            event.location?.let { location ->
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Event title
-                Text(
-                    text = event.title,
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Date and time
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Menu,
+                        imageVector = Icons.Default.LocationOn,
                         contentDescription = null,
                         tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Column {
-                        Text(
-                            text = formattedDate,
-                            style = MaterialTheme.typography.body2
-                        )
-
-                        if (!event.isAllDay) {
-                            Text(
-                                text = "$formattedStartTime - $formattedEndTime",
-                                style = MaterialTheme.typography.body2
-                            )
-                        } else {
-                            Text(
-                                text = "All day",
-                                style = MaterialTheme.typography.body2
-                            )
-                        }
-                    }
+                    Text(
+                        text = location, style = MaterialTheme.typography.body1
+                    )
                 }
+            }
 
-                // Location if available
-                event.location?.let { location ->
+            // Description if available
+            event.description?.let { description ->
+                if (description.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Text(
-                            text = location,
-                            style = MaterialTheme.typography.body1
-                        )
-                    }
-                }
-
-                // Description if available
-                event.description?.let { description ->
-                    if (description.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            text = description,
-                            style = MaterialTheme.typography.body1
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            Row {
-                TextButton(
-                    onClick = { onDelete(event) }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete"
+                    Text(
+                        text = description, style = MaterialTheme.typography.body1
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Delete")
                 }
-
-                TextButton(
-                    onClick = { onEdit(event) }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit"
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Edit")
-                }
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Close")
             }
         }
-    )
+    }, confirmButton = {
+        Row {
+            TextButton(
+                onClick = { onDelete(event) }) {
+                Icon(
+                    imageVector = Icons.Default.Delete, contentDescription = "Delete"
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Delete")
+            }
+
+            TextButton(
+                onClick = { onEdit(event) }) {
+                Icon(
+                    imageVector = Icons.Default.Edit, contentDescription = "Edit"
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Edit")
+            }
+        }
+    }, dismissButton = {
+        TextButton(onClick = onDismiss) {
+            Text("Close")
+        }
+    })
 }
 
 /*
@@ -1035,8 +711,7 @@ fun EventDetailsDialog(
  * These would be fully implemented in a complete application
  */
 
-@Composable
-fun WeekView(
+@Composable fun WeekView(
     startDate: LocalDate,
     events: List<Event>,
     holidays: List<Holiday>,
@@ -1059,20 +734,15 @@ fun WeekView(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(weekEvents) { event ->
                 EventItem(
-                    event = event,
-                    onClick = { onEventClick(event) }
-                )
+                    event = event, onClick = { onEventClick(event) })
             }
         }
     }
 }
 
-@Composable
-fun WeekHeader(startDate: LocalDate) {
+@Composable fun WeekHeader(startDate: LocalDate) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
     ) {
         for (i in 0..6) {
             val date = startDate.plus(DatePeriod(days = i))
@@ -1080,8 +750,7 @@ fun WeekHeader(startDate: LocalDate) {
             val dayOfMonth = date.dayOfMonth
 
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f)
+                horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = dayOfWeek,
@@ -1090,19 +759,15 @@ fun WeekHeader(startDate: LocalDate) {
                 )
 
                 Text(
-                    text = dayOfMonth.toString(),
-                    style = MaterialTheme.typography.body2
+                    text = dayOfMonth.toString(), style = MaterialTheme.typography.body2
                 )
             }
         }
     }
 }
 
-@Composable
-fun ThreeDayView(
-    startDate: LocalDate,
-    events: List<Event>,
-    onEventClick: (Event) -> Unit
+@Composable fun ThreeDayView(
+    startDate: LocalDate, events: List<Event>, onEventClick: (Event) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Simplified implementation
@@ -1113,29 +778,23 @@ fun ThreeDayView(
         )
 
         // Events for the three days
-        val threeDayEvents = events
-            .filter { event ->
-                val eventDate =
-                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date
-                eventDate >= startDate && eventDate < startDate.plus(DatePeriod(days = 3))
-            }
-            .sortedBy { it.startTime }
+        val threeDayEvents = events.filter { event ->
+            val eventDate =
+                event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            eventDate >= startDate && eventDate < startDate.plus(DatePeriod(days = 3))
+        }.sortedBy { it.startTime }
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(threeDayEvents) { event ->
                 EventItem(
-                    event = event,
-                    onClick = { onEventClick(event) }
-                )
+                    event = event, onClick = { onEventClick(event) })
             }
         }
     }
 }
 
-@Composable
-fun ScheduleView(
-    events: List<Event>,
-    onEventClick: (Event) -> Unit
+@Composable fun ScheduleView(
+    events: List<Event>, onEventClick: (Event) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Simplified implementation
@@ -1146,8 +805,7 @@ fun ScheduleView(
         )
 
         // Group events by date
-        val eventsByDate = events
-            .sortedBy { it.startTime }
+        val eventsByDate = events.sortedBy { it.startTime }
             .groupBy { it.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date }
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -1163,9 +821,7 @@ fun ScheduleView(
 
                 items(dateEvents) { event ->
                     EventItem(
-                        event = event,
-                        onClick = { onEventClick(event) }
-                    )
+                        event = event, onClick = { onEventClick(event) })
                 }
 
                 item {
