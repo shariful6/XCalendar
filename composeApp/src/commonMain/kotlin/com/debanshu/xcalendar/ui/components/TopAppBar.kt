@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,7 +74,7 @@ fun TopAppBar(
 ) {
     Column(
         modifier = Modifier.background(
-            color= MaterialTheme.colors.primarySurface
+            color = MaterialTheme.colors.primarySurface
         ).animateContentSize()
     ) {
         val rotationDegree by animateFloatAsState(
@@ -85,6 +86,19 @@ fun TopAppBar(
             ),
             label = "rotation"
         )
+
+        // Determine if we need to show the year in the month title
+        val currentYear = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
+
+        val showYear = calendarUiState.selectedMonth.year != currentYear
+
+        // Create the month title with year if needed
+        val monthTitle = if (showYear) {
+            "${calendarUiState.selectedMonth.month.name.toSentenceCase()} ${calendarUiState.selectedMonth.year}"
+        } else {
+            calendarUiState.selectedMonth.month.name.toSentenceCase()
+        }
+
         TopAppBar(
             navigationIcon = {
                 IconButton(onClick = onMenuClick) {
@@ -107,7 +121,7 @@ fun TopAppBar(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = calendarUiState.selectedMonth.month.name.toSentenceCase(),
+                        text = monthTitle,
                         style = MaterialTheme.typography.subtitle1
                     )
                     Icon(
@@ -145,6 +159,7 @@ fun TopAppBar(
             elevation = 0.dp,
             backgroundColor = MaterialTheme.colors.onPrimary,
         )
+
         when (calendarUiState.showMonthDropdown) {
             TopBarCalendarView.Month -> {
                 TopBarMonthView(
@@ -187,7 +202,7 @@ private fun TopBarMonthView(
 
 
             items(daysInMonth) { day ->
-                val date = LocalDate(month.year, month.month, day+1)
+                val date = LocalDate(month.year, month.month, day + 1)
                 TopAppBarDayCell(
                     date = date,
                     events = events.filter { event ->

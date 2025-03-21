@@ -1,8 +1,7 @@
-package com.debanshu.xcalendar.ui
+package com.debanshu.xcalendar.ui.screen.MonthScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,17 +32,22 @@ import com.debanshu.xcalendar.common.getScreenHeight
 import com.debanshu.xcalendar.common.getScreenWidth
 import com.debanshu.xcalendar.common.getTopSystemBarHeight
 import com.debanshu.xcalendar.common.lengthOfMonth
+import com.debanshu.xcalendar.common.noRippleClickable
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
+import com.debanshu.xcalendar.ui.YearMonth
+import com.debanshu.xcalendar.ui.isLeap
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun MonthView(
+    modifier: Modifier,
     month: YearMonth,
     events: List<Event>,
     holidays: List<Holiday>,
@@ -53,12 +57,14 @@ fun MonthView(
     val firstDayOfMonth = LocalDate(month.year, month.month, 1)
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal + 1
     val daysInMonth = month.month.lengthOfMonth(month.year.isLeap())
-    val totalDays = firstDayOfWeek + daysInMonth
-    val remainingCells = 42 - totalDays
+
+    val skipPreviousPadding = firstDayOfWeek >= 7
+    val totalDaysDisplayed = if (skipPreviousPadding) daysInMonth else firstDayOfWeek + daysInMonth
+    val remainingCells = 42 - totalDaysDisplayed
 
     // Calendar grid with fixed height based on number of rows
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         columns = GridCells.Fixed(7),
         userScrollEnabled = false
     ) {
@@ -66,27 +72,29 @@ fun MonthView(
             WeekdayHeader()
         }
         // Previous month padding days
-        items(firstDayOfWeek) { index ->
-            val prevMonth =
-                if (month.month.ordinal == 1) Month(12) else Month(month.month.ordinal - 1)
-            val prevYear = if (month.month.ordinal == 1) month.year - 1 else month.year
-            val daysInPrevMonth = prevMonth.lengthOfMonth(prevYear.isLeap())
-            val day = daysInPrevMonth - (firstDayOfWeek - index - 1)
-            val date = LocalDate(prevYear, prevMonth, day)
+        if (firstDayOfWeek > 0 && !skipPreviousPadding) {
+            items(firstDayOfWeek) { index ->
+                val prevMonth =
+                    if (month.month.number == 1) Month(12) else Month(month.month.number - 1)
+                val prevYear = if (month.month.number == 1) month.year - 1 else month.year
+                val daysInPrevMonth = prevMonth.lengthOfMonth(prevYear.isLeap())
+                val day = daysInPrevMonth - (firstDayOfWeek - index - 1)
+                val date = LocalDate(prevYear, prevMonth, day)
 
-            DayCell(
-                modifier = Modifier,
-                date = date,
-                events = events.filter { event ->
-                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                },
-                holidays = holidays.filter { holiday ->
-                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                },
-                isCurrentMonth = false,
-                isSelected = false,
-                onDayClick = onDayClick
-            )
+                DayCell(
+                    modifier = Modifier,
+                    date = date,
+                    events = events.filter { event ->
+                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                    },
+                    holidays = holidays.filter { holiday ->
+                        holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                    },
+                    isCurrentMonth = false,
+                    isSelected = false,
+                    onDayClick = onDayClick
+                )
+            }
         }
 
         // Current month days
@@ -109,8 +117,8 @@ fun MonthView(
 
         items(remainingCells) { day ->
             val nextMonth =
-                if (month.month.ordinal == 12) Month(1) else Month(month.month.ordinal + 1)
-            val nextYear = if (month.month.ordinal == 12) month.year + 1 else month.year
+                if (month.month.number == 12) Month(1) else Month(month.month.number + 1)
+            val nextYear = if (month.month.number == 12) month.year + 1 else month.year
             val date = LocalDate(nextYear, nextMonth, day + 1)
 
             DayCell(
@@ -143,11 +151,7 @@ fun WeekdayHeader() {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(30.dp)
-                    .border(
-                        width = 0.5.dp,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
-                    ),
+                    .height(30.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -189,7 +193,7 @@ fun DayCell(
                     else -> MaterialTheme.colors.surface
                 }
             )
-            .clickable { onDayClick(date) }
+            .noRippleClickable { onDayClick(date) }
     ) {
         Column(
             modifier = Modifier

@@ -3,6 +3,7 @@ package com.debanshu.xcalendar.ui
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.debanshu.xcalendar.common.lengthOfMonth
 import com.debanshu.xcalendar.data.remoteDataSource.CalendarApiService
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
@@ -171,6 +172,15 @@ class CalendarViewModel(
 
     // UI actions
     fun selectDay(date: LocalDate) {
+        val currentMonth = _uiState.value.selectedMonth
+        val dateMonth = YearMonth(date.year, date.month)
+
+        // If selecting a day from a different month, navigate to that month
+        if (currentMonth != dateMonth) {
+            selectMonth(date.month, date.year, false)
+        }
+
+        // Update the selected day
         _uiState.update {
             it.copy(
                 selectedDay = date,
@@ -180,23 +190,59 @@ class CalendarViewModel(
         }
     }
 
-    fun selectMonth(month: Month, year: Int) {
+    fun selectMonth(month: Month, year: Int, preserveSelectedDay: Boolean = true) {
         val yearMonth = YearMonth(year, month)
-        val firstDayOfMonth = LocalDate(year, month, 1)
+        val currentSelectedDay = _uiState.value.selectedDay
+
+        // Calculate the same day in the new month if possible, otherwise use first day
+        val newSelectedDay = if (preserveSelectedDay && _uiState.value.selectedDay != LocalDate(0, Month.JANUARY, 1)) {
+            try {
+                // Try to use the same day number in the new month
+                val targetDayOfMonth = minOf(
+                    currentSelectedDay.dayOfMonth,
+                    month.lengthOfMonth(year.isLeap())
+                )
+                LocalDate(year, month, targetDayOfMonth)
+            } catch (e: Exception) {
+                // Fallback to first day of month if any error occurs
+                LocalDate(year, month, 1)
+            }
+        } else {
+            // Default to first day if not preserving or no valid day selected
+            LocalDate(year, month, 1)
+        }
+
+        val weekStartDate = CalendarUiState.getWeekStartDate(newSelectedDay)
 
         _uiState.update {
             it.copy(
                 selectedMonth = yearMonth,
-                selectedDay = firstDayOfMonth,
-                weekStartDate = CalendarUiState.getWeekStartDate(firstDayOfMonth),
-                threeDayStartDate = firstDayOfMonth
+                selectedDay = newSelectedDay,
+                weekStartDate = weekStartDate,
+                threeDayStartDate = newSelectedDay
             )
+        }
+
+        // Preload events for this month range
+        viewModelScope.launch {
+            preloadEventsForMonth(yearMonth)
         }
     }
 
     fun selectToday() {
         val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        selectDay(today)
+
+        // Navigate to today's month while indicating not to preserve the selected day
+        selectMonth(today.month, today.year, false)
+
+        // Set today as the selected day
+        _uiState.update {
+            it.copy(
+                selectedDay = today,
+                weekStartDate = CalendarUiState.getWeekStartDate(today),
+                threeDayStartDate = today
+            )
+        }
     }
 
     fun selectView(view: CalendarView) {
@@ -205,6 +251,34 @@ class CalendarViewModel(
 
     fun setTopAppBarMonthDropdown(viewType: TopBarCalendarView) {
         _uiState.update { it.copy(showMonthDropdown = viewType) }
+    }
+
+    /**
+     * Preload events for the given month and adjacent months
+     */
+    private fun preloadEventsForMonth(yearMonth: YearMonth) {
+        viewModelScope.launch {
+            // Calculate date range (one month before and after selected month)
+            val startMonth = yearMonth.plusMonths(-1)
+            val endMonth = yearMonth.plusMonths(1)
+
+            val startDate = startMonth.atStartOfMonth()
+            val endDate = endMonth.atEndOfMonth()
+
+            val startTime = startDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+            val endTime = endDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+
+            // Get visible calendar IDs
+            val visibleCalendarIds = _uiState.value.calendars
+                .filter { it.isVisible }
+                .map { it.id }
+
+            if (visibleCalendarIds.isEmpty()) return@launch
+
+            // Load events for this date range - implementation depends on your repository
+            // This is just an example that matches your existing code structure
+            loadEventsForCalendars(visibleCalendarIds)
+        }
     }
 
     fun toggleCalendarVisibility(calendar: Calendar) {

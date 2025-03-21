@@ -60,8 +60,8 @@ import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.ui.CalendarView
 import com.debanshu.xcalendar.ui.CalendarViewModel
-import com.debanshu.xcalendar.ui.MonthView
 import com.debanshu.xcalendar.ui.components.CalendarDrawer
+import com.debanshu.xcalendar.ui.components.SwipeableMonthView
 import com.debanshu.xcalendar.ui.components.TopAppBar
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -101,7 +101,7 @@ fun CalendarApp(
                     },
                     onSelectToday = { viewModel.selectToday() },
                     onToggleMonthDropdown = { viewModel.setTopAppBarMonthDropdown(it) },
-                    onDayClick = { date -> viewModel.selectDay(date) })
+                    onDayClick = { date -> viewModel.selectToday() })
             },
             drawerContent = {
                 CalendarDrawer(
@@ -132,12 +132,16 @@ fun CalendarApp(
             }) { paddingValues ->
             when (calendarUiState.currentView) {
                 is CalendarView.Month -> {
-                    MonthView(
-                        month = calendarUiState.selectedMonth,
+                    SwipeableMonthView(
+                        initialMonth = calendarUiState.selectedMonth,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,
                         onDayClick = { date -> viewModel.selectDay(date) },
-                        selectedDay = calendarUiState.selectedDay
+                        selectedDay = calendarUiState.selectedDay,
+                        onMonthChange = { yearMonth ->
+                            // Make sure to handle month changes correctly
+                            viewModel.selectMonth(yearMonth.month, yearMonth.year)
+                        }
                     )
                 }
 
