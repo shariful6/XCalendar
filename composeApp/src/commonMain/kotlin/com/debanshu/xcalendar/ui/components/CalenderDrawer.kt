@@ -41,15 +41,13 @@ fun CalendarDrawer(
         modifier = Modifier
             .width(280.dp)
             .fillMaxHeight()
-            .background(MaterialTheme.colors.surface)
-            .padding(vertical = 8.dp)
     ) {
         // App title
         Text(
             text = "Google Calendar",
             style = MaterialTheme.typography.h6,
             color = MaterialTheme.colors.onSurface,
-            modifier = Modifier.padding(start = 24.dp, top = 16.dp, bottom = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
         )
         Divider()
         // View options
