@@ -1,4 +1,4 @@
-package com.debanshu.xcalendar.ui.components
+package com.debanshu.xcalendar.ui.screen.monthScreen.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -33,50 +33,29 @@ fun SwipeableMonthView(
     selectedDay: LocalDate,
     onMonthChange: (YearMonth) -> Unit
 ) {
-    // Use derived state to track the current month being displayed
     var centerMonth by remember(initialMonth) { mutableStateOf(initialMonth) }
+    val previousMonth = remember(centerMonth) { centerMonth.plusMonths(-1) }
+    val nextMonth = remember(centerMonth) { centerMonth.plusMonths(1) }
 
-    // Track the previous initialMonth to detect external navigation
-    val previousInitialMonth = remember { mutableStateOf(initialMonth) }
-
-    // Handle external navigation (like Today button)
-    LaunchedEffect(initialMonth) {
-        if (initialMonth != previousInitialMonth.value) {
-            centerMonth = initialMonth
-            previousInitialMonth.value = initialMonth
-        }
-    }
-
-    // Size of the component for calculating offsets
     var size by remember { mutableStateOf(IntSize.Zero) }
-
-    // Drag gesture and animation state
     var offsetX by remember { mutableStateOf(0f) }
     var isAnimating by remember { mutableStateOf(false) }
     var targetOffsetX by remember { mutableStateOf(0f) }
 
-    // Calculate adjacent months
-    val previousMonth = remember(centerMonth) { centerMonth.plusMonths(-1) }
-    val nextMonth = remember(centerMonth) { centerMonth.plusMonths(1) }
 
-    // Animate offset for smooth transitions
     val animatedOffset by animateFloatAsState(
         targetValue = targetOffsetX,
         animationSpec = tween(durationMillis = 300),
         finishedListener = {
             if (isAnimating) {
-                // Determine which month should become the new center
                 if (targetOffsetX > 0) {
-                    // Moving to previous month - preserve selected day
                     centerMonth = previousMonth
                     onMonthChange(centerMonth)
                 } else if (targetOffsetX < 0) {
-                    // Moving to next month - preserve selected day
                     centerMonth = nextMonth
                     onMonthChange(centerMonth)
                 }
 
-                // Reset state for next interaction
                 offsetX = 0f
                 targetOffsetX = 0f
                 isAnimating = false
@@ -84,7 +63,6 @@ fun SwipeableMonthView(
         }
     )
 
-    // The actual animated offset used in layout
     val effectiveOffset = if (isAnimating) animatedOffset else offsetX
 
     Box(
@@ -94,20 +72,17 @@ fun SwipeableMonthView(
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onDragEnd = {
-                        // Threshold for triggering month change (30% of screen width)
                         val screenWidth = size.width.toFloat()
                         val threshold = screenWidth * 0.3f
 
                         if (abs(offsetX) > threshold) {
-                            // Animate to next/previous month
                             isAnimating = true
                             targetOffsetX = if (offsetX > 0) {
-                                screenWidth  // Animate to full screen width (prev month)
+                                screenWidth
                             } else {
-                                -screenWidth // Animate to negative width (next month)
+                                -screenWidth
                             }
                         } else {
-                            // Not enough drag, snap back to current month
                             isAnimating = true
                             targetOffsetX = 0f
                         }
@@ -126,10 +101,7 @@ fun SwipeableMonthView(
             }
     ) {
         val screenWidth = size.width
-
-        // Only render if we have dimensions
         if (screenWidth > 0) {
-            // Current month (centered)
             MonthView(
                 month = centerMonth,
                 events = events,
@@ -140,8 +112,6 @@ fun SwipeableMonthView(
                     .fillMaxSize()
                     .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
             )
-
-            // Previous month (to the left)
             MonthView(
                 month = previousMonth,
                 events = events,
@@ -153,7 +123,6 @@ fun SwipeableMonthView(
                     .offset { IntOffset(-screenWidth + effectiveOffset.roundToInt(), 0) }
             )
 
-            // Next month (to the right)
             MonthView(
                 month = nextMonth,
                 events = events,
