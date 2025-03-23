@@ -17,11 +17,14 @@ fun MonthScreen(
 ) {
     val dateState by dateStateHolder.currentDateState.collectAsState()
     SwipeableMonthView(
-        initialMonth = YearMonth(dateState.selectedDate.year, dateState.selectedDate.monthNumber),
+        currentMonth = YearMonth(
+            dateState.selectedInViewMonth.year,
+            dateState.selectedInViewMonth.month
+        ),
         events = events,
         holidays = holidays,
-        onDayClick = { date -> dateStateHolder.updateSelectedDateState(date) },
-        selectedDay = dateState.selectedDate,
+        onSpecificDayClicked = { date -> dateStateHolder.updateSelectedDateState(date) },
+        currentSelectedDay = dateState.selectedDate,
         onMonthChange = { yearMonth ->
             dateStateHolder.updateSelectedInViewMonthState(yearMonth)
         }

@@ -26,18 +26,15 @@ import kotlin.math.roundToInt
  */
 @Composable
 fun SwipeableMonthView(
-    initialMonth: YearMonth,
+    currentMonth: YearMonth,
     events: List<Event>,
     holidays: List<Holiday>,
-    onDayClick: (LocalDate) -> Unit,
-    selectedDay: LocalDate,
+    onSpecificDayClicked: (LocalDate) -> Unit,
+    currentSelectedDay: LocalDate,
     onMonthChange: (YearMonth) -> Unit
 ) {
-    var centerMonth by remember(initialMonth) { mutableStateOf(initialMonth) }
-    val previousMonth = remember(centerMonth) { centerMonth.plusMonths(-1) }
-    val nextMonth = remember(centerMonth) { centerMonth.plusMonths(1) }
-
     var size by remember { mutableStateOf(IntSize.Zero) }
+    val screenWidth by derivedStateOf { size.width.toFloat() }
     var offsetX by remember { mutableStateOf(0f) }
     var isAnimating by remember { mutableStateOf(false) }
     var targetOffsetX by remember { mutableStateOf(0f) }
@@ -49,13 +46,10 @@ fun SwipeableMonthView(
         finishedListener = {
             if (isAnimating) {
                 if (targetOffsetX > 0) {
-                    centerMonth = previousMonth
-                    onMonthChange(centerMonth)
+                    onMonthChange(currentMonth.plusMonths(-1))
                 } else if (targetOffsetX < 0) {
-                    centerMonth = nextMonth
-                    onMonthChange(centerMonth)
+                    onMonthChange(currentMonth.plusMonths(1))
                 }
-
                 offsetX = 0f
                 targetOffsetX = 0f
                 isAnimating = false
@@ -72,9 +66,7 @@ fun SwipeableMonthView(
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onDragEnd = {
-                        val screenWidth = size.width.toFloat()
                         val threshold = screenWidth * 0.3f
-
                         if (abs(offsetX) > threshold) {
                             isAnimating = true
                             targetOffsetX = if (offsetX > 0) {
@@ -92,6 +84,7 @@ fun SwipeableMonthView(
                         targetOffsetX = 0f
                     },
                     onHorizontalDrag = { change, amount ->
+                        targetOffsetX+=amount
                         if (!isAnimating) {
                             offsetX += amount
                             change.consume()
@@ -100,38 +93,38 @@ fun SwipeableMonthView(
                 )
             }
     ) {
-        val screenWidth = size.width
         if (screenWidth > 0) {
             MonthView(
-                month = centerMonth,
+                month = currentMonth,
                 events = events,
                 holidays = holidays,
-                onDayClick = onDayClick,
-                selectedDay = selectedDay,
+                onDayClick = onSpecificDayClicked,
+                selectedDay = currentSelectedDay,
                 modifier = Modifier
                     .fillMaxSize()
                     .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
             )
+
             MonthView(
-                month = previousMonth,
+                month = currentMonth.plusMonths(-1),
                 events = events,
                 holidays = holidays,
-                onDayClick = onDayClick,
-                selectedDay = selectedDay,
+                onDayClick = onSpecificDayClicked,
+                selectedDay = currentSelectedDay,
                 modifier = Modifier
                     .fillMaxSize()
-                    .offset { IntOffset(-screenWidth + effectiveOffset.roundToInt(), 0) }
+                    .offset { IntOffset(-screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
             )
 
             MonthView(
-                month = nextMonth,
+                month = currentMonth.plusMonths(1),
                 events = events,
                 holidays = holidays,
-                onDayClick = onDayClick,
-                selectedDay = selectedDay,
+                onDayClick = onSpecificDayClicked,
+                selectedDay = currentSelectedDay,
                 modifier = Modifier
                     .fillMaxSize()
-                    .offset { IntOffset(screenWidth + effectiveOffset.roundToInt(), 0) }
+                    .offset { IntOffset(screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
             )
         }
     }

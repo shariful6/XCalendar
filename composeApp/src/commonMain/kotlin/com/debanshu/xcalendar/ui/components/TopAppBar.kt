@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -187,34 +188,31 @@ private fun TopBarMonthView(
     val firstDayOfMonth = LocalDate(month.year, month.month, 1)
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal + 1
     val daysInMonth = month.month.lengthOfMonth(month.year.isLeap())
-    Column() {
-        // Day of week headers
-        TopAppBarWeekdayHeader()
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(7),
+    ) {
 
-        // Calendar grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(7),
-        ) {
+        item(span = { GridItemSpan(7) }) {
+            TopAppBarWeekdayHeader()
+        }
 
-            items(firstDayOfWeek) {
-                TopAppBarEmptyPagingDayCell()
-            }
+        items(firstDayOfWeek) {
+            TopAppBarEmptyPagingDayCell()
+        }
 
-
-            items(daysInMonth) { day ->
-                val date = LocalDate(month.year, month.month, day + 1)
-                TopAppBarDayCell(
-                    date = date,
-                    events = events.filter { event ->
-                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    holidays = holidays.filter { holiday ->
-                        holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    isSelected = date == selectedDay,
-                    onDayClick = onDayClick
-                )
-            }
+        items(daysInMonth) { day ->
+            val date = LocalDate(month.year, month.month, day + 1)
+            TopAppBarDayCell(
+                date = date,
+                events = events.filter { event ->
+                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                holidays = holidays.filter { holiday ->
+                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                isSelected = date == selectedDay,
+                onDayClick = onDayClick
+            )
         }
     }
 }

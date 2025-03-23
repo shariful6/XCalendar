@@ -229,22 +229,6 @@ class CalendarViewModel(
         }
     }
 
-    fun selectToday() {
-        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-
-        // Navigate to today's month while indicating not to preserve the selected day
-        selectMonth(today.month, today.year, false)
-
-        // Set today as the selected day
-        _uiState.update {
-            it.copy(
-                selectedDay = today,
-                weekStartDate = CalendarUiState.getWeekStartDate(today),
-                threeDayStartDate = today
-            )
-        }
-    }
-
     fun selectView(view: CalendarView) {
         _uiState.update { it.copy(currentView = view) }
     }

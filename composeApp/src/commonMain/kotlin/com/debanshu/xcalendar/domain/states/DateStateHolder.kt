@@ -41,6 +41,11 @@ class DateStateHolderImpl : DateStateHolder {
     }
 
     override fun updateSelectedDateState(selectedDate: LocalDate) {
-        _currentDateState.tryEmit(_currentDateState.value.copy(selectedDate = selectedDate))
+        _currentDateState.tryEmit(
+            _currentDateState.value.copy(
+                selectedDate = selectedDate,
+                selectedInViewMonth = YearMonth(selectedDate.year, selectedDate.month)
+            )
+        )
     }
 }
