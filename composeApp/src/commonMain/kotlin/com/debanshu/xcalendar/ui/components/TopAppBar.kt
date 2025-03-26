@@ -2,10 +2,7 @@ package com.debanshu.xcalendar.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.EaseInCubic
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +33,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +50,7 @@ import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.common.toSentenceCase
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.ui.CalendarUiState
+import com.debanshu.xcalendar.domain.states.DateState
 import com.debanshu.xcalendar.ui.TopBarCalendarView
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
@@ -66,7 +63,8 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun TopAppBar(
-    calendarUiState: CalendarUiState,
+    dateState: DateState,
+    monthDropdownState: TopBarCalendarView,
     onMenuClick: () -> Unit,
     onSelectToday: () -> Unit,
     onToggleMonthDropdown: (TopBarCalendarView) -> Unit,
@@ -78,7 +76,7 @@ fun TopAppBar(
         ).animateContentSize()
     ) {
         val rotationDegree by animateFloatAsState(
-            targetValue = if (calendarUiState.showMonthDropdown != TopBarCalendarView.NoView)
+            targetValue = if (monthDropdownState != TopBarCalendarView.NoView)
                 180f else 0f,
             animationSpec = tween(
                 durationMillis = 300,
@@ -90,13 +88,13 @@ fun TopAppBar(
         // Determine if we need to show the year in the month title
         val currentYear = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
 
-        val showYear = calendarUiState.selectedMonth.year != currentYear
+        val showYear = dateState.selectedInViewMonth.year != currentYear
 
         // Create the month title with year if needed
         val monthTitle = if (showYear) {
-            "${calendarUiState.selectedMonth.month.name.toSentenceCase()} ${calendarUiState.selectedMonth.year}"
+            "${dateState.selectedInViewMonth.month.name.toSentenceCase()} ${dateState.selectedInViewMonth.year}"
         } else {
-            calendarUiState.selectedMonth.month.name.toSentenceCase()
+            dateState.selectedInViewMonth.month.name.toSentenceCase()
         }
 
         TopAppBar(
@@ -112,7 +110,7 @@ fun TopAppBar(
                 Row(
                     modifier = Modifier.noRippleClickable {
                         val toggleView =
-                            if (calendarUiState.showMonthDropdown != TopBarCalendarView.NoView)
+                            if (monthDropdownState != TopBarCalendarView.NoView)
                                 TopBarCalendarView.NoView
                             else
                                 TopBarCalendarView.Month
@@ -140,7 +138,7 @@ fun TopAppBar(
                 }
                 IconButton(onClick = { onSelectToday() }) {
                     Text(
-                        text = calendarUiState.currentDate.dayOfMonth.toString(),
+                        text = dateState.currentDate.dayOfMonth.toString(),
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Bold
                     )
@@ -160,14 +158,17 @@ fun TopAppBar(
             backgroundColor = MaterialTheme.colors.onPrimary,
         )
 
-        when (calendarUiState.showMonthDropdown) {
+        when (monthDropdownState) {
             TopBarCalendarView.Month -> {
                 TopBarMonthView(
-                    month = calendarUiState.selectedMonth,
-                    events = calendarUiState.events,
-                    holidays = calendarUiState.holidays,
+                    month = YearMonth(
+                        dateState.selectedInViewMonth.year, dateState
+                            .selectedInViewMonth.month
+                    ),
+                    events = emptyList(),
+                    holidays = emptyList(),
                     onDayClick = onDayClick,
-                    selectedDay = calendarUiState.selectedDay
+                    selectedDay = dateState.selectedDate
                 )
             }
 
@@ -187,34 +188,31 @@ private fun TopBarMonthView(
     val firstDayOfMonth = LocalDate(month.year, month.month, 1)
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal + 1
     val daysInMonth = month.month.lengthOfMonth(month.year.isLeap())
-    Column() {
-        // Day of week headers
-        TopAppBarWeekdayHeader()
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(7),
+    ) {
 
-        // Calendar grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(7),
-        ) {
+        item(span = { GridItemSpan(7) }) {
+            TopAppBarWeekdayHeader()
+        }
 
-            items(firstDayOfWeek) {
-                TopAppBarEmptyPagingDayCell()
-            }
+        items(firstDayOfWeek) {
+            TopAppBarEmptyPagingDayCell()
+        }
 
-
-            items(daysInMonth) { day ->
-                val date = LocalDate(month.year, month.month, day + 1)
-                TopAppBarDayCell(
-                    date = date,
-                    events = events.filter { event ->
-                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    holidays = holidays.filter { holiday ->
-                        holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    isSelected = date == selectedDay,
-                    onDayClick = onDayClick
-                )
-            }
+        items(daysInMonth) { day ->
+            val date = LocalDate(month.year, month.month, day + 1)
+            TopAppBarDayCell(
+                date = date,
+                events = events.filter { event ->
+                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                holidays = holidays.filter { holiday ->
+                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                },
+                isSelected = date == selectedDay,
+                onDayClick = onDayClick
+            )
         }
     }
 }

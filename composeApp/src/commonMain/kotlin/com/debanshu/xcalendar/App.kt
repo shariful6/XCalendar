@@ -58,11 +58,13 @@ import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
+import com.debanshu.xcalendar.domain.states.DateStateHolder
 import com.debanshu.xcalendar.ui.CalendarView
 import com.debanshu.xcalendar.ui.CalendarViewModel
 import com.debanshu.xcalendar.ui.components.CalendarDrawer
-import com.debanshu.xcalendar.ui.components.SwipeableMonthView
+import com.debanshu.xcalendar.ui.screen.monthScreen.components.SwipeableMonthView
 import com.debanshu.xcalendar.ui.components.TopAppBar
+import com.debanshu.xcalendar.ui.screen.monthScreen.MonthScreen
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
@@ -73,20 +75,24 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
 fun App() {
     val viewModel = koinViewModel<CalendarViewModel>()
-    CalendarApp(viewModel)
+    val dateStateHolder = koinInject<DateStateHolder>()
+    CalendarApp(viewModel, dateStateHolder)
 }
 
 @Composable
 fun CalendarApp(
-    viewModel: CalendarViewModel
+    viewModel: CalendarViewModel,
+    dateStateHolder: DateStateHolder
 ) {
     val calendarUiState by viewModel.uiState.collectAsState()
+    val dataState by dateStateHolder.currentDateState.collectAsState()
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
@@ -95,13 +101,12 @@ fun CalendarApp(
             scaffoldState = scaffoldState,
             topBar = {
                 TopAppBar(
-                    calendarUiState = calendarUiState,
-                    onMenuClick = {
-                        scope.launch { scaffoldState.drawerState.open() }
-                    },
-                    onSelectToday = { viewModel.selectToday() },
+                    dateState = dataState,
+                    monthDropdownState = calendarUiState.showMonthDropdown,
+                    onMenuClick = { scope.launch { scaffoldState.drawerState.open() } },
+                    onSelectToday = { dateStateHolder.updateSelectedDateState(dataState.currentDate) },
                     onToggleMonthDropdown = { viewModel.setTopAppBarMonthDropdown(it) },
-                    onDayClick = { date -> viewModel.selectToday() })
+                    onDayClick = { date -> dateStateHolder.updateSelectedDateState(date) })
             },
             drawerContent = {
                 CalendarDrawer(
@@ -132,16 +137,10 @@ fun CalendarApp(
             }) { paddingValues ->
             when (calendarUiState.currentView) {
                 is CalendarView.Month -> {
-                    SwipeableMonthView(
-                        initialMonth = calendarUiState.selectedMonth,
-                        events = calendarUiState.events,
-                        holidays = calendarUiState.holidays,
-                        onDayClick = { date -> viewModel.selectDay(date) },
-                        selectedDay = calendarUiState.selectedDay,
-                        onMonthChange = { yearMonth ->
-                            // Make sure to handle month changes correctly
-                            viewModel.selectMonth(yearMonth.month, yearMonth.year)
-                        }
+                    MonthScreen(
+                        dateStateHolder,
+                        calendarUiState.events,
+                        calendarUiState.holidays
                     )
                 }
 

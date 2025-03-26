@@ -43,13 +43,15 @@ class DataModule {
     fun getUserEntityDao(appDatabase: AppDatabase): UserDao = appDatabase.getUserEntityDao()
 
     @Single
-    fun getCalendarEntityDao(appDatabase: AppDatabase): CalendarDao = appDatabase.getCalendarEntityDao()
+    fun getCalendarEntityDao(appDatabase: AppDatabase): CalendarDao =
+        appDatabase.getCalendarEntityDao()
 
     @Single
     fun getEventEntityDao(appDatabase: AppDatabase): EventDao = appDatabase.getEventEntityDao()
 
     @Single
-    fun getHolidayEntityDao(appDatabase: AppDatabase): HolidayDao = appDatabase.getHolidayEntityDao()
+    fun getHolidayEntityDao(appDatabase: AppDatabase): HolidayDao =
+        appDatabase.getHolidayEntityDao()
 }
 
 @Module
@@ -60,13 +62,20 @@ class ViewModelModule
 @ComponentScan("com.debanshu.xcalendar.domain.repository")
 class DomainModule
 
-@Module(includes = [PlatformModule::class, DataModule::class, ViewModelModule::class, DomainModule::class])
+@Module
+@ComponentScan("com.debanshu.xcalendar.domain.states")
+class StateModule
+
+@Module(
+    includes = [PlatformModule::class, DataModule::class, ViewModelModule::class,
+        DomainModule::class, StateModule::class]
+)
 class AppModule
 
 fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
         modules(
-           AppModule().module
+            AppModule().module
         )
         config?.invoke(this)
     }

@@ -1,4 +1,4 @@
-package com.debanshu.xcalendar.ui.screen.MonthScreen
+package com.debanshu.xcalendar.ui.screen.monthScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +21,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,7 +64,6 @@ fun MonthView(
     val totalDaysDisplayed = if (skipPreviousPadding) daysInMonth else firstDayOfWeek + daysInMonth
     val remainingCells = 42 - totalDaysDisplayed
 
-    // Calendar grid with fixed height based on number of rows
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
         columns = GridCells.Fixed(7),
@@ -71,7 +72,6 @@ fun MonthView(
         item(span = { GridItemSpan(7) }) {
             WeekdayHeader()
         }
-        // Previous month padding days
         if (firstDayOfWeek > 0 && !skipPreviousPadding) {
             items(firstDayOfWeek) { index ->
                 val prevMonth =
@@ -91,13 +91,12 @@ fun MonthView(
                         holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                     },
                     isCurrentMonth = false,
-                    isSelected = false,
+                    isSelected = date == selectedDay,
                     onDayClick = onDayClick
                 )
             }
         }
 
-        // Current month days
         items(daysInMonth) { day ->
             val date = LocalDate(month.year, month.month, day + 1)
             DayCell(
@@ -131,7 +130,7 @@ fun MonthView(
                     holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 },
                 isCurrentMonth = false,
-                isSelected = false,
+                isSelected = date == selectedDay,
                 onDayClick = onDayClick
             )
         }
@@ -200,7 +199,6 @@ fun DayCell(
                 .fillMaxSize()
                 .padding(1.dp)
         ) {
-            // Day number
             Box(
                 modifier = Modifier
                     .padding(2.dp)
@@ -250,7 +248,6 @@ fun DayCell(
                 )
             }
 
-            // +more indicator if needed
             if (events.size > maxEventsToShow) {
                 Text(
                     text = "+${events.size - maxEventsToShow} more",
