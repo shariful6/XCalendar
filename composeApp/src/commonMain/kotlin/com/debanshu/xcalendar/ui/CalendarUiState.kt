@@ -22,7 +22,7 @@ data class CalendarUiState(
     ),
 
     // View state
-    val currentView: CalendarView = CalendarView.Month,
+    val currentView: CalendarView = CalendarView.Week,
     val showMonthDropdown: TopBarCalendarView = TopBarCalendarView.NoView,
 
     // Data

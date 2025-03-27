@@ -65,6 +65,7 @@ import com.debanshu.xcalendar.ui.components.CalendarDrawer
 import com.debanshu.xcalendar.ui.screen.monthScreen.components.SwipeableMonthView
 import com.debanshu.xcalendar.ui.components.TopAppBar
 import com.debanshu.xcalendar.ui.screen.monthScreen.MonthScreen
+import com.debanshu.xcalendar.ui.screen.weekScreen.WeekScreen
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
@@ -145,11 +146,12 @@ fun CalendarApp(
                 }
 
                 is CalendarView.Week -> {
-                    WeekView(
-                        startDate = calendarUiState.weekStartDate,
+                    WeekScreen(
+                        dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) })
+                        onEventClick = { event -> viewModel.selectEvent(event) }
+                    )
                 }
 
                 is CalendarView.Day -> {
