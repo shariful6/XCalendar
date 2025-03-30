@@ -57,7 +57,7 @@ fun WeekView(
         startDate.plus(DatePeriod(days = index))
     }
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         state = scrollState
     ) {
         items(24) { hour ->

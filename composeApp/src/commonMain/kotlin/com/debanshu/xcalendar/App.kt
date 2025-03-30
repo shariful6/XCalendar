@@ -147,6 +147,7 @@ fun CalendarApp(
 
                 is CalendarView.Week -> {
                     WeekScreen(
+                        viewModel = viewModel,
                         dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,

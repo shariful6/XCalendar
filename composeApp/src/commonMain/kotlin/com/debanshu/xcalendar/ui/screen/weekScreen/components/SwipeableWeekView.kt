@@ -2,25 +2,31 @@ package com.debanshu.xcalendar.ui.screen.weekScreen.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -44,7 +50,6 @@ import androidx.compose.ui.unit.sp
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.ui.screen.weekScreen.WeekView
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -56,25 +61,25 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
-fun SwipeableWeekView(
+fun SwipeableWeekCalendarView(
+    modifier: Modifier = Modifier,
     currentStartDate: LocalDate,
     events: List<Event>,
-    holidays: List<Holiday>,
+    holidays: List<Holiday> = emptyList(),
     onDayClick: (LocalDate) -> Unit,
     onEventClick: (Event) -> Unit,
     selectedDay: LocalDate,
-    onWeekChange: (LocalDate) -> Unit
+    onWeekChange: (LocalDate) -> Unit,
+    timeRange: IntRange = 0..23,
+    hourHeightDp: Float = 60f,
+    scrollState: ScrollState
 ) {
     var size by remember { mutableStateOf(IntSize.Zero) }
     val screenWidth by derivedStateOf { size.width.toFloat() }
     var offsetX by remember { mutableStateOf(0f) }
     var isAnimating by remember { mutableStateOf(false) }
     var targetOffsetX by remember { mutableStateOf(0f) }
-    val scrollState = rememberLazyListState()
-    val weekDates = List(7) { index ->
-        currentStartDate.plus(DatePeriod(days = index))
-    }
-    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val timeColumnWidth = 60.dp
 
     val prevWeekStartDate = remember(currentStartDate) {
         currentStartDate.minus(DatePeriod(days = 7))
@@ -104,200 +109,306 @@ fun SwipeableWeekView(
     )
 
     val effectiveOffset = if (isAnimating) animatedOffset else offsetX
+    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
-    Row {
-        TimeColumn(
-            modifier = Modifier,
-            scrollState = scrollState,
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .onSizeChanged { size = it }
-        ) {
-            WeekHeader(
-                weekDates = weekDates,
-                onDayClick = onDayClick,
-                selectedDay = selectedDay,
-                today = today,
-                holidays = holidays
-            )
-
-            Box(
-                modifier = Modifier
-                    .pointerInput(Unit) {
-                        detectHorizontalDragGestures(
-                            onDragEnd = {
-                                val threshold = screenWidth * 0.3f
-                                if (abs(offsetX) > threshold) {
-                                    isAnimating = true
-                                    targetOffsetX = if (offsetX > 0) {
-                                        screenWidth
-                                    } else {
-                                        -screenWidth
-                                    }
-                                } else {
-                                    isAnimating = true
-                                    targetOffsetX = 0f
-                                }
-                            },
-                            onDragCancel = {
-                                isAnimating = true
-                                targetOffsetX = 0f
-                            },
-                            onHorizontalDrag = { change, amount ->
-                                if (!isAnimating) {
-                                    offsetX += amount
-                                    change.consume()
-                                }
+    Surface(
+        modifier = Modifier
+            .fillMaxHeight()
+            .onSizeChanged { size = it }
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onDragEnd = {
+                        val threshold = screenWidth * 0.3f
+                        if (abs(offsetX) > threshold) {
+                            isAnimating = true
+                            targetOffsetX = if (offsetX > 0) {
+                                screenWidth
+                            } else {
+                                -screenWidth
                             }
-                        )
+                        } else {
+                            isAnimating = true
+                            targetOffsetX = 0f
+                        }
+                    },
+                    onDragCancel = {
+                        isAnimating = true
+                        targetOffsetX = 0f
+                    },
+                    onHorizontalDrag = { change, amount ->
+                        if (!isAnimating) {
+                            offsetX += amount
+                            change.consume()
+                        }
                     }
-            ) {
-                if (screenWidth > 0) {
-                    WeekView(
-                        scrollState = scrollState,
-                        startDate = currentStartDate,
-                        events = events,
-                        onEventClick = onEventClick,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
-                    )
-
-                    WeekView(
-                        scrollState = scrollState,
-                        startDate = prevWeekStartDate,
-                        events = events,
-                        onEventClick = onEventClick,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .offset {
-                                IntOffset(
-                                    -screenWidth.roundToInt() + effectiveOffset.roundToInt(),
-                                    0
-                                )
-                            }
-                    )
-
-                    WeekView(
-                        scrollState = scrollState,
-                        startDate = nextWeekStartDate,
-                        events = events,
-                        onEventClick = onEventClick,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .offset {
-                                IntOffset(
-                                    screenWidth.roundToInt() + effectiveOffset.roundToInt(),
-                                    0
-                                )
-                            }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TimeColumn(modifier: Modifier, scrollState: LazyListState) {
-    LazyColumn(
-        modifier = modifier,
-//        state = scrollState
-    ) {
-        items(24) { hour ->
-            Box(
-                modifier = Modifier
-                    .height(60.dp)
-                    .padding(end = 8.dp)
-            ) {
-                Text(
-                    text = formatHour(hour),
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-                    modifier = Modifier
-                        .padding(end = 8.dp, top = 4.dp)
-                        .align(Alignment.TopEnd),
-                    textAlign = TextAlign.End
                 )
             }
-        }
+    ) {
+        // Current week
+        WeekContent(
+            startDate = currentStartDate,
+            events = events,
+            holidays = holidays,
+            timeRange = timeRange,
+            hourHeightDp = hourHeightDp,
+            onDayClick = onDayClick,
+            onEventClick = onEventClick,
+            selectedDay = selectedDay,
+            today = today,
+            scrollState = scrollState,
+            modifier = Modifier
+                .fillMaxSize()
+                .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
+        )
+
+        // Previous week
+        WeekContent(
+            startDate = prevWeekStartDate,
+            events = events,
+            holidays = holidays,
+            timeRange = timeRange,
+            hourHeightDp = hourHeightDp,
+            onDayClick = onDayClick,
+            onEventClick = onEventClick,
+            selectedDay = selectedDay,
+            today = today,
+            scrollState = scrollState,
+            modifier = Modifier
+                .fillMaxSize()
+                .offset { IntOffset(-screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
+        )
+
+        // Next week
+        WeekContent(
+            startDate = nextWeekStartDate,
+            events = events,
+            holidays = holidays,
+            timeRange = timeRange,
+            hourHeightDp = hourHeightDp,
+            onDayClick = onDayClick,
+            onEventClick = onEventClick,
+            selectedDay = selectedDay,
+            today = today,
+            scrollState = scrollState,
+            modifier = Modifier
+                .fillMaxSize()
+                .offset { IntOffset(screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
+        )
     }
 }
 
 @Composable
-fun WeekHeader(
-    weekDates: List<LocalDate>,
+private fun WeekContent(
+    startDate: LocalDate,
+    events: List<Event>,
+    holidays: List<Holiday>,
+    timeRange: IntRange,
+    hourHeightDp: Float,
     onDayClick: (LocalDate) -> Unit,
+    onEventClick: (Event) -> Unit,
     selectedDay: LocalDate,
     today: LocalDate,
-    holidays: List<Holiday>
+    scrollState: ScrollState,
+    modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        modifier = Modifier
+    Column(modifier) {
+        // Headers for days of the week
+        WeekHeaderRow(
+            startDate = startDate,
+            selectedDay = selectedDay,
+            today = today,
+            holidays = holidays,
+            onDayClick = onDayClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        )
+
+        // Events grid
+        WeekEventsGrid(
+            startDate = startDate,
+            events = events,
+            timeRange = timeRange,
+            hourHeightDp = hourHeightDp,
+            onEventClick = onEventClick,
+            scrollState = scrollState
+        )
+    }
+}
+
+@Composable
+private fun WeekHeaderRow(
+    startDate: LocalDate,
+    selectedDay: LocalDate,
+    today: LocalDate,
+    holidays: List<Holiday>,
+    onDayClick: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
             .background(MaterialTheme.colors.surface)
-            .padding(vertical = 8.dp)
-            .padding(start = 10.dp)
     ) {
-        items(weekDates) { date ->
+        val weekDates = List(7) { index ->
+            startDate.plus(DatePeriod(days = index))
+        }
+
+        weekDates.forEach { date ->
             val isSelected = date == selectedDay
             val isToday = date == today
             val holidaysForDate = holidays.filter { holiday ->
                 holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
             }
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Box(
                 modifier = Modifier
-                    .fillParentMaxWidth(fraction = 1F / 7)
+                    .weight(1f)
+                    .fillMaxHeight()
                     .clickable { onDayClick(date) }
-                    .padding(vertical = 4.dp)
+                    .padding(2.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = date.dayOfWeek.name.first().toString(),
-                    style = MaterialTheme.typography.caption,
-                    fontWeight = FontWeight.Bold
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = date.dayOfWeek.name.take(1),
+                        style = MaterialTheme.typography.caption,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .size(28.dp)
+                            .background(
+                                when {
+                                    isSelected -> MaterialTheme.colors.primary
+                                    isToday -> MaterialTheme.colors.primary.copy(alpha = 0.2f)
+                                    else -> Color.Transparent
+                                },
+                                CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = date.dayOfMonth.toString(),
+                            style = MaterialTheme.typography.body2,
+                            color = when {
+                                isSelected -> Color.White
+                                else -> MaterialTheme.colors.onSurface
+                            },
+                            fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+
+                    // Holiday indicator (optional)
+                    if (holidaysForDate.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFF4CAF50), CircleShape)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeekEventsGrid(
+    startDate: LocalDate,
+    events: List<Event>,
+    timeRange: IntRange,
+    hourHeightDp: Float,
+    onEventClick: (Event) -> Unit,
+    scrollState: ScrollState
+) {
+    val weekDates = List(7) { index ->
+        startDate.plus(DatePeriod(days = index))
+    }
+
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize().verticalScroll(scrollState)
+    ) {
+        val dayColumnWidth = maxWidth / 7
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val currentMinute = now.hour * 60 + now.minute
+        val currentDay = now.date
+
+        Column() {
+            timeRange.forEach { index ->
+                val hour = timeRange.first + index
+
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(hourHeightDp.dp)
+                ) {
+                    repeat(7) { dayIndex ->
+                        Box(
+                            Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .border(0.5.dp, MaterialTheme.colors.onSurface.copy(0.1f))
+                        )
+                    }
+                }
+            }
+        }
+
+        // Current time indicator
+        if (weekDates.any { it == currentDay }) {
+            val dayIndex = weekDates.indexOfFirst { it == currentDay }
+            if (dayIndex >= 0) {
+                val offsetX = dayColumnWidth * dayIndex
+                val offsetY = (currentMinute / 60f * hourHeightDp).dp
 
                 Box(
                     modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .size(28.dp)
-                        .background(
-                            when {
-                                isSelected -> Color(0xFF673AB7) // Purple color as in the image
-                                isToday -> MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                                else -> Color.Transparent
-                            },
-                            CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = date.dayOfMonth.toString(),
-                        style = MaterialTheme.typography.body2,
-                        color = when {
-                            isSelected -> Color.White
-                            else -> MaterialTheme.colors.onSurface
-                        },
-                        fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
-                    )
-                }
+                        .offset(x = offsetX, y = offsetY)
+                        .width(dayColumnWidth)
+                        .height(2.dp)
+                        .background(MaterialTheme.colors.primary)
+                )
+            }
+        }
 
-                holidaysForDate.firstOrNull()?.let { holiday ->
-                    Text(
-                        text = holiday.name,
-                        style = MaterialTheme.typography.caption,
-                        color = Color(0xFF4CAF50),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontSize = 8.sp,
+        // Events
+        weekDates.forEachIndexed { dayIndex, date ->
+            val dayEvents = events.filter { event ->
+                event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+            }
+
+            dayEvents.forEach { event ->
+                val eventStart = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
+                val eventEnd = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
+
+                val hour = eventStart.hour
+                val minute = eventStart.minute
+
+                if (hour in timeRange) {
+                    val durationMinutes = if (eventStart.date == eventEnd.date) {
+                        (eventEnd.hour - hour) * 60 + (eventEnd.minute - minute)
+                    } else {
+                        (24 - hour) * 60 - minute
+                    }
+
+                    val topOffset = (hour - timeRange.first) * hourHeightDp + (minute / 60f) * hourHeightDp
+                    val eventHeight = (durationMinutes / 60f) * hourHeightDp
+
+                    EventItem(
+                        event = event,
+                        onClick = { onEventClick(event) },
                         modifier = Modifier
-                            .padding(top = 2.dp)
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(Color(0xFF4CAF50).copy(alpha = 0.1f))
-                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                            .offset(
+                                x = dayColumnWidth * dayIndex,
+                                y = topOffset.dp
+                            )
+                            .width(dayColumnWidth)
+                            .height(eventHeight.dp.coerceAtLeast(30.dp))
+                            .padding(1.dp)
                     )
                 }
             }
@@ -305,12 +416,26 @@ fun WeekHeader(
     }
 }
 
-private fun formatHour(hour: Int): String {
-    val displayHour = when {
-        hour == 0 -> "12"
-        hour > 12 -> (hour - 12).toString()
-        else -> hour.toString()
+@Composable
+private fun EventItem(
+    event: Event,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(Color(event.color ?: 0xFF4285F4.toInt()).copy(alpha = 0.8f))
+            .clickable(onClick = onClick)
+            .padding(4.dp)
+    ) {
+        Text(
+            text = event.title,
+            style = MaterialTheme.typography.caption,
+            color = Color.White,
+            fontSize = 10.sp,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
     }
-    val amPm = if (hour >= 12) "am" else "am"
-    return "$displayHour $amPm"
 }
