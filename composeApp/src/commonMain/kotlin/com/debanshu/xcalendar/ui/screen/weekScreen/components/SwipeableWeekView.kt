@@ -79,7 +79,6 @@ fun SwipeableWeekCalendarView(
     var offsetX by remember { mutableStateOf(0f) }
     var isAnimating by remember { mutableStateOf(false) }
     var targetOffsetX by remember { mutableStateOf(0f) }
-    val timeColumnWidth = 60.dp
 
     val prevWeekStartDate = remember(currentStartDate) {
         currentStartDate.minus(DatePeriod(days = 7))
@@ -221,7 +220,7 @@ private fun WeekContent(
             onDayClick = onDayClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(60.dp)
         )
 
         // Events grid
