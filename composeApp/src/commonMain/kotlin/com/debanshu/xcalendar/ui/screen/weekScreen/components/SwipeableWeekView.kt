@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +26,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,8 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -50,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
+import com.debanshu.xcalendar.domain.states.DateStateHolder
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -62,7 +59,6 @@ import kotlin.math.roundToInt
 
 @Composable
 fun SwipeableWeekCalendarView(
-    modifier: Modifier = Modifier,
     currentStartDate: LocalDate,
     events: List<Event>,
     holidays: List<Holiday> = emptyList(),
@@ -72,22 +68,21 @@ fun SwipeableWeekCalendarView(
     onWeekChange: (LocalDate) -> Unit,
     timeRange: IntRange = 0..23,
     hourHeightDp: Float = 60f,
-    scrollState: ScrollState
+    scrollState: ScrollState,
+    dateStateHolder: DateStateHolder,
 ) {
+    val today  = dateStateHolder.currentDateState.collectAsState().value.currentDate
     var size by remember { mutableStateOf(IntSize.Zero) }
     val screenWidth by derivedStateOf { size.width.toFloat() }
     var offsetX by remember { mutableStateOf(0f) }
     var isAnimating by remember { mutableStateOf(false) }
     var targetOffsetX by remember { mutableStateOf(0f) }
-
     val prevWeekStartDate = remember(currentStartDate) {
         currentStartDate.minus(DatePeriod(days = 7))
     }
-
     val nextWeekStartDate = remember(currentStartDate) {
         currentStartDate.plus(DatePeriod(days = 7))
     }
-
     val animatedOffset by animateFloatAsState(
         targetValue = targetOffsetX,
         animationSpec = tween(durationMillis = 300),
@@ -106,9 +101,7 @@ fun SwipeableWeekCalendarView(
             }
         }
     )
-
     val effectiveOffset = if (isAnimating) animatedOffset else offsetX
-    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     Surface(
         modifier = Modifier
@@ -143,7 +136,6 @@ fun SwipeableWeekCalendarView(
                 )
             }
     ) {
-        // Current week
         WeekContent(
             startDate = currentStartDate,
             events = events,
@@ -160,7 +152,6 @@ fun SwipeableWeekCalendarView(
                 .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
         )
 
-        // Previous week
         WeekContent(
             startDate = prevWeekStartDate,
             events = events,
@@ -177,7 +168,6 @@ fun SwipeableWeekCalendarView(
                 .offset { IntOffset(-screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
         )
 
-        // Next week
         WeekContent(
             startDate = nextWeekStartDate,
             events = events,
@@ -211,7 +201,6 @@ private fun WeekContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        // Headers for days of the week
         WeekHeaderRow(
             startDate = startDate,
             selectedDay = selectedDay,
@@ -223,7 +212,6 @@ private fun WeekContent(
                 .height(60.dp)
         )
 
-        // Events grid
         WeekEventsGrid(
             startDate = startDate,
             events = events,
@@ -272,8 +260,9 @@ private fun WeekHeaderRow(
                 ) {
                     Text(
                         text = date.dayOfWeek.name.take(1),
-                        style = MaterialTheme.typography.caption,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.caption.copy(
+                            fontSize = 10.sp
+                        )
                     )
 
                     Box(
@@ -292,16 +281,14 @@ private fun WeekHeaderRow(
                     ) {
                         Text(
                             text = date.dayOfMonth.toString(),
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.body1,
                             color = when {
                                 isSelected -> Color.White
                                 else -> MaterialTheme.colors.onSurface
                             },
-                            fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
                         )
                     }
 
-                    // Holiday indicator (optional)
                     if (holidaysForDate.isNotEmpty()) {
                         Box(
                             modifier = Modifier
@@ -357,7 +344,6 @@ private fun WeekEventsGrid(
             }
         }
 
-        // Current time indicator
         if (weekDates.any { it == currentDay }) {
             val dayIndex = weekDates.indexOfFirst { it == currentDay }
             if (dayIndex >= 0) {
@@ -374,7 +360,6 @@ private fun WeekEventsGrid(
             }
         }
 
-        // Events
         weekDates.forEachIndexed { dayIndex, date ->
             val dayEvents = events.filter { event ->
                 event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
