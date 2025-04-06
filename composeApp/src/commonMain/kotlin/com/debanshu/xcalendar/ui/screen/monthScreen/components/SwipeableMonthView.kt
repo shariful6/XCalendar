@@ -3,10 +3,15 @@ package com.debanshu.xcalendar.ui.screen.monthScreen.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.*
+import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
@@ -14,8 +19,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.ui.screen.monthScreen.MonthView
 import com.debanshu.xcalendar.ui.YearMonth
+import com.debanshu.xcalendar.ui.screen.monthScreen.MonthView
 import kotlinx.datetime.LocalDate
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -59,7 +64,7 @@ fun SwipeableMonthView(
 
     val effectiveOffset = if (isAnimating) animatedOffset else offsetX
 
-    Box(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
             .onSizeChanged { size = it }
@@ -84,7 +89,7 @@ fun SwipeableMonthView(
                         targetOffsetX = 0f
                     },
                     onHorizontalDrag = { change, amount ->
-                        targetOffsetX+=amount
+                        targetOffsetX += amount
                         if (!isAnimating) {
                             offsetX += amount
                             change.consume()
@@ -93,39 +98,38 @@ fun SwipeableMonthView(
                 )
             }
     ) {
-        if (screenWidth > 0) {
-            MonthView(
-                month = currentMonth,
-                events = events,
-                holidays = holidays,
-                onDayClick = onSpecificDayClicked,
-                selectedDay = currentSelectedDay,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
-            )
+        MonthView(
+            month = currentMonth,
+            events = events,
+            holidays = holidays,
+            onDayClick = onSpecificDayClicked,
+            selectedDay = currentSelectedDay,
+            modifier = Modifier
+                .fillMaxSize()
+                .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
+        )
 
-            MonthView(
-                month = currentMonth.plusMonths(-1),
-                events = events,
-                holidays = holidays,
-                onDayClick = onSpecificDayClicked,
-                selectedDay = currentSelectedDay,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .offset { IntOffset(-screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
-            )
+        MonthView(
+            month = currentMonth.plusMonths(-1),
+            events = events,
+            holidays = holidays,
+            onDayClick = onSpecificDayClicked,
+            selectedDay = currentSelectedDay,
+            modifier = Modifier
+                .fillMaxSize()
+                .offset { IntOffset(-screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
+        )
 
-            MonthView(
-                month = currentMonth.plusMonths(1),
-                events = events,
-                holidays = holidays,
-                onDayClick = onSpecificDayClicked,
-                selectedDay = currentSelectedDay,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .offset { IntOffset(screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
-            )
-        }
+        MonthView(
+            month = currentMonth.plusMonths(1),
+            events = events,
+            holidays = holidays,
+            onDayClick = onSpecificDayClicked,
+            selectedDay = currentSelectedDay,
+            modifier = Modifier
+                .fillMaxSize()
+                .offset { IntOffset(screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
+        )
+
     }
 }

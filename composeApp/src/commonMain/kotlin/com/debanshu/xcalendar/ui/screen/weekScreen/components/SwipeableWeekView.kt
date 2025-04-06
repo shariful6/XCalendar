@@ -89,10 +89,8 @@ fun SwipeableWeekCalendarView(
         finishedListener = {
             if (isAnimating) {
                 if (targetOffsetX > 0) {
-                    // Swiped right, show previous week
                     onWeekChange(prevWeekStartDate)
                 } else if (targetOffsetX < 0) {
-                    // Swiped left, show next week
                     onWeekChange(nextWeekStartDate)
                 }
                 offsetX = 0f
@@ -128,6 +126,7 @@ fun SwipeableWeekCalendarView(
                         targetOffsetX = 0f
                     },
                     onHorizontalDrag = { change, amount ->
+                        targetOffsetX += amount
                         if (!isAnimating) {
                             offsetX += amount
                             change.consume()
