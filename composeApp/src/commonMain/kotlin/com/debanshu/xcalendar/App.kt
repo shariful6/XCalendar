@@ -64,7 +64,9 @@ import com.debanshu.xcalendar.ui.CalendarViewModel
 import com.debanshu.xcalendar.ui.components.CalendarDrawer
 import com.debanshu.xcalendar.ui.screen.monthScreen.components.SwipeableMonthView
 import com.debanshu.xcalendar.ui.components.TopAppBar
+import com.debanshu.xcalendar.ui.screen.dayScreen.DayScreen
 import com.debanshu.xcalendar.ui.screen.monthScreen.MonthScreen
+import com.debanshu.xcalendar.ui.screen.threeDayScreen.ThreeDayScreen
 import com.debanshu.xcalendar.ui.screen.weekScreen.WeekScreen
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -155,12 +157,12 @@ fun CalendarApp(
                 }
 
                 is CalendarView.Day -> {
-                    DayView(
-                        date = calendarUiState.selectedDay,
-                        events = calendarUiState.events.filter {
-                            it.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == calendarUiState.selectedDay
-                        },
-                        onEventClick = { event -> viewModel.selectEvent(event) })
+                    DayScreen(
+                        dateStateHolder = dateStateHolder,
+                        events = calendarUiState.events,
+                        holidays = calendarUiState.holidays,
+                        onEventClick = { event -> viewModel.selectEvent(event) }
+                    )
                 }
 
                 is CalendarView.Schedule -> {
@@ -170,10 +172,12 @@ fun CalendarApp(
                 }
 
                 is CalendarView.ThreeDay -> {
-                    ThreeDayView(
-                        startDate = calendarUiState.threeDayStartDate,
+                    ThreeDayScreen(
+                        dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
-                        onEventClick = { event -> viewModel.selectEvent(event) })
+                        holidays = calendarUiState.holidays,
+                        onEventClick = { event -> viewModel.selectEvent(event) }
+                    )
                 }
             }
 
