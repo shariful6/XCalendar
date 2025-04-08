@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -61,7 +62,7 @@ private fun TimeCell(
             .height(hourHeightDp.dp)
             .fillMaxWidth()
             .customBorder(
-                thickness = 0.5.dp,
+                thickness = 2.dp,
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
             )
             .padding(end = 16.dp)
@@ -73,7 +74,7 @@ private fun TimeCell(
             textAlign = TextAlign.End,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 8.dp)
+                .offset(y= (-8).dp)
         )
     }
 }
