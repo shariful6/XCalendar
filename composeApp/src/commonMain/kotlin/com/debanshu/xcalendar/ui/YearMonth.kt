@@ -18,41 +18,6 @@ data class YearMonth(val year: Int, val month: Month) {
     )
 
     /**
-     * Get the length of this month, considering leap years
-     */
-    private fun lengthOfMonth(): Int {
-        return when (month) {
-            Month.JANUARY, Month.MARCH, Month.MAY, Month.JULY,
-            Month.AUGUST, Month.OCTOBER, Month.DECEMBER -> 31
-            Month.APRIL, Month.JUNE, Month.SEPTEMBER, Month.NOVEMBER -> 30
-            Month.FEBRUARY -> if (year.isLeap()) 29 else 28
-            else -> 0
-        }
-    }
-
-    /**
-     * Get the first date of this month
-     */
-    fun atDay(day: Int): LocalDate {
-        require(day in 1..lengthOfMonth()) { "Day must be valid for month" }
-        return LocalDate(year, month, day)
-    }
-
-    /**
-     * Get the first date of this month
-     */
-    fun atStartOfMonth(): LocalDate {
-        return LocalDate(year, month, 1)
-    }
-
-    /**
-     * Get the last date of this month
-     */
-    fun atEndOfMonth(): LocalDate {
-        return LocalDate(year, month, lengthOfMonth())
-    }
-
-    /**
      * Add months to this YearMonth
      */
     fun plusMonths(months: Int): YearMonth {
@@ -80,14 +45,6 @@ data class YearMonth(val year: Int, val month: Month) {
     }
 
     companion object {
-        /**
-         * Create a YearMonth from the current date
-         */
-        fun now(timeZone: TimeZone = TimeZone.currentSystemDefault()): YearMonth {
-            val now = Clock.System.now().toLocalDateTime(timeZone)
-            return YearMonth(now.year, now.month)
-        }
-
         /**
          * Create a YearMonth from a LocalDate
          */
