@@ -23,9 +23,5 @@ fun DayScreen(
         holidays = holidays,
         onEventClick = onEventClick,
         numDays = 1,
-        getStartDate = { selectedDate ->
-            // Use the selected date as the only day in the view
-            selectedDate
-        }
     )
 }

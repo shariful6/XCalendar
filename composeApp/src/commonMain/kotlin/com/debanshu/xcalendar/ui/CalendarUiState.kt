@@ -14,15 +14,13 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 data class CalendarUiState(
-    val currentDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
-    val selectedDay: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
-    val selectedMonth: YearMonth = YearMonth(
-        selectedDay.year,
-        selectedDay.month
-    ),
+    val selectedDay: LocalDate = Clock.System.now().toLocalDateTime(
+        TimeZone.currentSystemDefault
+            ()
+    ).date,
 
     // View state
-    val currentView: CalendarView = CalendarView.Week,
+    val currentView: CalendarView = CalendarView.Month,
     val showMonthDropdown: TopBarCalendarView = TopBarCalendarView.NoView,
 
     // Data
@@ -33,7 +31,7 @@ data class CalendarUiState(
 
     // Derived data for different views
     val weekStartDate: LocalDate = getWeekStartDate(selectedDay),
-    val threeDayStartDate: LocalDate = selectedDay,
+    val threeDayStartDate: LocalDate = get3DayStartDate(selectedDay),
     val upcomingEvents: List<Event> = getUpcomingEvents(events, selectedDay),
 
     // UI state
@@ -42,8 +40,12 @@ data class CalendarUiState(
 ) {
     companion object {
         internal fun getWeekStartDate(date: LocalDate): LocalDate {
-            // Get the previous Sunday (or the date itself if it's Sunday)
-            val dayOfWeek = date.dayOfWeek.ordinal % 7 // 0 for Sunday, 1-6 for Monday-Saturday
+            val dayOfWeek = date.dayOfWeek.ordinal % 7
+            return date.minus(DatePeriod(days = dayOfWeek))
+        }
+
+        internal fun get3DayStartDate(date: LocalDate): LocalDate {
+            val dayOfWeek = date.dayOfWeek.ordinal % 3
             return date.minus(DatePeriod(days = dayOfWeek))
         }
 
@@ -53,7 +55,10 @@ data class CalendarUiState(
                 .currentSystemDefault())
 
             return events
-                .filter { it.startTime >= fromInstant.toEpochMilliseconds() && it.startTime <= toInstant.toEpochMilliseconds() }
+                .filter {
+                    it.startTime >= fromInstant.toEpochMilliseconds()
+                            && it.startTime <= toInstant.toEpochMilliseconds()
+                }
                 .sortedBy { it.startTime }
 
         }

@@ -1,5 +1,6 @@
 package com.debanshu.xcalendar.domain.states
 
+import com.debanshu.xcalendar.ui.CalendarUiState
 import com.debanshu.xcalendar.ui.YearMonth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,12 +14,14 @@ data class DateState(
     val currentDate: LocalDate,
     val selectedDate: LocalDate,
     val selectedInViewMonth: YearMonth,
+    val viewStartDate: LocalDate,
 )
 
 interface DateStateHolder {
     val currentDateState: StateFlow<DateState>
     fun updateSelectedInViewMonthState(selectedInViewMonth: YearMonth)
     fun updateSelectedDateState(selectedDate: LocalDate)
+    fun updateViewStartDate(viewStartDate: LocalDate)
 }
 
 @Single
@@ -28,7 +31,8 @@ class DateStateHolderImpl : DateStateHolder {
         DateState(
             date,
             date,
-            YearMonth(date.year, date.monthNumber)
+            YearMonth(date.year, date.monthNumber),
+            date
         )
     )
     override val currentDateState: StateFlow<DateState> = _currentDateState
@@ -44,7 +48,16 @@ class DateStateHolderImpl : DateStateHolder {
         _currentDateState.tryEmit(
             _currentDateState.value.copy(
                 selectedDate = selectedDate,
-                selectedInViewMonth = YearMonth(selectedDate.year, selectedDate.month)
+                selectedInViewMonth = YearMonth(selectedDate.year, selectedDate.month),
+                viewStartDate = CalendarUiState.getWeekStartDate(selectedDate)
+            )
+        )
+    }
+
+    override fun updateViewStartDate(viewStartDate: LocalDate) {
+        _currentDateState.tryEmit(
+            _currentDateState.value.copy(
+                viewStartDate = viewStartDate
             )
         )
     }

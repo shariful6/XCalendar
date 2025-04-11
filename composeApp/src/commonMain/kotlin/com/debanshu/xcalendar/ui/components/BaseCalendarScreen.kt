@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.DateStateHolder
+import com.debanshu.xcalendar.ui.CalendarUiState
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 
@@ -23,7 +24,6 @@ import kotlinx.datetime.plus
  * @param holidays The list of holidays to display
  * @param onEventClick Callback for when an event is clicked
  * @param numDays The number of days to display (1 for day view, 3 for three-day view, 7 for week view)
- * @param getStartDate Function to determine the start date based on the selected date
  */
 @Composable
 fun BaseCalendarScreen(
@@ -31,8 +31,7 @@ fun BaseCalendarScreen(
     events: List<Event>,
     holidays: List<Holiday>,
     onEventClick: (Event) -> Unit,
-    numDays: Int,
-    getStartDate: (selectedDate: LocalDate) -> LocalDate = { it }
+    numDays: Int
 ) {
     val dateState by dateStateHolder.currentDateState.collectAsState()
     val verticalScrollState = rememberScrollState()
@@ -40,10 +39,9 @@ fun BaseCalendarScreen(
     val timeRange = 0..23
     val hourHeightDp = 60f
 
-    val startDate = getStartDate(dateState.selectedDate)
+    val startDate = dateState.viewStartDate
 
     Row {
-        // Time column
         TimeColumn(
             modifier = Modifier
                 .padding(top = hourHeightDp.dp)
@@ -52,8 +50,6 @@ fun BaseCalendarScreen(
             hourHeightDp = hourHeightDp,
             scrollState = verticalScrollState
         )
-
-        // Calendar view
         SwipeableCalendarView(
             startDate = startDate,
             events = events,
@@ -62,22 +58,7 @@ fun BaseCalendarScreen(
             onEventClick = onEventClick,
             selectedDay = dateState.selectedDate,
             onDateRangeChange = { newStartDate ->
-                // Preserve the selected day's position in the new range if possible
-                val currentPosition = if (dateState.selectedDate >= startDate &&
-                    dateState.selectedDate < startDate.plus(kotlinx.datetime.DatePeriod(days =
-                        numDays))) {
-                    (dateState.selectedDate.toEpochDays() - startDate.toEpochDays()).toInt()
-                } else {
-                    0
-                }
-
-                val newSelectedDate = if (currentPosition in 0 until numDays) {
-                    newStartDate.plus(kotlinx.datetime.DatePeriod(days = currentPosition))
-                } else {
-                    newStartDate
-                }
-
-                dateStateHolder.updateSelectedDateState(newSelectedDate)
+                dateStateHolder.updateViewStartDate(newStartDate)
             },
             numDays = numDays,
             timeRange = timeRange,

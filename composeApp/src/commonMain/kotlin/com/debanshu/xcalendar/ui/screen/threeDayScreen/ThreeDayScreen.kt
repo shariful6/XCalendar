@@ -23,9 +23,5 @@ fun ThreeDayScreen(
         holidays = holidays,
         onEventClick = onEventClick,
         numDays = 3,
-        getStartDate = { selectedDate ->
-            // Use the selected date as the first day in the 3-day view
-            selectedDate
-        }
     )
 }

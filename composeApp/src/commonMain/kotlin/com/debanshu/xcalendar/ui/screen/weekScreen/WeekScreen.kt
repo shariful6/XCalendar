@@ -6,7 +6,6 @@ import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.DateStateHolder
 import com.debanshu.xcalendar.ui.CalendarUiState
 import com.debanshu.xcalendar.ui.components.BaseCalendarScreen
-import kotlinx.datetime.LocalDate
 
 /**
  * Week view screen that displays a 7-day calendar view.
@@ -24,9 +23,5 @@ fun WeekScreen(
         holidays = holidays,
         onEventClick = onEventClick,
         numDays = 7,
-        getStartDate = { selectedDate ->
-            // Get the start date for the week (Sunday)
-            CalendarUiState.getWeekStartDate(selectedDate)
-        }
     )
 }
