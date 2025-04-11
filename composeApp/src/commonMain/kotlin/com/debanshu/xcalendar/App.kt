@@ -21,6 +21,7 @@ import com.debanshu.xcalendar.ui.components.EventDetailsDialog
 import com.debanshu.xcalendar.ui.components.TopAppBar
 import com.debanshu.xcalendar.ui.screen.dayScreen.DayScreen
 import com.debanshu.xcalendar.ui.screen.monthScreen.MonthScreen
+import com.debanshu.xcalendar.ui.screen.scheduleScreen.ScheduleScreen
 import com.debanshu.xcalendar.ui.screen.threeDayScreen.ThreeDayScreen
 import com.debanshu.xcalendar.ui.screen.weekScreen.WeekScreen
 import kotlinx.coroutines.launch
@@ -56,7 +57,8 @@ fun CalendarApp(
                     onMenuClick = { scope.launch { scaffoldState.drawerState.open() } },
                     onSelectToday = { dateStateHolder.updateSelectedDateState(dataState.currentDate) },
                     onToggleMonthDropdown = { viewModel.setTopAppBarMonthDropdown(it) },
-                    onDayClick = { date -> dateStateHolder.updateSelectedDateState(date) })
+                    onDayClick = { date -> dateStateHolder.updateSelectedDateState(date) },
+                )
             },
             drawerContent = {
                 CalendarDrawer(
@@ -84,7 +86,8 @@ fun CalendarApp(
                         tint = Color.White
                     )
                 }
-            }) { paddingValues ->
+            },
+        ) { paddingValues ->
             when (calendarUiState.currentView) {
                 is CalendarView.Month -> {
                     MonthScreen(
@@ -113,7 +116,12 @@ fun CalendarApp(
                 }
 
                 is CalendarView.Schedule -> {
-
+                    ScheduleScreen(
+                        dateStateHolder = dateStateHolder,
+                        events = calendarUiState.events,
+                        holidays = calendarUiState.holidays,
+                        onEventClick = { event -> viewModel.selectEvent(event) }
+                    )
                 }
 
                 is CalendarView.ThreeDay -> {
@@ -134,7 +142,8 @@ fun CalendarApp(
                         viewModel.addEvent(event)
                         viewModel.hideAddEventDialog()
                     },
-                    onDismiss = { viewModel.hideAddEventDialog() })
+                    onDismiss = { viewModel.hideAddEventDialog() },
+                )
             }
 
             if (calendarUiState.selectedEvent != null) {
@@ -142,7 +151,8 @@ fun CalendarApp(
                     event = calendarUiState.selectedEvent!!,
                     onEdit = { viewModel.editEvent(it) },
                     onDelete = { viewModel.deleteEvent(it) },
-                    onDismiss = { viewModel.clearSelectedEvent() })
+                    onDismiss = { viewModel.clearSelectedEvent() },
+                )
             }
         }
     }

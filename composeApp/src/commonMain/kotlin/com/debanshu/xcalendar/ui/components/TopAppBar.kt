@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.debanshu.xcalendar.common.lengthOfMonth
 import com.debanshu.xcalendar.common.noRippleClickable
 import com.debanshu.xcalendar.common.toLocalDateTime
@@ -54,8 +55,6 @@ import com.debanshu.xcalendar.domain.states.DateState
 import com.debanshu.xcalendar.ui.TopBarCalendarView
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -143,10 +142,8 @@ fun TopAppBar(
                         fontWeight = FontWeight.Bold
                     )
                 }
-                KamelImage(
-                    resource = asyncPainterResource(
-                        "https://t4.ftcdn.net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA.jpg"
-                    ),
+                AsyncImage(
+                    model = "https://t4.ftcdn.net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA.jpg",
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
