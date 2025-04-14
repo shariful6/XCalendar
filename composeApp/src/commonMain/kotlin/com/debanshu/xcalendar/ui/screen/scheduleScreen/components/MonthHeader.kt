@@ -1,6 +1,5 @@
 package com.debanshu.xcalendar.ui.screen.scheduleScreen.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,12 +10,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.debanshu.xcalendar.common.toSentenceCase
 import com.debanshu.xcalendar.ui.YearMonth
+import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.datetime.Month
 
 private fun getMonthImageUrl(month: Month): String {
@@ -44,10 +41,8 @@ fun MonthHeader(yearMonth: YearMonth) {
             .fillMaxWidth()
             .height(200.dp)
     ) {
-        AsyncImage(
-            model = getMonthImageUrl(yearMonth.month),
-            contentDescription = "${yearMonth.month.name.toSentenceCase()} illustration",
-            contentScale = ContentScale.Crop,
+        CoilImage(
+            imageModel = { getMonthImageUrl(yearMonth.month) },
             modifier = Modifier.fillMaxSize()
         )
 
@@ -55,13 +50,12 @@ fun MonthHeader(yearMonth: YearMonth) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 16.dp, start = 32.dp),
+                .padding(top = 16.dp, start = 64.dp),
             contentAlignment = Alignment.TopStart
         ) {
             Text(
                 text = "${yearMonth.month.name.toSentenceCase()} ${yearMonth.year}",
                 style = MaterialTheme.typography.h6,
-                color = Color.White
             )
         }
     }

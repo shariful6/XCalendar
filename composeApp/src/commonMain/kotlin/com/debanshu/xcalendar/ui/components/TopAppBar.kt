@@ -38,13 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import com.debanshu.xcalendar.common.lengthOfMonth
 import com.debanshu.xcalendar.common.noRippleClickable
 import com.debanshu.xcalendar.common.toLocalDateTime
@@ -55,6 +53,7 @@ import com.debanshu.xcalendar.domain.states.DateState
 import com.debanshu.xcalendar.ui.TopBarCalendarView
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
+import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -142,10 +141,12 @@ fun TopAppBar(
                         fontWeight = FontWeight.Bold
                     )
                 }
-                AsyncImage(
-                    model = "https://t4.ftcdn.net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA.jpg",
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
+                CoilImage(
+                    imageModel = {
+                        "https://t4.ftcdn" +
+                                ".net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA" +
+                                ".jpg"
+                    },
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)

@@ -17,13 +17,14 @@ fun WeekHeader(startDate: LocalDate, endDate: LocalDate) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 64.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${startDate.dayOfMonth} – ${endDate.dayOfMonth} ${endDate.month.name.take(3)}",
-            style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Medium
+            text = "${startDate.dayOfMonth} – ${endDate.dayOfMonth} ${endDate.month.name.take(3)}".uppercase(),
+            style = MaterialTheme.typography.caption,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
         )
     }
 }

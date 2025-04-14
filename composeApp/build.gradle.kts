@@ -52,8 +52,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(project.dependencies.platform(libs.koin.annotations.bom))
 
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.ktor)
+            implementation(libs.landscapist.coil3)
             implementation(libs.kotlinx.datetime)
 
             implementation(libs.ktor.client.core)
