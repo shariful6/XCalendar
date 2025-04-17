@@ -12,13 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.User
 import com.debanshu.xcalendar.ui.CalendarView
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 
 @Composable
 fun CalendarDrawer(
@@ -45,11 +45,11 @@ fun CalendarDrawer(
         // App title
         Text(
             text = "Google Calendar",
-            style = MaterialTheme.typography.h6,
-            color = MaterialTheme.colors.onSurface,
+            style = XCalendarTheme.typography.headlineSmall,
+            color = XCalendarTheme.colorScheme.onSurface,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
         )
-        Divider()
+        HorizontalDivider()
         // View options
         CalendarViewOption(
             name = "Schedule",
@@ -81,7 +81,7 @@ fun CalendarDrawer(
             onClick = { onViewSelect(CalendarView.Month) }
         )
 
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
         // Accounts and their calendars
         accounts.forEach { user ->
@@ -92,7 +92,7 @@ fun CalendarDrawer(
             )
         }
 
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
         // Other calendar sections like Birthdays
         Row(
@@ -117,7 +117,7 @@ fun CalendarDrawer(
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = "Birthdays",
-                style = MaterialTheme.typography.body1
+                style = XCalendarTheme.typography.bodySmall
             )
         }
     }
@@ -141,7 +141,7 @@ fun CalendarViewOption(
             modifier = Modifier
                 .size(24.dp)
                 .background(
-                    if (selected) MaterialTheme.colors.primary.copy(alpha = 0.1f)
+                    if (selected) XCalendarTheme.colorScheme.primary.copy(alpha = 0.1f)
                     else Color.Transparent,
                     shape = CircleShape
                 )
@@ -150,8 +150,8 @@ fun CalendarViewOption(
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = name,
-            style = MaterialTheme.typography.body1,
-            color = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors
+            style = XCalendarTheme.typography.bodySmall,
+            color = if (selected) XCalendarTheme.colorScheme.primary else XCalendarTheme.colorScheme
                 .onSurface
         )
     }
@@ -176,7 +176,7 @@ fun AccountSection(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colors.primary)
+                    .background(XCalendarTheme.colorScheme.primary)
             ) {
                 // If we had an actual image, we'd load it here
             }
@@ -184,8 +184,8 @@ fun AccountSection(
             // User email
             Text(
                 text = user.email,
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                style = XCalendarTheme.typography.bodyMedium,
+                color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
         }
 
@@ -217,7 +217,7 @@ fun AccountSection(
                 // Calendar name
                 Text(
                     text = calendar.name,
-                    style = MaterialTheme.typography.body1
+                    style = XCalendarTheme.typography.bodySmall
                 )
             }
         }

@@ -21,16 +21,16 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.primarySurface
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBar as MaterialTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -53,12 +53,14 @@ import com.debanshu.xcalendar.domain.states.DateState
 import com.debanshu.xcalendar.ui.TopBarCalendarView
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
     dateState: DateState,
@@ -70,7 +72,7 @@ fun TopAppBar(
 ) {
     Column(
         modifier = Modifier.background(
-            color = MaterialTheme.colors.primarySurface
+            color = XCalendarTheme.colorScheme.primaryContainer
         ).animateContentSize()
     ) {
         val rotationDegree by animateFloatAsState(
@@ -95,7 +97,14 @@ fun TopAppBar(
             dateState.selectedInViewMonth.month.name.toSentenceCase()
         }
 
-        TopAppBar(
+        MaterialTopAppBar(
+            colors = TopAppBarColors(
+                containerColor = XCalendarTheme.colorScheme.onPrimary,
+                scrolledContainerColor = XCalendarTheme.colorScheme.onPrimary,
+                navigationIconContentColor = XCalendarTheme.colorScheme.onPrimary,
+                titleContentColor =XCalendarTheme.colorScheme.onPrimary,
+                actionIconContentColor = XCalendarTheme.colorScheme.onPrimary
+            ),
             navigationIcon = {
                 IconButton(onClick = onMenuClick) {
                     Icon(
@@ -118,7 +127,7 @@ fun TopAppBar(
                 ) {
                     Text(
                         text = monthTitle,
-                        style = MaterialTheme.typography.subtitle1
+                        style = XCalendarTheme.typography.labelSmall
                     )
                     Icon(
                         modifier = Modifier.rotate(rotationDegree),
@@ -137,7 +146,7 @@ fun TopAppBar(
                 IconButton(onClick = { onSelectToday() }) {
                     Text(
                         text = dateState.currentDate.dayOfMonth.toString(),
-                        style = MaterialTheme.typography.body1,
+                        style = XCalendarTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -152,8 +161,6 @@ fun TopAppBar(
                         .clip(CircleShape)
                 )
             },
-            elevation = 0.dp,
-            backgroundColor = MaterialTheme.colors.onPrimary,
         )
 
         when (monthDropdownState) {
@@ -230,7 +237,7 @@ private fun TopAppBarWeekdayHeader() {
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp,
-                color = MaterialTheme.colors.onPrimary,
+                color = XCalendarTheme.colorScheme.onPrimary,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -255,8 +262,8 @@ private fun TopAppBarDayCell(
             .clip(RoundedCornerShape(4.dp))
             .background(
                 when {
-                    isSelected -> MaterialTheme.colors.onPrimary.copy(alpha = 0.3f)
-                    isToday -> MaterialTheme.colors.onPrimary.copy(alpha = 0.1f)
+                    isSelected -> XCalendarTheme.colorScheme.onPrimary.copy(alpha = 0.3f)
+                    isToday -> XCalendarTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
                     else -> Color.Transparent
                 }
             )
@@ -267,10 +274,10 @@ private fun TopAppBarDayCell(
             Text(
                 text = date.dayOfMonth.toString(),
                 fontSize = 12.sp,
-                style = MaterialTheme.typography.body1,
+                style = XCalendarTheme.typography.bodyMedium,
                 color = when {
-                    isToday -> MaterialTheme.colors.onPrimary
-                    else -> MaterialTheme.colors.onPrimary
+                    isToday -> XCalendarTheme.colorScheme.onPrimary
+                    else -> XCalendarTheme.colorScheme.onPrimary
                 },
                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -280,7 +287,7 @@ private fun TopAppBarDayCell(
             holidays.firstOrNull()?.let { holiday ->
                 Text(
                     text = holiday.name,
-                    style = MaterialTheme.typography.body2,
+                    style = XCalendarTheme.typography.bodyMedium,
                     color = Color(0xFF2196F3),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -321,7 +328,7 @@ private fun TopAppBarDayCell(
                     Text(
                         text = "+${events.size - maxEventsToDisplay}",
                         fontSize = 10.sp,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 }
             }

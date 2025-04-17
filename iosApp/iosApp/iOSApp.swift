@@ -4,9 +4,7 @@ import SwiftUI
 struct iOSApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .ignoresSafeArea(edges: .bottom)
-                .ignoresSafeArea(.keyboard)
+            ContentView().ignoresSafeArea(.all)
         }
     }
 }

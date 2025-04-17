@@ -27,6 +27,7 @@ import kotlinx.datetime.plus
  */
 @Composable
 fun BaseCalendarScreen(
+    modifier: Modifier=Modifier,
     dateStateHolder: DateStateHolder,
     events: List<Event>,
     holidays: List<Holiday>,
@@ -41,7 +42,9 @@ fun BaseCalendarScreen(
 
     val startDate = dateState.viewStartDate
 
-    Row {
+    Row(
+        modifier = modifier
+    ) {
         TimeColumn(
             modifier = Modifier
                 .padding(top = hourHeightDp.dp)

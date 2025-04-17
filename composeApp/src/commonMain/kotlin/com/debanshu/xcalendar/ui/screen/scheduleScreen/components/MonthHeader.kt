@@ -5,14 +5,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.toSentenceCase
 import com.debanshu.xcalendar.ui.YearMonth
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.datetime.Month
 
@@ -55,7 +55,7 @@ fun MonthHeader(yearMonth: YearMonth) {
         ) {
             Text(
                 text = "${yearMonth.month.name.toSentenceCase()} ${yearMonth.year}",
-                style = MaterialTheme.typography.h6,
+                style = XCalendarTheme.typography.headlineSmall,
             )
         }
     }

@@ -22,9 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -45,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -269,7 +269,7 @@ private fun DaysHeaderRow(
 ) {
     Row(
         modifier = modifier
-            .background(MaterialTheme.colors.surface)
+            .background(XCalendarTheme.colorScheme.surface)
     ) {
         val dates = List(numDays) { index ->
             startDate.plus(DatePeriod(days = index))
@@ -301,7 +301,7 @@ private fun DaysHeaderRow(
 
                     Text(
                         text = date.dayOfWeek.name.take(dayNameLength),
-                        style = MaterialTheme.typography.caption
+                        style = XCalendarTheme.typography.labelSmall
                     )
 
                     Box(
@@ -310,8 +310,8 @@ private fun DaysHeaderRow(
                             .size(28.dp)
                             .background(
                                 when {
-                                    isSelected -> MaterialTheme.colors.primary
-                                    isToday -> MaterialTheme.colors.primary.copy(alpha = 0.2f)
+                                    isSelected -> XCalendarTheme.colorScheme.primary
+                                    isToday -> XCalendarTheme.colorScheme.primary.copy(alpha = 0.2f)
                                     else -> Color.Transparent
                                 },
                                 CircleShape
@@ -320,10 +320,10 @@ private fun DaysHeaderRow(
                     ) {
                         Text(
                             text = date.dayOfMonth.toString(),
-                            style = MaterialTheme.typography.body1,
+                            style = XCalendarTheme.typography.bodyMedium,
                             color = when {
                                 isSelected -> Color.White
-                                else -> MaterialTheme.colors.onSurface
+                                else -> XCalendarTheme.colorScheme.onSurface
                             },
                         )
                     }
@@ -376,7 +376,7 @@ private fun CalendarEventsGrid(
                             Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .border(0.5.dp, MaterialTheme.colors.onSurface.copy(0.1f))
+                                .border(0.5.dp, XCalendarTheme.colorScheme.onSurface.copy(0.1f))
                         )
                     }
                 }
@@ -395,7 +395,7 @@ private fun CalendarEventsGrid(
                         .offset(x = offsetX, y = offsetY)
                         .width(dayColumnWidth)
                         .height(2.dp)
-                        .background(MaterialTheme.colors.primary)
+                        .background(XCalendarTheme.colorScheme.primary)
                 )
             }
         }
@@ -456,7 +456,7 @@ private fun EventItem(
     ) {
         Text(
             text = event.title,
-            style = MaterialTheme.typography.caption,
+            style = XCalendarTheme.typography.labelSmall,
             color = Color.White,
             fontSize = 10.sp,
             maxLines = 2,

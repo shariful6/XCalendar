@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ScheduleScreen(
+    modifier: Modifier = Modifier,
     dateStateHolder: DateStateHolder,
     events: List<Event>,
     holidays: List<Holiday>,
@@ -116,7 +117,7 @@ fun ScheduleScreen(
 
     LazyColumn(
         state = listState,
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         itemsIndexed(
             items = scheduleState.items,

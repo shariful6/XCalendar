@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.customBorder
 import com.debanshu.xcalendar.common.formatHour
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 
 /**
  * A reusable time column component that displays hour labels.
@@ -63,14 +63,14 @@ private fun TimeCell(
             .fillMaxWidth()
             .customBorder(
                 thickness = 2.dp,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
+                color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
             .padding(end = 16.dp)
     ) {
         Text(
             text = formatHour(hour),
-            style = MaterialTheme.typography.caption,
-            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+            style = XCalendarTheme.typography.labelSmall,
+            color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.End,
             modifier = Modifier
                 .align(Alignment.TopEnd)

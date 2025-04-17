@@ -1,6 +1,7 @@
 package com.debanshu.xcalendar.ui.screen.threeDayScreen
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.DateStateHolder
@@ -12,12 +13,14 @@ import kotlinx.datetime.LocalDate
  */
 @Composable
 fun ThreeDayScreen(
+    modifier: Modifier = Modifier,
     dateStateHolder: DateStateHolder,
     events: List<Event>,
     holidays: List<Holiday>,
     onEventClick: (Event) -> Unit
 ) {
     BaseCalendarScreen(
+        modifier = modifier,
         dateStateHolder = dateStateHolder,
         events = events,
         holidays = holidays,

@@ -5,7 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -31,6 +31,7 @@ import kotlin.math.roundToInt
  */
 @Composable
 fun SwipeableMonthView(
+    modifier: Modifier = Modifier,
     currentMonth: YearMonth,
     events: List<Event>,
     holidays: List<Holiday>,
@@ -65,7 +66,7 @@ fun SwipeableMonthView(
     val effectiveOffset = if (isAnimating) animatedOffset else offsetX
 
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .onSizeChanged { size = it }
             .pointerInput(Unit) {

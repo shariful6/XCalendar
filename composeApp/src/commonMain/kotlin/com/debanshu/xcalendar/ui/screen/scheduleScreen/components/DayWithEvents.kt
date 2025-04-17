@@ -5,8 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -45,15 +45,15 @@ fun DayWithEvents(
         ) {
             Text(
                 text = date.dayOfWeek.name.take(3).uppercase(),
-                style = MaterialTheme.typography.caption,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                style = XCalendarTheme.typography.labelSmall,
+                color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
 
             Text(
                 text = date.dayOfMonth.toString(),
-                style = MaterialTheme.typography.h6,
+                style = XCalendarTheme.typography.headlineSmall,
                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                color = MaterialTheme.colors.onSurface
+                color = XCalendarTheme.colorScheme.onSurface
             )
         }
 

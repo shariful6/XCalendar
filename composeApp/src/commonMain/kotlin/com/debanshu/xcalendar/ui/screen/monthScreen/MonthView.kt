@@ -16,13 +16,10 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +37,7 @@ import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -142,7 +140,7 @@ fun WeekdayHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colors.surface)
+            .background(XCalendarTheme.colorScheme.surface)
     ) {
         val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
 
@@ -155,7 +153,7 @@ fun WeekdayHeader() {
             ) {
                 Text(
                     text = day,
-                    style = MaterialTheme.typography.caption,
+                    style = XCalendarTheme.typography.labelSmall,
                 )
             }
         }
@@ -183,13 +181,13 @@ fun DayCell(
         modifier = modifier
             .border(
                 width = 0.5.dp,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
+                color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.12f)
             )
             .aspectRatio(screenWidth / screenHeight)
             .background(
                 when {
-                    isSelected -> MaterialTheme.colors.primary.copy(alpha = 0.2f)
-                    else -> MaterialTheme.colors.surface
+                    isSelected -> XCalendarTheme.colorScheme.primary.copy(alpha = 0.2f)
+                    else -> XCalendarTheme.colorScheme.surface
                 }
             )
             .noRippleClickable { onDayClick(date) }
@@ -206,8 +204,8 @@ fun DayCell(
                     .align(Alignment.CenterHorizontally)
                     .background(
                         when {
-                            isToday -> MaterialTheme.colors.primary
-                            isSelected -> MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                            isToday -> XCalendarTheme.colorScheme.primary
+                            isSelected -> XCalendarTheme.colorScheme.primary.copy(alpha = 0.3f)
                             else -> Color.Transparent
                         },
                         CircleShape
@@ -216,11 +214,11 @@ fun DayCell(
             ) {
                 Text(
                     text = date.dayOfMonth.toString(),
-                    style = MaterialTheme.typography.body2,
+                    style = XCalendarTheme.typography.bodyMedium,
                     color = when {
                         isToday -> Color.White
-                        isCurrentMonth -> MaterialTheme.colors.onSurface
-                        else -> MaterialTheme.colors.onSurface.copy(alpha = 0.4f)
+                        isCurrentMonth -> XCalendarTheme.colorScheme.onSurface
+                        else -> XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                     },
                     fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
                 )
@@ -251,9 +249,9 @@ fun DayCell(
             if (events.size > maxEventsToShow) {
                 Text(
                     text = "+${events.size - maxEventsToShow} more",
-                    style = MaterialTheme.typography.caption,
+                    style = XCalendarTheme.typography.labelSmall,
                     fontSize = 8.sp,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     textAlign = TextAlign.End,
                     modifier = Modifier
                         .fillMaxWidth()

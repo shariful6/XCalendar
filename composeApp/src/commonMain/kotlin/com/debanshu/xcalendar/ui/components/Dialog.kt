@@ -17,19 +17,18 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -112,7 +112,7 @@ fun AddEventDialog(
             // Calendar selection
             Text(
                 text = "Calendar",
-                style = MaterialTheme.typography.body1,
+                style = XCalendarTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold
             )
 
@@ -127,7 +127,8 @@ fun AddEventDialog(
                         modifier = Modifier.size(24.dp).clip(CircleShape)
                             .background(Color(calendar.color)).border(
                                 width = 2.dp,
-                                color = if (selectedCalendarId == calendar.id) MaterialTheme.colors.primary else Color.Transparent,
+                                color = if (selectedCalendarId == calendar.id) XCalendarTheme.colorScheme
+                                    .primary else Color.Transparent,
                                 shape = CircleShape
                             ).clickable { selectedCalendarId = calendar.id })
                 }
@@ -140,7 +141,7 @@ fun AddEventDialog(
                 verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "All day", style = MaterialTheme.typography.body1
+                    text = "All day", style = XCalendarTheme.typography.bodySmall
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -155,7 +156,7 @@ fun AddEventDialog(
             if (!isAllDay) {
                 Text(
                     text = "Start time",
-                    style = MaterialTheme.typography.body1,
+                    style = XCalendarTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -166,16 +167,16 @@ fun AddEventDialog(
                     text = "${startDateTime.hour}:${
                         startDateTime.minute.toString().padStart(2, '0')
                     }",
-                    style = MaterialTheme.typography.body1,
+                    style = XCalendarTheme.typography.bodySmall,
                     modifier = Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colors.surface).padding(8.dp)
+                        .background(XCalendarTheme.colorScheme.surface).padding(8.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "End time",
-                    style = MaterialTheme.typography.body2,
+                    style = XCalendarTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -185,9 +186,9 @@ fun AddEventDialog(
                     text = "${endDateTime.hour}:${
                         endDateTime.minute.toString().padStart(2, '0')
                     }",
-                    style = MaterialTheme.typography.body1,
+                    style = XCalendarTheme.typography.bodySmall,
                     modifier = Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colors.surface).padding(8.dp)
+                        .background(XCalendarTheme.colorScheme.surface).padding(8.dp)
                 )
             }
         }
@@ -253,7 +254,7 @@ fun EventDetailsDialog(
             // Event title
             Text(
                 text = event.title,
-                style = MaterialTheme.typography.h6,
+                style = XCalendarTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
 
@@ -266,24 +267,24 @@ fun EventDetailsDialog(
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = null,
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                    tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Column {
                     Text(
-                        text = formattedDate, style = MaterialTheme.typography.body2
+                        text = formattedDate, style = XCalendarTheme.typography.bodyMedium
                     )
 
                     if (!event.isAllDay) {
                         Text(
                             text = "$formattedStartTime - $formattedEndTime",
-                            style = MaterialTheme.typography.body2
+                            style = XCalendarTheme.typography.bodyMedium
                         )
                     } else {
                         Text(
-                            text = "All day", style = MaterialTheme.typography.body2
+                            text = "All day", style = XCalendarTheme.typography.bodyMedium
                         )
                     }
                 }
@@ -300,13 +301,13 @@ fun EventDetailsDialog(
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = null,
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                        tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
-                        text = location, style = MaterialTheme.typography.body1
+                        text = location, style = XCalendarTheme.typography.bodySmall
                     )
                 }
             }
@@ -317,7 +318,7 @@ fun EventDetailsDialog(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = description, style = MaterialTheme.typography.body1
+                        text = description, style = XCalendarTheme.typography.bodySmall
                     )
                 }
             }
