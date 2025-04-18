@@ -3,7 +3,6 @@ package com.debanshu.xcalendar.ui.theme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 
-// Light theme color scheme based on Material 3 guidelines
 val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
@@ -36,7 +35,6 @@ val LightColorScheme = lightColorScheme(
     scrim = md_theme_light_scrim,
 )
 
-// Dark theme color scheme based on Material 3 guidelines
 val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,

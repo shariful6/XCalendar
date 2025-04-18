@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBar as MaterialTopAppBar
@@ -53,6 +54,7 @@ import com.debanshu.xcalendar.domain.states.DateState
 import com.debanshu.xcalendar.ui.TopBarCalendarView
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
+import com.debanshu.xcalendar.ui.theme.LocalCalendarColors
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.datetime.Clock
@@ -72,7 +74,7 @@ fun TopAppBar(
 ) {
     Column(
         modifier = Modifier.background(
-            color = XCalendarTheme.colorScheme.primaryContainer
+            color = MaterialTheme.colorScheme.onPrimary
         ).animateContentSize()
     ) {
         val rotationDegree by animateFloatAsState(
@@ -101,9 +103,9 @@ fun TopAppBar(
             colors = TopAppBarColors(
                 containerColor = XCalendarTheme.colorScheme.onPrimary,
                 scrolledContainerColor = XCalendarTheme.colorScheme.onPrimary,
-                navigationIconContentColor = XCalendarTheme.colorScheme.onPrimary,
-                titleContentColor =XCalendarTheme.colorScheme.onPrimary,
-                actionIconContentColor = XCalendarTheme.colorScheme.onPrimary
+                navigationIconContentColor = XCalendarTheme.colorScheme.onPrimaryContainer,
+                titleContentColor = XCalendarTheme.colorScheme.onPrimaryContainer,
+                actionIconContentColor = XCalendarTheme.colorScheme.onPrimaryContainer
             ),
             navigationIcon = {
                 IconButton(onClick = onMenuClick) {
@@ -127,12 +129,13 @@ fun TopAppBar(
                 ) {
                     Text(
                         text = monthTitle,
-                        style = XCalendarTheme.typography.labelSmall
+                        style = XCalendarTheme.typography.bodyLarge,
+                        color = XCalendarTheme.colorScheme.onPrimaryContainer
                     )
                     Icon(
                         modifier = Modifier.rotate(rotationDegree),
                         imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Toggle Month Dropdown"
+                        contentDescription = "Toggle Month Dropdown",
                     )
                 }
             },
@@ -152,9 +155,7 @@ fun TopAppBar(
                 }
                 CoilImage(
                     imageModel = {
-                        "https://t4.ftcdn" +
-                                ".net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA" +
-                                ".jpg"
+                        "https://t4.ftcdn.net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA.jpg"
                     },
                     modifier = Modifier
                         .size(32.dp)
@@ -237,7 +238,7 @@ private fun TopAppBarWeekdayHeader() {
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp,
-                color = XCalendarTheme.colorScheme.onPrimary,
+                color = XCalendarTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -262,8 +263,8 @@ private fun TopAppBarDayCell(
             .clip(RoundedCornerShape(4.dp))
             .background(
                 when {
-                    isSelected -> XCalendarTheme.colorScheme.onPrimary.copy(alpha = 0.3f)
-                    isToday -> XCalendarTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
+                    isSelected -> XCalendarTheme.colorScheme.tertiaryContainer
+                    isToday -> XCalendarTheme.colorScheme.secondaryContainer
                     else -> Color.Transparent
                 }
             )
@@ -276,8 +277,8 @@ private fun TopAppBarDayCell(
                 fontSize = 12.sp,
                 style = XCalendarTheme.typography.bodyMedium,
                 color = when {
-                    isToday -> XCalendarTheme.colorScheme.onPrimary
-                    else -> XCalendarTheme.colorScheme.onPrimary
+                    isToday -> XCalendarTheme.colorScheme.onSecondaryContainer
+                    else -> XCalendarTheme.colorScheme.onPrimaryContainer
                 },
                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -328,7 +329,7 @@ private fun TopAppBarDayCell(
                     Text(
                         text = "+${events.size - maxEventsToDisplay}",
                         fontSize = 10.sp,
-                        color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = XCalendarTheme.colorScheme.onSurface
                     )
                 }
             }

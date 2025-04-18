@@ -110,7 +110,6 @@ fun CalendarDrawer(
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = null,
-                    tint = Color.White,
                     modifier = Modifier.size(16.dp).align(Alignment.Center)
                 )
             }
@@ -208,7 +207,6 @@ fun AccountSection(
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
-                            tint = Color.White,
                             modifier = Modifier.size(16.dp).align(Alignment.Center)
                         )
                     }
