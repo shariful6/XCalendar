@@ -88,7 +88,6 @@ fun SwipeableCalendarView(
     currentDate: LocalDate,
     headerHeight: Int = 60
 ) {
-    // Validate numDays
     require(numDays in 1..31) { "numDays must be between 1 and 31" }
 
     var size by remember { mutableStateOf(IntSize.Zero) }
@@ -156,7 +155,6 @@ fun SwipeableCalendarView(
                 )
             }
     ) {
-        // Current date range view
         CalendarContent(
             startDate = startDate,
             numDays = numDays,
@@ -175,7 +173,6 @@ fun SwipeableCalendarView(
                 .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
         )
 
-        // Previous date range view
         CalendarContent(
             startDate = prevStartDate,
             numDays = numDays,
@@ -194,7 +191,6 @@ fun SwipeableCalendarView(
                 .offset { IntOffset(-screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
         )
 
-        // Next date range view
         CalendarContent(
             startDate = nextStartDate,
             numDays = numDays,
@@ -293,10 +289,9 @@ private fun DaysHeaderRow(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Adapt day name length based on numDays
                     val dayNameLength = when {
-                        numDays <= 3 -> 3 // Show 3 letters for day, week, month views
-                        else -> 1      // Show 1 letter for month view
+                        numDays <= 3 -> 3
+                        else -> 1
                     }
 
                     Text(
@@ -450,14 +445,13 @@ private fun EventItem(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(Color(event.color ?: 0xFF4285F4.toInt()).copy(alpha = 0.8f))
+            .background(Color(event.color ?: 0xFF4285F4.toInt()))
             .clickable(onClick = onClick)
             .padding(4.dp)
     ) {
         Text(
             text = event.title,
             style = XCalendarTheme.typography.labelSmall,
-            color = Color.White,
             fontSize = 10.sp,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis

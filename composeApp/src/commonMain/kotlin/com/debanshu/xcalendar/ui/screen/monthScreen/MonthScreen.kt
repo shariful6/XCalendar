@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.DateStateHolder
+import com.debanshu.xcalendar.domain.states.ViewType
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.screen.monthScreen.components.SwipeableMonthView
 
@@ -26,7 +27,12 @@ fun MonthScreen(
         ),
         events = events,
         holidays = holidays,
-        onSpecificDayClicked = { date -> dateStateHolder.updateSelectedDateState(date) },
+        onSpecificDayClicked = { date ->
+            dateStateHolder.updateSelectedDateState(
+                date, viewType =
+                    ViewType.MONTH_VIEW
+            )
+        },
         currentSelectedDay = dateState.selectedDate,
         onMonthChange = { yearMonth ->
             dateStateHolder.updateSelectedInViewMonthState(yearMonth)

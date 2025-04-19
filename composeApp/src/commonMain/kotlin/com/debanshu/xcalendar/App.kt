@@ -12,17 +12,19 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.debanshu.xcalendar.domain.states.DateStateHolder
+import com.debanshu.xcalendar.domain.states.ViewType
 import com.debanshu.xcalendar.ui.CalendarView
 import com.debanshu.xcalendar.ui.CalendarViewModel
 import com.debanshu.xcalendar.ui.components.AddEventDialog
 import com.debanshu.xcalendar.ui.components.CalendarDrawer
 import com.debanshu.xcalendar.ui.components.EventDetailsDialog
-import com.debanshu.xcalendar.ui.components.TopAppBar
+import com.debanshu.xcalendar.ui.components.CalendarTopAppBar
 import com.debanshu.xcalendar.ui.screen.dayScreen.DayScreen
 import com.debanshu.xcalendar.ui.screen.monthScreen.MonthScreen
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.ScheduleScreen
@@ -52,6 +54,17 @@ fun CalendarApp(
     val dataState by dateStateHolder.currentDateState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val currentViewType by remember {
+        derivedStateOf {
+            when (calendarUiState.currentView) {
+                is CalendarView.Month -> ViewType.MONTH_VIEW
+                is CalendarView.Week -> ViewType.WEEK_VIEW
+                is CalendarView.Day -> ViewType.ONE_DAY_VIEW
+                is CalendarView.ThreeDay -> ViewType.THREE_DAY_VIEW
+                else -> ViewType.MONTH_VIEW
+            }
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -75,13 +88,25 @@ fun CalendarApp(
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
+                CalendarTopAppBar(
                     dateState = dataState,
                     monthDropdownState = calendarUiState.showMonthDropdown,
                     onMenuClick = { scope.launch { drawerState.open() } },
-                    onSelectToday = { dateStateHolder.updateSelectedDateState(dataState.currentDate) },
+                    onSelectToday = {
+                        dateStateHolder.updateSelectedDateState(
+                            dataState
+                                .currentDate, currentViewType
+                        )
+                    },
                     onToggleMonthDropdown = { viewModel.setTopAppBarMonthDropdown(it) },
-                    onDayClick = { date -> dateStateHolder.updateSelectedDateState(date) },
+                    onDayClick = { date ->
+                        dateStateHolder.updateSelectedDateState(
+                            date,
+                            currentViewType
+                        )
+                    },
+                    calendarUiState.events,
+                    calendarUiState.holidays
                 )
             },
             floatingActionButton = {

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.DateStateHolder
+import com.debanshu.xcalendar.domain.states.ViewType
 import com.debanshu.xcalendar.ui.CalendarUiState
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
@@ -27,12 +28,13 @@ import kotlinx.datetime.plus
  */
 @Composable
 fun BaseCalendarScreen(
-    modifier: Modifier=Modifier,
+    modifier: Modifier = Modifier,
     dateStateHolder: DateStateHolder,
     events: List<Event>,
     holidays: List<Holiday>,
     onEventClick: (Event) -> Unit,
-    numDays: Int
+    numDays: Int,
+    viewType: ViewType
 ) {
     val dateState by dateStateHolder.currentDateState.collectAsState()
     val verticalScrollState = rememberScrollState()
@@ -57,7 +59,7 @@ fun BaseCalendarScreen(
             startDate = startDate,
             events = events,
             holidays = holidays,
-            onDayClick = { date -> dateStateHolder.updateSelectedDateState(date) },
+            onDayClick = { date -> dateStateHolder.updateSelectedDateState(date,viewType) },
             onEventClick = onEventClick,
             selectedDay = dateState.selectedDate,
             onDateRangeChange = { newStartDate ->

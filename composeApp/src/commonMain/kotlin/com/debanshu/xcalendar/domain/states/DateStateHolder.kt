@@ -17,10 +17,17 @@ data class DateState(
     val viewStartDate: LocalDate,
 )
 
+enum class ViewType {
+    MONTH_VIEW,
+    WEEK_VIEW,
+    THREE_DAY_VIEW,
+    ONE_DAY_VIEW
+}
+
 interface DateStateHolder {
     val currentDateState: StateFlow<DateState>
     fun updateSelectedInViewMonthState(selectedInViewMonth: YearMonth)
-    fun updateSelectedDateState(selectedDate: LocalDate)
+    fun updateSelectedDateState(selectedDate: LocalDate, viewType: ViewType)
     fun updateViewStartDate(viewStartDate: LocalDate)
 }
 
@@ -44,12 +51,17 @@ class DateStateHolderImpl : DateStateHolder {
         )
     }
 
-    override fun updateSelectedDateState(selectedDate: LocalDate) {
+    override fun updateSelectedDateState(selectedDate: LocalDate, viewType: ViewType) {
         _currentDateState.tryEmit(
             _currentDateState.value.copy(
                 selectedDate = selectedDate,
                 selectedInViewMonth = YearMonth(selectedDate.year, selectedDate.month),
-                viewStartDate = CalendarUiState.getWeekStartDate(selectedDate)
+                viewStartDate = when(viewType) {
+                    ViewType.MONTH_VIEW -> CalendarUiState.getWeekStartDate(selectedDate)
+                    ViewType.WEEK_VIEW ->  CalendarUiState.getWeekStartDate(selectedDate)
+                    ViewType.THREE_DAY_VIEW -> CalendarUiState.get3DayStartDate(selectedDate)
+                    ViewType.ONE_DAY_VIEW ->  CalendarUiState.getOneDayStartDate(selectedDate)
+                }
             )
         )
     }

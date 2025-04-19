@@ -49,6 +49,10 @@ data class CalendarUiState(
             return date.minus(DatePeriod(days = dayOfWeek))
         }
 
+        internal fun getOneDayStartDate(date: LocalDate): LocalDate {
+            return date
+        }
+
         internal fun getUpcomingEvents(events: List<Event>, fromDate: LocalDate): List<Event> {
             val fromInstant = fromDate.atStartOfDayIn(TimeZone.currentSystemDefault())
             val toInstant = fromDate.plus(DatePeriod(days = 30)).atStartOfDayIn(TimeZone

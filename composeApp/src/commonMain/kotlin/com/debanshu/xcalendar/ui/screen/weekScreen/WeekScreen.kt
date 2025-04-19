@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.DateStateHolder
+import com.debanshu.xcalendar.domain.states.ViewType
 import com.debanshu.xcalendar.ui.CalendarUiState
 import com.debanshu.xcalendar.ui.components.BaseCalendarScreen
 
@@ -26,5 +27,6 @@ fun WeekScreen(
         holidays = holidays,
         onEventClick = onEventClick,
         numDays = 7,
+        viewType = ViewType.WEEK_VIEW
     )
 }

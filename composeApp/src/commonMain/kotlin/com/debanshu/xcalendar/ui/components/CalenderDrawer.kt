@@ -42,7 +42,6 @@ fun CalendarDrawer(
             .width(280.dp)
             .fillMaxHeight()
     ) {
-        // App title
         Text(
             text = "Google Calendar",
             style = XCalendarTheme.typography.headlineSmall,
@@ -50,7 +49,6 @@ fun CalendarDrawer(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
         )
         HorizontalDivider()
-        // View options
         CalendarViewOption(
             name = "Schedule",
             selected = selectedView is CalendarView.Schedule,
@@ -83,7 +81,6 @@ fun CalendarDrawer(
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-        // Accounts and their calendars
         accounts.forEach { user ->
             AccountSection(
                 user = user,
@@ -94,7 +91,6 @@ fun CalendarDrawer(
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
-        // Other calendar sections like Birthdays
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -163,24 +159,19 @@ fun AccountSection(
     onCalendarToggle: (Calendar) -> Unit
 ) {
     Column {
-        // User info
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp, vertical = 8.dp)
         ) {
-            // User profile image
             Box(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
                     .background(XCalendarTheme.colorScheme.primary)
-            ) {
-                // If we had an actual image, we'd load it here
-            }
+            )
             Spacer(modifier = Modifier.width(16.dp))
-            // User email
             Text(
                 text = user.email,
                 style = XCalendarTheme.typography.bodyMedium,
@@ -188,7 +179,6 @@ fun AccountSection(
             )
         }
 
-        // User's calendars
         calendars.forEach { calendar ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -197,7 +187,6 @@ fun AccountSection(
                     .padding(horizontal = 24.dp, vertical = 8.dp)
                     .clickable { onCalendarToggle(calendar) }
             ) {
-                // Calendar color indicator and checkbox
                 Box(
                     modifier = Modifier
                         .size(20.dp)
@@ -212,7 +201,6 @@ fun AccountSection(
                     }
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                // Calendar name
                 Text(
                     text = calendar.name,
                     style = XCalendarTheme.typography.bodySmall

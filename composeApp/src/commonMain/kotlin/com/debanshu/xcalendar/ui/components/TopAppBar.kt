@@ -28,10 +28,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBar as MaterialTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -54,7 +53,6 @@ import com.debanshu.xcalendar.domain.states.DateState
 import com.debanshu.xcalendar.ui.TopBarCalendarView
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
-import com.debanshu.xcalendar.ui.theme.LocalCalendarColors
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.datetime.Clock
@@ -64,19 +62,25 @@ import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(
+fun CalendarTopAppBar(
     dateState: DateState,
     monthDropdownState: TopBarCalendarView,
     onMenuClick: () -> Unit,
     onSelectToday: () -> Unit,
     onToggleMonthDropdown: (TopBarCalendarView) -> Unit,
-    onDayClick: (LocalDate) -> Unit
+    onDayClick: (LocalDate) -> Unit,
+    events: List<Event>,
+    holidays: List<Holiday>
 ) {
     Column(
         modifier = Modifier.background(
-            color = MaterialTheme.colorScheme.onPrimary
+            color = XCalendarTheme.colorScheme.onPrimary
         ).animateContentSize()
     ) {
+        val currentYear = dateState.currentDate.year
+
+        val showYear = dateState.selectedInViewMonth.year != currentYear
+
         val rotationDegree by animateFloatAsState(
             targetValue = if (monthDropdownState != TopBarCalendarView.NoView)
                 180f else 0f,
@@ -87,19 +91,13 @@ fun TopAppBar(
             label = "rotation"
         )
 
-        // Determine if we need to show the year in the month title
-        val currentYear = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
-
-        val showYear = dateState.selectedInViewMonth.year != currentYear
-
-        // Create the month title with year if needed
         val monthTitle = if (showYear) {
             "${dateState.selectedInViewMonth.month.name.toSentenceCase()} ${dateState.selectedInViewMonth.year}"
         } else {
             dateState.selectedInViewMonth.month.name.toSentenceCase()
         }
 
-        MaterialTopAppBar(
+        TopAppBar(
             colors = TopAppBarColors(
                 containerColor = XCalendarTheme.colorScheme.onPrimary,
                 scrolledContainerColor = XCalendarTheme.colorScheme.onPrimary,
@@ -171,8 +169,8 @@ fun TopAppBar(
                         dateState.selectedInViewMonth.year, dateState
                             .selectedInViewMonth.month
                     ),
-                    events = emptyList(),
-                    holidays = emptyList(),
+                    events = events,
+                    holidays = holidays,
                     onDayClick = onDayClick,
                     selectedDay = dateState.selectedDate
                 )
