@@ -15,8 +15,7 @@ import kotlinx.datetime.toLocalDateTime
 
 data class CalendarUiState(
     val selectedDay: LocalDate = Clock.System.now().toLocalDateTime(
-        TimeZone.currentSystemDefault
-            ()
+        TimeZone.currentSystemDefault()
     ).date,
 
     // View state

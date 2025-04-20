@@ -62,8 +62,14 @@ private fun TimeCell(
             .height(hourHeightDp.dp)
             .fillMaxWidth()
             .customBorder(
-                thickness = 2.dp,
-                color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                end = true,
+                bottom = true,
+                endFraction = 0f,
+                endLengthFraction = 1f,
+                bottomFraction = 0.85f,
+                bottomLengthFraction = 1f,
+                color = XCalendarTheme.colorScheme.surfaceVariant,
+                width = 1.dp
             )
             .padding(end = 16.dp)
     ) {

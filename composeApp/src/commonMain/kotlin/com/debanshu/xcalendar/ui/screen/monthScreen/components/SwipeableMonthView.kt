@@ -104,7 +104,6 @@ fun SwipeableMonthView(
             events = events,
             holidays = holidays,
             onDayClick = onSpecificDayClicked,
-            selectedDay = currentSelectedDay,
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
@@ -115,7 +114,6 @@ fun SwipeableMonthView(
             events = events,
             holidays = holidays,
             onDayClick = onSpecificDayClicked,
-            selectedDay = currentSelectedDay,
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(-screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
@@ -126,7 +124,6 @@ fun SwipeableMonthView(
             events = events,
             holidays = holidays,
             onDayClick = onSpecificDayClicked,
-            selectedDay = currentSelectedDay,
             modifier = Modifier
                 .fillMaxSize()
                 .offset { IntOffset(screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }

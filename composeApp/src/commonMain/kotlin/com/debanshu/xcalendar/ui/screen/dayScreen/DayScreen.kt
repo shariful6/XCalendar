@@ -18,7 +18,8 @@ fun DayScreen(
     dateStateHolder: DateStateHolder,
     events: List<Event>,
     holidays: List<Holiday>,
-    onEventClick: (Event) -> Unit
+    onEventClick: (Event) -> Unit,
+    onDateClick: (LocalDate) -> Unit,
 ) {
     BaseCalendarScreen(
         modifier = modifier,
@@ -27,6 +28,7 @@ fun DayScreen(
         holidays = holidays,
         onEventClick = onEventClick,
         numDays = 1,
-        viewType = ViewType.ONE_DAY_VIEW
+        viewType = ViewType.ONE_DAY_VIEW,
+        onDateClick = onDateClick
     )
 }

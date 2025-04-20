@@ -10,13 +10,15 @@ import com.debanshu.xcalendar.domain.states.DateStateHolder
 import com.debanshu.xcalendar.domain.states.ViewType
 import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.screen.monthScreen.components.SwipeableMonthView
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun MonthScreen(
     modifier: Modifier = Modifier,
     dateStateHolder: DateStateHolder,
     events: List<Event>,
-    holidays: List<Holiday>
+    holidays: List<Holiday>,
+    onDateClick: (LocalDate) -> Unit,
 ) {
     val dateState by dateStateHolder.currentDateState.collectAsState()
     SwipeableMonthView(
@@ -32,6 +34,7 @@ fun MonthScreen(
                 date, viewType =
                     ViewType.MONTH_VIEW
             )
+            onDateClick(date)
         },
         currentSelectedDay = dateState.selectedDate,
         onMonthChange = { yearMonth ->

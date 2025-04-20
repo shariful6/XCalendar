@@ -72,31 +72,31 @@ fun CalendarTopAppBar(
     events: List<Event>,
     holidays: List<Holiday>
 ) {
+    val currentYear = dateState.currentDate.year
+
+    val showYear = dateState.selectedInViewMonth.year != currentYear
+
+    val rotationDegree by animateFloatAsState(
+        targetValue = if (monthDropdownState != TopBarCalendarView.NoView)
+            180f else 0f,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = EaseInCubic
+        ),
+        label = "rotation"
+    )
+
+    val monthTitle = if (showYear) {
+        "${dateState.selectedInViewMonth.month.name.toSentenceCase()} ${dateState.selectedInViewMonth.year}"
+    } else {
+        dateState.selectedInViewMonth.month.name.toSentenceCase()
+    }
+
     Column(
         modifier = Modifier.background(
             color = XCalendarTheme.colorScheme.onPrimary
         ).animateContentSize()
     ) {
-        val currentYear = dateState.currentDate.year
-
-        val showYear = dateState.selectedInViewMonth.year != currentYear
-
-        val rotationDegree by animateFloatAsState(
-            targetValue = if (monthDropdownState != TopBarCalendarView.NoView)
-                180f else 0f,
-            animationSpec = tween(
-                durationMillis = 300,
-                easing = EaseInCubic
-            ),
-            label = "rotation"
-        )
-
-        val monthTitle = if (showYear) {
-            "${dateState.selectedInViewMonth.month.name.toSentenceCase()} ${dateState.selectedInViewMonth.year}"
-        } else {
-            dateState.selectedInViewMonth.month.name.toSentenceCase()
-        }
-
         TopAppBar(
             colors = TopAppBarColors(
                 containerColor = XCalendarTheme.colorScheme.onPrimary,
@@ -172,7 +172,6 @@ fun CalendarTopAppBar(
                     events = events,
                     holidays = holidays,
                     onDayClick = onDayClick,
-                    selectedDay = dateState.selectedDate
                 )
             }
 
@@ -187,7 +186,6 @@ private fun TopBarMonthView(
     events: List<Event>,
     holidays: List<Holiday>,
     onDayClick: (LocalDate) -> Unit,
-    selectedDay: LocalDate
 ) {
     val firstDayOfMonth = LocalDate(month.year, month.month, 1)
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal + 1
@@ -214,7 +212,6 @@ private fun TopBarMonthView(
                 holidays = holidays.filter { holiday ->
                     holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 },
-                isSelected = date == selectedDay,
                 onDayClick = onDayClick
             )
         }
@@ -248,7 +245,6 @@ private fun TopAppBarDayCell(
     date: LocalDate,
     events: List<Event>,
     holidays: List<Holiday>,
-    isSelected: Boolean,
     onDayClick: (LocalDate) -> Unit
 ) {
     val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -261,7 +257,6 @@ private fun TopAppBarDayCell(
             .clip(RoundedCornerShape(4.dp))
             .background(
                 when {
-                    isSelected -> XCalendarTheme.colorScheme.tertiaryContainer
                     isToday -> XCalendarTheme.colorScheme.secondaryContainer
                     else -> Color.Transparent
                 }
@@ -299,7 +294,6 @@ private fun TopAppBarDayCell(
                 )
             }
 
-            // Events (show up to 3 dots for events)
             val maxEventsToDisplay = 3
             val displayedEvents = events.take(maxEventsToDisplay)
 
@@ -322,7 +316,6 @@ private fun TopAppBarDayCell(
                     Spacer(modifier = Modifier.width(2.dp))
                 }
 
-                // If there are more events than we can display
                 if (events.size > maxEventsToDisplay) {
                     Text(
                         text = "+${events.size - maxEventsToDisplay}",

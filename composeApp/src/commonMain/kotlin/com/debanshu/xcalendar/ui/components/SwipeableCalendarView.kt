@@ -1,5 +1,6 @@
 package com.debanshu.xcalendar.ui.components
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
@@ -164,7 +165,6 @@ fun SwipeableCalendarView(
             hourHeightDp = hourHeightDp,
             onDayClick = onDayClick,
             onEventClick = onEventClick,
-            selectedDay = selectedDay,
             currentDate = currentDate,
             scrollState = scrollState,
             headerHeight = headerHeight,
@@ -182,13 +182,17 @@ fun SwipeableCalendarView(
             hourHeightDp = hourHeightDp,
             onDayClick = onDayClick,
             onEventClick = onEventClick,
-            selectedDay = selectedDay,
             currentDate = currentDate,
             scrollState = scrollState,
             headerHeight = headerHeight,
             modifier = Modifier
                 .fillMaxSize()
-                .offset { IntOffset(-screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
+                .offset {
+                    IntOffset(
+                        -screenWidth.roundToInt() + effectiveOffset.roundToInt(),
+                        0
+                    )
+                }
         )
 
         CalendarContent(
@@ -200,13 +204,17 @@ fun SwipeableCalendarView(
             hourHeightDp = hourHeightDp,
             onDayClick = onDayClick,
             onEventClick = onEventClick,
-            selectedDay = selectedDay,
             currentDate = currentDate,
             scrollState = scrollState,
             headerHeight = headerHeight,
             modifier = Modifier
                 .fillMaxSize()
-                .offset { IntOffset(screenWidth.roundToInt() + effectiveOffset.roundToInt(), 0) }
+                .offset {
+                    IntOffset(
+                        screenWidth.roundToInt() + effectiveOffset.roundToInt(),
+                        0
+                    )
+                }
         )
     }
 }
@@ -221,7 +229,6 @@ private fun CalendarContent(
     hourHeightDp: Float,
     onDayClick: (LocalDate) -> Unit,
     onEventClick: (Event) -> Unit,
-    selectedDay: LocalDate,
     currentDate: LocalDate,
     scrollState: ScrollState,
     headerHeight: Int,
@@ -231,7 +238,6 @@ private fun CalendarContent(
         DaysHeaderRow(
             startDate = startDate,
             numDays = numDays,
-            selectedDay = selectedDay,
             currentDate = currentDate,
             holidays = holidays,
             onDayClick = onDayClick,
@@ -257,7 +263,6 @@ private fun CalendarContent(
 private fun DaysHeaderRow(
     startDate: LocalDate,
     numDays: Int,
-    selectedDay: LocalDate,
     currentDate: LocalDate,
     holidays: List<Holiday>,
     onDayClick: (LocalDate) -> Unit,
@@ -272,7 +277,6 @@ private fun DaysHeaderRow(
         }
 
         dates.forEach { date ->
-            val isSelected = date == selectedDay
             val isToday = date == currentDate
             val holidaysForDate = holidays.filter { holiday ->
                 holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
@@ -305,9 +309,8 @@ private fun DaysHeaderRow(
                             .size(28.dp)
                             .background(
                                 when {
-                                    isSelected -> XCalendarTheme.colorScheme.primary
-                                    isToday -> XCalendarTheme.colorScheme.primary.copy(alpha = 0.2f)
-                                    else -> Color.Transparent
+                                    isToday -> XCalendarTheme.colorScheme.primary
+                                    else -> XCalendarTheme.colorScheme.surface
                                 },
                                 CircleShape
                             ),
@@ -317,7 +320,7 @@ private fun DaysHeaderRow(
                             text = date.dayOfMonth.toString(),
                             style = XCalendarTheme.typography.bodyMedium,
                             color = when {
-                                isSelected -> Color.White
+                                isToday -> XCalendarTheme.colorScheme.inverseOnSurface
                                 else -> XCalendarTheme.colorScheme.onSurface
                             },
                         )
@@ -358,27 +361,25 @@ private fun CalendarEventsGrid(
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val currentMinute = now.hour * 60 + now.minute
 
-        // Hour grid lines
         Column {
-            timeRange.forEach { hour ->
+            timeRange.forEach { _ ->
                 Row(
                     Modifier
                         .fillMaxWidth()
                         .height(hourHeightDp.dp)
                 ) {
-                    repeat(numDays) { dayIndex ->
+                    repeat(numDays) {
                         Box(
                             Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .border(0.5.dp, XCalendarTheme.colorScheme.onSurface.copy(0.1f))
+                                .border(0.5.dp, XCalendarTheme.colorScheme.surfaceVariant)
                         )
                     }
                 }
             }
         }
 
-        // Current time indicator
         if (dates.any { it == currentDate }) {
             val dayIndex = dates.indexOfFirst { it == currentDate }
             if (dayIndex >= 0) {
@@ -395,7 +396,6 @@ private fun CalendarEventsGrid(
             }
         }
 
-        // Events
         dates.forEachIndexed { dayIndex, date ->
             val dayEvents = events.filter { event ->
                 event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date

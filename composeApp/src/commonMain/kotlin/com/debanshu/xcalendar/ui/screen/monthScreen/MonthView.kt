@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -26,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.debanshu.xcalendar.common.customBorder
 import com.debanshu.xcalendar.common.getBottomSystemBarHeight
 import com.debanshu.xcalendar.common.getScreenHeight
 import com.debanshu.xcalendar.common.getScreenWidth
@@ -52,7 +55,6 @@ fun MonthView(
     events: List<Event>,
     holidays: List<Holiday>,
     onDayClick: (LocalDate) -> Unit,
-    selectedDay: LocalDate
 ) {
     val firstDayOfMonth = LocalDate(month.year, month.month, 1)
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal + 1
@@ -89,7 +91,6 @@ fun MonthView(
                         holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                     },
                     isCurrentMonth = false,
-                    isSelected = date == selectedDay,
                     onDayClick = onDayClick
                 )
             }
@@ -107,7 +108,6 @@ fun MonthView(
                     holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 },
                 isCurrentMonth = true,
-                isSelected = date == selectedDay,
                 onDayClick = onDayClick
             )
         }
@@ -128,7 +128,6 @@ fun MonthView(
                     holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 },
                 isCurrentMonth = false,
-                isSelected = date == selectedDay,
                 onDayClick = onDayClick
             )
         }
@@ -142,18 +141,38 @@ fun WeekdayHeader() {
             .fillMaxWidth()
             .background(XCalendarTheme.colorScheme.surface)
     ) {
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val ordinalToday = if(today.dayOfWeek.ordinal == 6) 0 else today.dayOfWeek.ordinal + 1
         val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
 
-        daysOfWeek.forEach { day ->
+        daysOfWeek.forEachIndexed {dayIndex, day ->
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(30.dp),
+                    .background(XCalendarTheme.colorScheme.surfaceContainer)
+                    .customBorder(
+                        end = true,
+                        bottom = true,
+                        start = true,
+                        startFraction = 0.70f,
+                        startLengthFraction = 1f,
+                        endFraction = 0.70f,
+                        endLengthFraction = 1f,
+                        bottomFraction = 0f,
+                        bottomLengthFraction = 1f,
+                        color = XCalendarTheme.colorScheme.surfaceVariant,
+                        width = 1.dp
+                    )
+                    .padding(vertical = XCalendarTheme.dimensions.spacing_8),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = day,
-                    style = XCalendarTheme.typography.labelSmall,
+                    style = XCalendarTheme.typography.bodySmall,
+                    color = if(dayIndex == ordinalToday)
+                        XCalendarTheme.colorScheme.primary
+                    else
+                        XCalendarTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -167,7 +186,6 @@ fun DayCell(
     events: List<Event>,
     holidays: List<Holiday>,
     isCurrentMonth: Boolean,
-    isSelected: Boolean,
     onDayClick: (LocalDate) -> Unit
 ) {
     val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -181,15 +199,10 @@ fun DayCell(
         modifier = modifier
             .border(
                 width = 0.5.dp,
-                color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                color = XCalendarTheme.colorScheme.surfaceVariant
             )
             .aspectRatio(screenWidth / screenHeight)
-            .background(
-                when {
-                    isSelected -> XCalendarTheme.colorScheme.primary.copy(alpha = 0.2f)
-                    else -> XCalendarTheme.colorScheme.surface
-                }
-            )
+            .background(XCalendarTheme.colorScheme.surfaceContainer)
             .noRippleClickable { onDayClick(date) }
     ) {
         Column(
@@ -205,7 +218,6 @@ fun DayCell(
                     .background(
                         when {
                             isToday -> XCalendarTheme.colorScheme.primary
-                            isSelected -> XCalendarTheme.colorScheme.primary.copy(alpha = 0.3f)
                             else -> Color.Transparent
                         },
                         CircleShape
@@ -214,21 +226,18 @@ fun DayCell(
             ) {
                 Text(
                     text = date.dayOfMonth.toString(),
-                    style = XCalendarTheme.typography.bodyMedium,
+                    style = XCalendarTheme.typography.bodySmall,
                     color = when {
-                        isToday -> Color.White
-                        isCurrentMonth -> XCalendarTheme.colorScheme.onSurface
-                        else -> XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        isToday -> XCalendarTheme.colorScheme.inverseOnSurface
+                        isCurrentMonth -> XCalendarTheme.colorScheme.onSurfaceVariant
+                        else -> XCalendarTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     },
-                    fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal
                 )
             }
 
-            // Events display - limited to 3 events with +more indicator
             val maxEventsToShow = 3
             val displayedEvents = events.take(maxEventsToShow)
 
-            // Holidays at the top
             holidays.firstOrNull()?.let { holiday ->
                 EventTag(
                     text = holiday.name,
@@ -237,7 +246,6 @@ fun DayCell(
                 )
             }
 
-            // Regular events
             displayedEvents.forEach { event ->
                 EventTag(
                     text = event.title,

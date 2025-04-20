@@ -1,5 +1,8 @@
 package com.debanshu.xcalendar
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -11,7 +14,9 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,6 +41,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
+val LocalSharedTransitionScope =
+    compositionLocalOf<SharedTransitionScope> { error("Error Occurred during creation of SharedTransitionScope ") }
+
 @Composable
 @Preview
 fun App() {
@@ -46,6 +55,7 @@ fun App() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun CalendarApp(
     viewModel: CalendarViewModel, dateStateHolder: DateStateHolder
@@ -120,50 +130,71 @@ fun CalendarApp(
                 }
             },
         ) { paddingValues ->
-            when (calendarUiState.currentView) {
-                is CalendarView.Month -> {
-                    MonthScreen(
-                        modifier = Modifier.padding(paddingValues),
-                        dateStateHolder,
-                        calendarUiState.events,
-                        calendarUiState.holidays
-                    )
-                }
+            SharedTransitionLayout {
+                CompositionLocalProvider(
+                    LocalSharedTransitionScope provides this,
+                ) {
+                    when (calendarUiState.currentView) {
+                        is CalendarView.Month -> {
+                            MonthScreen(
+                                modifier = Modifier.padding(paddingValues),
+                                dateStateHolder,
+                                calendarUiState.events,
+                                calendarUiState.holidays,
+                                onDateClick = {
+                                    viewModel.selectView(CalendarView.Day)
+                                }
+                            )
+                        }
 
-                is CalendarView.Week -> {
-                    WeekScreen(
-                        modifier = Modifier.padding(paddingValues),
-                        dateStateHolder = dateStateHolder,
-                        events = calendarUiState.events,
-                        holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) })
-                }
+                        is CalendarView.Week -> {
+                            WeekScreen(
+                                modifier = Modifier.padding(paddingValues),
+                                dateStateHolder = dateStateHolder,
+                                events = calendarUiState.events,
+                                holidays = calendarUiState.holidays,
+                                onEventClick = { event -> viewModel.selectEvent(event) },
+                                onDateClick = {
+                                    viewModel.selectView(CalendarView.Day)
+                                }
+                            )
+                        }
 
-                is CalendarView.Day -> {
-                    DayScreen(
-                        modifier = Modifier.padding(paddingValues),
-                        dateStateHolder = dateStateHolder,
-                        events = calendarUiState.events,
-                        holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) })
-                }
+                        is CalendarView.Day -> {
+                            DayScreen(
+                                modifier = Modifier.padding(paddingValues),
+                                dateStateHolder = dateStateHolder,
+                                events = calendarUiState.events,
+                                holidays = calendarUiState.holidays,
+                                onEventClick = { event -> viewModel.selectEvent(event) },
+                                onDateClick = {
+                                    viewModel.selectView(CalendarView.Day)
+                                }
+                            )
+                        }
 
-                is CalendarView.Schedule -> {
-                    ScheduleScreen(
-                        modifier = Modifier.padding(paddingValues),
-                        dateStateHolder = dateStateHolder,
-                        events = calendarUiState.events,
-                        holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) })
-                }
+                        is CalendarView.Schedule -> {
+                            ScheduleScreen(
+                                modifier = Modifier.padding(paddingValues),
+                                dateStateHolder = dateStateHolder,
+                                events = calendarUiState.events,
+                                holidays = calendarUiState.holidays,
+                                onEventClick = { event -> viewModel.selectEvent(event) })
+                        }
 
-                is CalendarView.ThreeDay -> {
-                    ThreeDayScreen(
-                        modifier = Modifier.padding(paddingValues),
-                        dateStateHolder = dateStateHolder,
-                        events = calendarUiState.events,
-                        holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) })
+                        is CalendarView.ThreeDay -> {
+                            ThreeDayScreen(
+                                modifier = Modifier.padding(paddingValues),
+                                dateStateHolder = dateStateHolder,
+                                events = calendarUiState.events,
+                                holidays = calendarUiState.holidays,
+                                onEventClick = { event -> viewModel.selectEvent(event) },
+                                onDateClick = {
+                                    viewModel.selectView(CalendarView.Day)
+                                }
+                            )
+                        }
+                    }
                 }
             }
 

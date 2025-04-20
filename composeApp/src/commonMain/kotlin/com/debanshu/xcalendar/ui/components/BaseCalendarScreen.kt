@@ -1,5 +1,7 @@
 package com.debanshu.xcalendar.ui.components
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -33,8 +35,9 @@ fun BaseCalendarScreen(
     events: List<Event>,
     holidays: List<Holiday>,
     onEventClick: (Event) -> Unit,
+    onDateClick: (LocalDate) -> Unit,
     numDays: Int,
-    viewType: ViewType
+    viewType: ViewType,
 ) {
     val dateState by dateStateHolder.currentDateState.collectAsState()
     val verticalScrollState = rememberScrollState()
@@ -43,7 +46,6 @@ fun BaseCalendarScreen(
     val hourHeightDp = 60f
 
     val startDate = dateState.viewStartDate
-
     Row(
         modifier = modifier
     ) {
@@ -59,7 +61,17 @@ fun BaseCalendarScreen(
             startDate = startDate,
             events = events,
             holidays = holidays,
-            onDayClick = { date -> dateStateHolder.updateSelectedDateState(date,viewType) },
+            onDayClick = { date ->
+                dateStateHolder.updateSelectedDateState(date, viewType)
+                onDateClick(
+                    when (viewType) {
+                        ViewType.MONTH_VIEW -> CalendarUiState.getWeekStartDate(date)
+                        ViewType.WEEK_VIEW -> CalendarUiState.getWeekStartDate(date)
+                        ViewType.THREE_DAY_VIEW -> CalendarUiState.get3DayStartDate(date)
+                        ViewType.ONE_DAY_VIEW -> CalendarUiState.getOneDayStartDate(date)
+                    }
+                )
+            },
             onEventClick = onEventClick,
             selectedDay = dateState.selectedDate,
             onDateRangeChange = { newStartDate ->
