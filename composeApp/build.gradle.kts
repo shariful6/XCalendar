@@ -63,6 +63,8 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.annotations)
             implementation(libs.navigation.compose)
+
+            implementation(libs.navigation.compose)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

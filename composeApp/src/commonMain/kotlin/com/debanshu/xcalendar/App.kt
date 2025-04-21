@@ -22,6 +22,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.debanshu.xcalendar.domain.states.DateStateHolder
 import com.debanshu.xcalendar.domain.states.ViewType
 import com.debanshu.xcalendar.ui.CalendarView
@@ -64,6 +67,7 @@ fun CalendarApp(
     val dataState by dateStateHolder.currentDateState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val navController = rememberNavController()
     val currentViewType by remember {
         derivedStateOf {
             when (calendarUiState.currentView) {
@@ -84,6 +88,7 @@ fun CalendarApp(
                     selectedView = calendarUiState.currentView,
                     onViewSelect = { view ->
                         viewModel.selectView(view)
+                        navController.navigate(view.toString())
                         scope.launch { drawerState.close() }
                     },
                     accounts = calendarUiState.accounts,
@@ -134,20 +139,31 @@ fun CalendarApp(
                 CompositionLocalProvider(
                     LocalSharedTransitionScope provides this,
                 ) {
-                    when (calendarUiState.currentView) {
-                        is CalendarView.Month -> {
+                    NavHost(
+                        navController = navController,
+                        startDestination = CalendarView.Month.toString()
+                    ) {
+                        composable(
+                            route = CalendarView.Month.toString(),
+                        ) {
                             MonthScreen(
                                 modifier = Modifier.padding(paddingValues),
                                 dateStateHolder,
                                 calendarUiState.events,
                                 calendarUiState.holidays,
                                 onDateClick = {
+                                    navController.navigate(CalendarView.Day.toString())
                                     viewModel.selectView(CalendarView.Day)
+                                    dateStateHolder.updateSelectedDateState(
+                                        it,
+                                        ViewType.ONE_DAY_VIEW
+                                    )
                                 }
                             )
                         }
-
-                        is CalendarView.Week -> {
+                        composable(
+                            route = CalendarView.Week.toString(),
+                        ) {
                             WeekScreen(
                                 modifier = Modifier.padding(paddingValues),
                                 dateStateHolder = dateStateHolder,
@@ -155,34 +171,30 @@ fun CalendarApp(
                                 holidays = calendarUiState.holidays,
                                 onEventClick = { event -> viewModel.selectEvent(event) },
                                 onDateClick = {
+                                    navController.navigate(CalendarView.Day.toString())
                                     viewModel.selectView(CalendarView.Day)
+                                    dateStateHolder.updateSelectedDateState(
+                                        it,
+                                        ViewType.ONE_DAY_VIEW
+                                    )
                                 }
                             )
                         }
-
-                        is CalendarView.Day -> {
+                        composable(
+                            route = CalendarView.Day.toString(),
+                        ) {
                             DayScreen(
                                 modifier = Modifier.padding(paddingValues),
                                 dateStateHolder = dateStateHolder,
                                 events = calendarUiState.events,
                                 holidays = calendarUiState.holidays,
                                 onEventClick = { event -> viewModel.selectEvent(event) },
-                                onDateClick = {
-                                    viewModel.selectView(CalendarView.Day)
-                                }
+                                onDateClick = {}
                             )
                         }
-
-                        is CalendarView.Schedule -> {
-                            ScheduleScreen(
-                                modifier = Modifier.padding(paddingValues),
-                                dateStateHolder = dateStateHolder,
-                                events = calendarUiState.events,
-                                holidays = calendarUiState.holidays,
-                                onEventClick = { event -> viewModel.selectEvent(event) })
-                        }
-
-                        is CalendarView.ThreeDay -> {
+                        composable(
+                            route = CalendarView.ThreeDay.toString(),
+                        ) {
                             ThreeDayScreen(
                                 modifier = Modifier.padding(paddingValues),
                                 dateStateHolder = dateStateHolder,
@@ -190,10 +202,27 @@ fun CalendarApp(
                                 holidays = calendarUiState.holidays,
                                 onEventClick = { event -> viewModel.selectEvent(event) },
                                 onDateClick = {
+                                    navController.navigate(CalendarView.Day.toString())
                                     viewModel.selectView(CalendarView.Day)
+                                    dateStateHolder.updateSelectedDateState(
+                                        it,
+                                        ViewType.ONE_DAY_VIEW
+                                    )
                                 }
                             )
                         }
+                        composable(
+                            route = CalendarView.Schedule.toString(),
+                        ) {
+                            ScheduleScreen(
+                                modifier = Modifier.padding(paddingValues),
+                                dateStateHolder = dateStateHolder,
+                                events = calendarUiState.events,
+                                holidays = calendarUiState.holidays,
+                                onEventClick = { event -> viewModel.selectEvent(event) }
+                            )
+                        }
+
                     }
                 }
             }

@@ -14,8 +14,8 @@ sqlite = "2.5.0"
 ktor-bom = "3.1.2"
 koin-bom = "4.1.0-Beta7"
 koin-annotations-bom = "2.0.0"
-navigation-compose = "2.8.0-alpha13"
 kotlinx-datetime = "0.6.2"
+navigation = "2.9.0-alpha16"
 
 [libraries]
 landscapist-coil3 = { module ="com.github.skydoves:landscapist-coil3", version.ref = "coil3"}
@@ -35,8 +35,6 @@ koin-annotations-bom = { module = "io.insert-koin:koin-annotations-bom", version
 koin-annotations = { module = "io.insert-koin:koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations-bom" }
 
-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
-
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
@@ -44,6 +42,8 @@ androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room_version" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room_version" }
 sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
+
+navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
