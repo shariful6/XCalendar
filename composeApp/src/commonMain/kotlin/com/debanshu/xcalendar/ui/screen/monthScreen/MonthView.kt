@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -139,7 +137,6 @@ fun WeekdayHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(XCalendarTheme.colorScheme.surface)
     ) {
         val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         val ordinalToday = if(today.dayOfWeek.ordinal == 6) 0 else today.dayOfWeek.ordinal + 1
@@ -149,7 +146,6 @@ fun WeekdayHeader() {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(XCalendarTheme.colorScheme.surfaceContainer)
                     .customBorder(
                         end = true,
                         bottom = true,
@@ -202,7 +198,6 @@ fun DayCell(
                 color = XCalendarTheme.colorScheme.surfaceVariant
             )
             .aspectRatio(screenWidth / screenHeight)
-            .background(XCalendarTheme.colorScheme.surfaceContainer)
             .noRippleClickable { onDayClick(date) }
     ) {
         Column(

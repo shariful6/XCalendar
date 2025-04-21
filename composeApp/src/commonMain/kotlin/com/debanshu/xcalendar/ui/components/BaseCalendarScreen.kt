@@ -1,9 +1,10 @@
 package com.debanshu.xcalendar.ui.components
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
@@ -16,8 +17,8 @@ import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.DateStateHolder
 import com.debanshu.xcalendar.domain.states.ViewType
 import com.debanshu.xcalendar.ui.CalendarUiState
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
 
 /**
  * Base calendar screen that provides common structure for day, three-day, and week views.
@@ -49,14 +50,21 @@ fun BaseCalendarScreen(
     Row(
         modifier = modifier
     ) {
-        TimeColumn(
-            modifier = Modifier
-                .padding(top = hourHeightDp.dp)
-                .width(timeColumnWidth),
-            timeRange = timeRange,
-            hourHeightDp = hourHeightDp,
-            scrollState = verticalScrollState
-        )
+        Column {
+            Box(
+                modifier = Modifier
+                    .height(hourHeightDp.dp)
+                    .width(timeColumnWidth)
+                    .background(color = XCalendarTheme.colorScheme.onPrimary)
+            )
+            TimeColumn(
+                modifier = Modifier
+                    .width(timeColumnWidth),
+                timeRange = timeRange,
+                hourHeightDp = hourHeightDp,
+                scrollState = verticalScrollState
+            )
+        }
         SwipeableCalendarView(
             startDate = startDate,
             events = events,
@@ -73,7 +81,6 @@ fun BaseCalendarScreen(
                 )
             },
             onEventClick = onEventClick,
-            selectedDay = dateState.selectedDate,
             onDateRangeChange = { newStartDate ->
                 dateStateHolder.updateViewStartDate(newStartDate)
             },

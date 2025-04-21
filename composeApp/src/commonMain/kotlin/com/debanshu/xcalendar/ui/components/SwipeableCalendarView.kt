@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.debanshu.xcalendar.common.customBorder
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
@@ -64,7 +66,6 @@ import kotlin.math.roundToInt
  * @param holidays The list of holidays to display
  * @param onDayClick Callback for when a day is clicked
  * @param onEventClick Callback for when an event is clicked
- * @param selectedDay The currently selected day
  * @param onDateRangeChange Callback for when the date range changes due to swiping
  * @param numDays The number of days to display (1 for day view, 3 for three-day view, 7 for week view)
  * @param timeRange The range of hours to display
@@ -80,7 +81,6 @@ fun SwipeableCalendarView(
     holidays: List<Holiday> = emptyList(),
     onDayClick: (LocalDate) -> Unit,
     onEventClick: (Event) -> Unit,
-    selectedDay: LocalDate,
     onDateRangeChange: (LocalDate) -> Unit,
     numDays: Int = 7,
     timeRange: IntRange = 0..23,
@@ -268,13 +268,13 @@ private fun DaysHeaderRow(
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val dates = List(numDays) { index ->
+        startDate.plus(DatePeriod(days = index))
+    }
     Row(
         modifier = modifier
-            .background(XCalendarTheme.colorScheme.surface)
+            .background(XCalendarTheme.colorScheme.onPrimary)
     ) {
-        val dates = List(numDays) { index ->
-            startDate.plus(DatePeriod(days = index))
-        }
 
         dates.forEach { date ->
             val isToday = date == currentDate
@@ -287,7 +287,19 @@ private fun DaysHeaderRow(
                     .weight(1f)
                     .fillMaxHeight()
                     .clickable { onDayClick(date) }
-                    .padding(2.dp),
+                    .customBorder(
+                        end = true,
+                        bottom = true,
+                        start = true,
+                        startFraction = 0.85f,
+                        startLengthFraction = 1f,
+                        endFraction = 0.85f,
+                        endLengthFraction = 1f,
+                        bottomFraction = 0f,
+                        bottomLengthFraction = 1f,
+                        color = XCalendarTheme.colorScheme.surfaceVariant,
+                        width = 1.dp
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -310,9 +322,12 @@ private fun DaysHeaderRow(
                             .background(
                                 when {
                                     isToday -> XCalendarTheme.colorScheme.primary
-                                    else -> XCalendarTheme.colorScheme.surface
+                                    else -> XCalendarTheme.colorScheme.onPrimary
                                 },
-                                CircleShape
+                                if(isToday)
+                                    CircleShape
+                                else
+                                    RectangleShape
                             ),
                         contentAlignment = Alignment.Center
                     ) {

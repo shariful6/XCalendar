@@ -108,7 +108,7 @@ class CalendarViewModel(
 
     private fun updateVisibleCalendars(calendars: List<Calendar>) {
         val visibleIds = calendars.filter { it.isVisible }.map { it.id }.toSet()
-        visibleCalendarIds.value = visibleCalendarIds.value + visibleIds
+        visibleCalendarIds.value += visibleIds
     }
 
     private suspend fun loadEventsForCalendars(calendarIds: List<String>) {
@@ -181,9 +181,9 @@ class CalendarViewModel(
 
             // Update visible calendars tracking
             if (updatedCalendar.isVisible) {
-                visibleCalendarIds.value = visibleCalendarIds.value + updatedCalendar.id
+                visibleCalendarIds.value += updatedCalendar.id
             } else {
-                visibleCalendarIds.value = visibleCalendarIds.value - updatedCalendar.id
+                visibleCalendarIds.value -= updatedCalendar.id
             }
 
             // Update UI state with the updated calendar
