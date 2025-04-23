@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.debanshu.xcalendar.domain.states.DateStateHolder
 import com.debanshu.xcalendar.domain.states.ViewType
@@ -68,36 +69,28 @@ fun CalendarApp(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
-    val currentViewType by remember {
-        derivedStateOf {
-            when (calendarUiState.currentView) {
-                is CalendarView.Month -> ViewType.MONTH_VIEW
-                is CalendarView.Week -> ViewType.WEEK_VIEW
-                is CalendarView.Day -> ViewType.ONE_DAY_VIEW
-                is CalendarView.ThreeDay -> ViewType.THREE_DAY_VIEW
-                else -> ViewType.MONTH_VIEW
-            }
-        }
-    }
+    val currentRoute by navController.currentBackStackEntryAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                CalendarDrawer(
-                    selectedView = calendarUiState.currentView,
-                    onViewSelect = { view ->
-                        viewModel.selectView(view)
-                        navController.navigate(view.toString())
-                        scope.launch { drawerState.close() }
-                    },
-                    accounts = calendarUiState.accounts,
-                    calendars = calendarUiState.calendars,
-                    onCalendarToggle = { calendar ->
-                        viewModel.toggleCalendarVisibility(
-                            calendar
-                        )
-                    })
+                currentRoute?.destination?.route?.let {
+                    CalendarDrawer(
+                        selectedView = it,
+                        onViewSelect = { view ->
+                            navController.navigate(view.toString())
+                            scope.launch { drawerState.close() }
+                        },
+                        accounts = calendarUiState.accounts,
+                        calendars = calendarUiState.calendars,
+                        onCalendarToggle = { calendar ->
+                            viewModel.toggleCalendarVisibility(
+                                calendar
+                            )
+                        }
+                    )
+                }
             }
         },
     ) {
@@ -109,15 +102,13 @@ fun CalendarApp(
                     onMenuClick = { scope.launch { drawerState.open() } },
                     onSelectToday = {
                         dateStateHolder.updateSelectedDateState(
-                            dataState
-                                .currentDate, currentViewType
+                            dataState.currentDate,
                         )
                     },
                     onToggleMonthDropdown = { viewModel.setTopAppBarMonthDropdown(it) },
                     onDayClick = { date ->
                         dateStateHolder.updateSelectedDateState(
-                            date,
-                            currentViewType
+                            date
                         )
                     },
                     calendarUiState.events,
@@ -153,11 +144,6 @@ fun CalendarApp(
                                 calendarUiState.holidays,
                                 onDateClick = {
                                     navController.navigate(CalendarView.Day.toString())
-                                    viewModel.selectView(CalendarView.Day)
-                                    dateStateHolder.updateSelectedDateState(
-                                        it,
-                                        ViewType.ONE_DAY_VIEW
-                                    )
                                 }
                             )
                         }
@@ -170,13 +156,8 @@ fun CalendarApp(
                                 events = calendarUiState.events,
                                 holidays = calendarUiState.holidays,
                                 onEventClick = { event -> viewModel.selectEvent(event) },
-                                onDateClick = {
+                                onDateClickCallback = {
                                     navController.navigate(CalendarView.Day.toString())
-                                    viewModel.selectView(CalendarView.Day)
-                                    dateStateHolder.updateSelectedDateState(
-                                        it,
-                                        ViewType.ONE_DAY_VIEW
-                                    )
                                 }
                             )
                         }
@@ -189,7 +170,7 @@ fun CalendarApp(
                                 events = calendarUiState.events,
                                 holidays = calendarUiState.holidays,
                                 onEventClick = { event -> viewModel.selectEvent(event) },
-                                onDateClick = {}
+                                onDateClickCallback = {}
                             )
                         }
                         composable(
@@ -201,13 +182,8 @@ fun CalendarApp(
                                 events = calendarUiState.events,
                                 holidays = calendarUiState.holidays,
                                 onEventClick = { event -> viewModel.selectEvent(event) },
-                                onDateClick = {
+                                onDateClickCallback = {
                                     navController.navigate(CalendarView.Day.toString())
-                                    viewModel.selectView(CalendarView.Day)
-                                    dateStateHolder.updateSelectedDateState(
-                                        it,
-                                        ViewType.ONE_DAY_VIEW
-                                    )
                                 }
                             )
                         }

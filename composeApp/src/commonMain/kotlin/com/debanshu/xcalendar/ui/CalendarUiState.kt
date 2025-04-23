@@ -19,7 +19,6 @@ data class CalendarUiState(
     ).date,
 
     // View state
-    val currentView: CalendarView = CalendarView.Month,
     val showMonthDropdown: TopBarCalendarView = TopBarCalendarView.NoView,
 
     // Data

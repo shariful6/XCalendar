@@ -20,7 +20,7 @@ fun WeekScreen(
     events: List<Event>,
     holidays: List<Holiday>,
     onEventClick: (Event) -> Unit,
-    onDateClick: (LocalDate) -> Unit,
+    onDateClickCallback: () -> Unit,
 ) {
     BaseCalendarScreen(
         modifier = modifier,
@@ -29,7 +29,6 @@ fun WeekScreen(
         holidays = holidays,
         onEventClick = onEventClick,
         numDays = 7,
-        viewType = ViewType.WEEK_VIEW,
-        onDateClick = onDateClick
+        onDateClickCallback = onDateClickCallback
     )
 }

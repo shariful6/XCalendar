@@ -31,7 +31,7 @@ import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 
 @Composable
 fun CalendarDrawer(
-    selectedView: CalendarView,
+    selectedView: String,
     onViewSelect: (CalendarView) -> Unit,
     accounts: List<User>,
     calendars: List<Calendar>,
@@ -51,31 +51,31 @@ fun CalendarDrawer(
         HorizontalDivider()
         CalendarViewOption(
             name = "Schedule",
-            selected = selectedView is CalendarView.Schedule,
+            selected = selectedView == CalendarView.Schedule.toString(),
             onClick = { onViewSelect(CalendarView.Schedule) }
         )
 
         CalendarViewOption(
             name = "Day",
-            selected = selectedView is CalendarView.Day,
+            selected = selectedView == CalendarView.Day.toString(),
             onClick = { onViewSelect(CalendarView.Day) }
         )
 
         CalendarViewOption(
             name = "3 Day",
-            selected = selectedView is CalendarView.ThreeDay,
+            selected = selectedView == CalendarView.ThreeDay.toString(),
             onClick = { onViewSelect(CalendarView.ThreeDay) }
         )
 
         CalendarViewOption(
             name = "Week",
-            selected = selectedView is CalendarView.Week,
+            selected = selectedView == CalendarView.Week.toString(),
             onClick = { onViewSelect(CalendarView.Week) }
         )
 
         CalendarViewOption(
             name = "Month",
-            selected = selectedView is CalendarView.Month,
+            selected = selectedView == CalendarView.Month.toString(),
             onClick = { onViewSelect(CalendarView.Month) }
         )
 

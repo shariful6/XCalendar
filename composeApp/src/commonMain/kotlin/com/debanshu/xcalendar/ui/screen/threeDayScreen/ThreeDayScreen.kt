@@ -19,7 +19,7 @@ fun ThreeDayScreen(
     events: List<Event>,
     holidays: List<Holiday>,
     onEventClick: (Event) -> Unit,
-    onDateClick: (LocalDate) -> Unit,
+    onDateClickCallback: () -> Unit,
 ) {
     BaseCalendarScreen(
         modifier = modifier,
@@ -28,7 +28,6 @@ fun ThreeDayScreen(
         holidays = holidays,
         onEventClick = onEventClick,
         numDays = 3,
-        viewType = ViewType.THREE_DAY_VIEW,
-        onDateClick = onDateClick
+        onDateClickCallback = onDateClickCallback
     )
 }

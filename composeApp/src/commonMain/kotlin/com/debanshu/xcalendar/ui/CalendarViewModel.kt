@@ -165,10 +165,6 @@ class CalendarViewModel(
         _uiState.update { it.copy(holidays = holidays) }
     }
 
-    fun selectView(view: CalendarView) {
-        _uiState.update { it.copy(currentView = view) }
-    }
-
     fun setTopAppBarMonthDropdown(viewType: TopBarCalendarView) {
         _uiState.update { it.copy(showMonthDropdown = viewType) }
     }

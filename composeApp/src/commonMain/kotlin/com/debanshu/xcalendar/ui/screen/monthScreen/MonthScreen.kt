@@ -30,10 +30,7 @@ fun MonthScreen(
         events = events,
         holidays = holidays,
         onSpecificDayClicked = { date ->
-            dateStateHolder.updateSelectedDateState(
-                date, viewType =
-                    ViewType.MONTH_VIEW
-            )
+            dateStateHolder.updateSelectedDateState(date)
             onDateClick(date)
         },
         currentSelectedDay = dateState.selectedDate,
