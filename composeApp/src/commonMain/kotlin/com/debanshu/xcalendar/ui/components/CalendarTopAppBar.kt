@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -95,16 +95,16 @@ fun CalendarTopAppBar(
 
     Column(
         modifier = Modifier.background(
-            color = XCalendarTheme.colorScheme.onPrimary
+            color = XCalendarTheme.colorScheme.surfaceContainerHigh
         ).animateContentSize()
     ) {
         TopAppBar(
             colors = TopAppBarColors(
-                containerColor = XCalendarTheme.colorScheme.onPrimary,
-                scrolledContainerColor = XCalendarTheme.colorScheme.onPrimary,
-                navigationIconContentColor = XCalendarTheme.colorScheme.onPrimaryContainer,
-                titleContentColor = XCalendarTheme.colorScheme.onPrimaryContainer,
-                actionIconContentColor = XCalendarTheme.colorScheme.onPrimaryContainer
+                containerColor = XCalendarTheme.colorScheme.surfaceContainerHigh,
+                scrolledContainerColor = XCalendarTheme.colorScheme.surfaceContainerHigh,
+                navigationIconContentColor = XCalendarTheme.colorScheme.onSurface,
+                titleContentColor = XCalendarTheme.colorScheme.onSurface,
+                actionIconContentColor = XCalendarTheme.colorScheme.onSurface
             ),
             navigationIcon = {
                 IconButton(onClick = onMenuClick) {
@@ -130,7 +130,7 @@ fun CalendarTopAppBar(
                     Text(
                         text = monthTitle,
                         style = XCalendarTheme.typography.bodyLarge,
-                        color = XCalendarTheme.colorScheme.onPrimaryContainer
+                        color = XCalendarTheme.colorScheme.onSurface
                     )
                     Icon(
                         modifier = Modifier.size(20.dp).rotate(rotationDegree),
@@ -151,7 +151,6 @@ fun CalendarTopAppBar(
                     Text(
                         text = dateState.currentDate.dayOfMonth.toString(),
                         style = XCalendarTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
                     )
                 }
                 CoilImage(
@@ -233,10 +232,9 @@ private fun TopAppBarWeekdayHeader() {
         daysOfWeek.forEach { day ->
             Text(
                 text = day,
-                fontWeight = FontWeight.Bold,
+                style = XCalendarTheme.typography.bodySmall,
                 textAlign = TextAlign.Center,
-                fontSize = 12.sp,
-                color = XCalendarTheme.colorScheme.onPrimaryContainer,
+                color = XCalendarTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -252,80 +250,75 @@ private fun TopAppBarDayCell(
 ) {
     val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     val isToday = date == today
-
-    Box(
-        modifier = Modifier
-            .aspectRatio(1f)
-            .padding(2.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(
-                when {
-                    isToday -> XCalendarTheme.colorScheme.secondaryContainer
-                    else -> Color.Transparent
-                }
-            )
-            .clickable { onDayClick(date) }
-            .padding(4.dp)
+    Column(
+        modifier = Modifier.aspectRatio(1f),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column {
-            Text(
-                text = date.dayOfMonth.toString(),
-                fontSize = 12.sp,
-                style = XCalendarTheme.typography.bodyMedium,
-                color = when {
-                    isToday -> XCalendarTheme.colorScheme.onSecondaryContainer
-                    else -> XCalendarTheme.colorScheme.onPrimaryContainer
-                },
-                fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            // Holidays
-            holidays.firstOrNull()?.let { holiday ->
-                Text(
-                    text = holiday.name,
-                    style = XCalendarTheme.typography.bodyMedium,
-                    color = Color(0xFF2196F3),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    fontSize = 10.sp,
-                    modifier = Modifier
-                        .padding(top = 2.dp)
-                        .fillMaxWidth()
-                        .background(Color(0xFF2196F3).copy(alpha = 0.1f), RoundedCornerShape(2.dp))
-                        .padding(2.dp)
+        Text(
+            text = date.dayOfMonth.toString(),
+            style = XCalendarTheme.typography.bodySmall,
+            color = when {
+                isToday -> XCalendarTheme.colorScheme.inverseOnSurface
+                else -> XCalendarTheme.colorScheme.onSurfaceVariant
+            },
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .background(
+                    when {
+                        isToday -> XCalendarTheme.colorScheme.primary
+                        else -> Color.Transparent
+                    },
+                    CircleShape
                 )
+                .padding(4.dp)
+                .clickable { onDayClick(date) },
+        )
+
+        // Holidays
+        holidays.firstOrNull()?.let { holiday ->
+            Text(
+                text = holiday.name,
+                style = XCalendarTheme.typography.bodyMedium,
+                color = Color(0xFF2196F3),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 10.sp,
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .fillMaxWidth()
+                    .background(Color(0xFF2196F3).copy(alpha = 0.1f), RoundedCornerShape(2.dp))
+                    .padding(2.dp)
+            )
+        }
+
+        val maxEventsToDisplay = 3
+        val displayedEvents = events.take(maxEventsToDisplay)
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 2.dp)
+        ) {
+            displayedEvents.forEach { event ->
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .background(
+                            Color((event.color ?: 0xFFE91E63).toInt()),
+                            CircleShape
+                        )
+                        .padding(1.dp)
+                )
+                Spacer(modifier = Modifier.width(2.dp))
             }
 
-            val maxEventsToDisplay = 3
-            val displayedEvents = events.take(maxEventsToDisplay)
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 2.dp)
-            ) {
-                displayedEvents.forEach { event ->
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .background(
-                                Color((event.color ?: 0xFFE91E63) as Int),
-                                CircleShape
-                            )
-                            .padding(1.dp)
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                }
-
-                if (events.size > maxEventsToDisplay) {
-                    Text(
-                        text = "+${events.size - maxEventsToDisplay}",
-                        fontSize = 10.sp,
-                        color = XCalendarTheme.colorScheme.onSurface
-                    )
-                }
+            if (events.size > maxEventsToDisplay) {
+                Text(
+                    text = "+${events.size - maxEventsToDisplay}",
+                    fontSize = 10.sp,
+                    color = XCalendarTheme.colorScheme.onSurface
+                )
             }
         }
     }

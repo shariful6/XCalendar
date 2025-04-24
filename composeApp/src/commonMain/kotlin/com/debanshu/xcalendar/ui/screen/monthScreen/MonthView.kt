@@ -146,6 +146,7 @@ fun WeekdayHeader() {
             Box(
                 modifier = Modifier
                     .weight(1f)
+                    .background(XCalendarTheme.colorScheme.surfaceContainerLow)
                     .customBorder(
                         end = true,
                         bottom = true,
@@ -156,7 +157,7 @@ fun WeekdayHeader() {
                         endLengthFraction = 1f,
                         bottomFraction = 0f,
                         bottomLengthFraction = 1f,
-                        color = XCalendarTheme.colorScheme.surfaceVariant,
+                        color = XCalendarTheme.colorScheme.outlineVariant,
                         width = 1.dp
                     )
                     .padding(vertical = XCalendarTheme.dimensions.spacing_8),
@@ -168,7 +169,7 @@ fun WeekdayHeader() {
                     color = if(dayIndex == ordinalToday)
                         XCalendarTheme.colorScheme.primary
                     else
-                        XCalendarTheme.colorScheme.onSurfaceVariant
+                        XCalendarTheme.colorScheme.onSurface
                 )
             }
         }
@@ -190,77 +191,68 @@ fun DayCell(
     val screenHeight =
         getScreenHeight().plus(30.dp) - getTopSystemBarHeight() - getBottomSystemBarHeight()
 
-
-    Box(
+    Column(
         modifier = modifier
+            .background(XCalendarTheme.colorScheme.surfaceContainerLow)
             .border(
-                width = 0.5.dp,
-                color = XCalendarTheme.colorScheme.surfaceVariant
+                width = 0.2.dp,
+                color = XCalendarTheme.colorScheme.outlineVariant
             )
             .aspectRatio(screenWidth / screenHeight)
             .noRippleClickable { onDayClick(date) }
+            .padding(top = 2.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        Text(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(1.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(2.dp)
-                    .size(28.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .background(
-                        when {
-                            isToday -> XCalendarTheme.colorScheme.primary
-                            else -> Color.Transparent
-                        },
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = date.dayOfMonth.toString(),
-                    style = XCalendarTheme.typography.bodySmall,
-                    color = when {
-                        isToday -> XCalendarTheme.colorScheme.inverseOnSurface
-                        isCurrentMonth -> XCalendarTheme.colorScheme.onSurfaceVariant
-                        else -> XCalendarTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                .background(
+                    when {
+                        isToday -> XCalendarTheme.colorScheme.primary
+                        else -> Color.Transparent
                     },
+                    CircleShape
                 )
-            }
+                .padding(4.dp),
+            text = date.dayOfMonth.toString(),
+            style = XCalendarTheme.typography.labelSmall,
+            color = when {
+                isToday -> XCalendarTheme.colorScheme.inverseOnSurface
+                isCurrentMonth -> XCalendarTheme.colorScheme.onSurface
+                else -> XCalendarTheme.colorScheme.onSurfaceVariant
+            },
+            textAlign = TextAlign.Center
+        )
 
-            val maxEventsToShow = 3
-            val displayedEvents = events.take(maxEventsToShow)
+        val maxEventsToShow = 3
+        val displayedEvents = events.take(maxEventsToShow)
 
-            holidays.firstOrNull()?.let { holiday ->
-                EventTag(
-                    text = holiday.name,
-                    color = Color(0xFF4285F4).copy(alpha = 0.8f),
-                    textColor = Color.White
-                )
-            }
+        holidays.firstOrNull()?.let { holiday ->
+            EventTag(
+                text = holiday.name,
+                color = Color(0xFF4285F4).copy(alpha = 0.8f),
+                textColor = Color.White
+            )
+        }
 
-            displayedEvents.forEach { event ->
-                EventTag(
-                    text = event.title,
-                    color = Color(event.color ?: 0xFFE91E63.toInt()).copy(alpha = 0.8f),
-                    textColor = Color.White
-                )
-            }
+        displayedEvents.forEach { event ->
+            EventTag(
+                text = event.title,
+                color = Color(event.color ?: 0xFFE91E63.toInt()).copy(alpha = 0.8f),
+                textColor = Color.White
+            )
+        }
 
-            if (events.size > maxEventsToShow) {
-                Text(
-                    text = "+${events.size - maxEventsToShow} more",
-                    style = XCalendarTheme.typography.labelSmall,
-                    fontSize = 8.sp,
-                    color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    textAlign = TextAlign.End,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 2.dp, top = 1.dp)
-                )
-            }
+        if (events.size > maxEventsToShow) {
+            Text(
+                text = "+${events.size - maxEventsToShow} more",
+                style = XCalendarTheme.typography.labelSmall,
+                fontSize = 8.sp,
+                color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 2.dp, top = 1.dp)
+            )
         }
     }
 }

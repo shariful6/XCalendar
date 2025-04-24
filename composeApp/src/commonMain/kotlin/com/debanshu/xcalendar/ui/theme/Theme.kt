@@ -8,14 +8,8 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.staticCompositionLocalOf
-
-
-//val LocalDimensions = staticCompositionLocalOf { Dimensions }
-//val LocalCalendarColors = staticCompositionLocalOf { LightColorScheme }
-//val LocalTypography = staticCompositionLocalOf { Typography }
-//val LocalShapes = staticCompositionLocalOf { AppShapes }
-
+import androidx.compose.ui.graphics.Color
+import com.materialkolor.rememberDynamicColorScheme
 
 /**
  * Main theme composable for the XCalendar app
@@ -27,19 +21,15 @@ import androidx.compose.runtime.staticCompositionLocalOf
 fun XCalendarTheme(
     shapes: Shapes = XCalendarTheme.shapes,
     typography: Typography = XCalendarTheme.typography,
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    CompositionLocalProvider(
-//        LocalDimensions provides Dimensions,
-//        LocalCalendarColors provides colorScheme,
-//        LocalTypography provides typography,
-//        LocalShapes provides shapes
-    ) {
+    val colorScheme = rememberDynamicColorScheme(
+        Color(0xFF4285F4),
+        useDarkTheme,
+        isAmoled = true
+    )
+    CompositionLocalProvider() {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = typography,
@@ -54,7 +44,7 @@ object XCalendarTheme {
         @Composable @ReadOnlyComposable get() = Dimensions
 
     val colorScheme: ColorScheme
-        @Composable @ReadOnlyComposable get() = if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
+        @Composable @ReadOnlyComposable get() = MaterialTheme.colorScheme
 
     val typography: Typography
         @Composable @ReadOnlyComposable get() = Typography

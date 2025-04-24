@@ -33,7 +33,6 @@ fun MonthScreen(
             dateStateHolder.updateSelectedDateState(date)
             onDateClick(date)
         },
-        currentSelectedDay = dateState.selectedDate,
         onMonthChange = { yearMonth ->
             dateStateHolder.updateSelectedInViewMonthState(yearMonth)
         }

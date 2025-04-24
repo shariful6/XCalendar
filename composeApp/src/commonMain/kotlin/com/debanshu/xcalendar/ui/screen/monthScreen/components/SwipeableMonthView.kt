@@ -36,7 +36,6 @@ fun SwipeableMonthView(
     events: List<Event>,
     holidays: List<Holiday>,
     onSpecificDayClicked: (LocalDate) -> Unit,
-    currentSelectedDay: LocalDate,
     onMonthChange: (YearMonth) -> Unit
 ) {
     var size by remember { mutableStateOf(IntSize.Zero) }

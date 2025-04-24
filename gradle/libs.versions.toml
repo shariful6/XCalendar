@@ -17,6 +17,7 @@ koin-annotations-bom = "2.0.0"
 kotlinx-datetime = "0.6.2"
 navigation = "2.9.0-alpha16"
 composeIcons = "1.1.1"
+materialKolor = "2.1.1"
 
 [libraries]
 landscapist-coil3 = { module = "com.github.skydoves:landscapist-coil3", version.ref = "coil3" }
@@ -46,6 +47,7 @@ sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.r
 
 navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 icons = { group = "br.com.devsrsouza.compose.icons", name = "font-awesome", version.ref = "composeIcons" }
+materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

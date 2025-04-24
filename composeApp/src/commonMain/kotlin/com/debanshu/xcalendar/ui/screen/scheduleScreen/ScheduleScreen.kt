@@ -1,5 +1,6 @@
 package com.debanshu.xcalendar.ui.screen.scheduleScreen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -19,6 +20,7 @@ import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.DayWithEvents
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.MonthHeader
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.WeekHeader
+import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -117,7 +119,9 @@ fun ScheduleScreen(
 
     LazyColumn(
         state = listState,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(XCalendarTheme.colorScheme.surfaceContainerLow)
     ) {
         itemsIndexed(
             items = scheduleState.items,

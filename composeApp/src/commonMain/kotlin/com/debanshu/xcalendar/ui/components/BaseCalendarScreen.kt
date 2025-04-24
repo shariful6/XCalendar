@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.customBorder
@@ -61,7 +62,7 @@ fun BaseCalendarScreen(
                 modifier = Modifier
                     .height(hourHeightDp.dp)
                     .width(timeColumnWidth)
-                    .background(color = XCalendarTheme.colorScheme.onPrimary)
+                    .background(color = XCalendarTheme.colorScheme.surfaceContainerHigh)
             ) {
                 if (numDays == 1) {
                     Column(
@@ -79,7 +80,11 @@ fun BaseCalendarScreen(
                     ) {
                         Text(
                             text = startDate.dayOfWeek.name.take(3),
-                            style = XCalendarTheme.typography.labelSmall
+                            style = XCalendarTheme.typography.labelSmall,
+                            color = when {
+                                isToday -> XCalendarTheme.colorScheme.onPrimaryContainer
+                                else -> XCalendarTheme.colorScheme.onSurface
+                            }
                         )
                         Box(
                             modifier = Modifier
@@ -88,7 +93,7 @@ fun BaseCalendarScreen(
                                 .background(
                                     when {
                                         isToday -> XCalendarTheme.colorScheme.primary
-                                        else -> XCalendarTheme.colorScheme.onPrimary
+                                        else -> Color.Transparent
                                     },
                                     if (isToday)
                                         CircleShape
@@ -111,6 +116,7 @@ fun BaseCalendarScreen(
             }
             TimeColumn(
                 modifier = Modifier
+                    .background(XCalendarTheme.colorScheme.surfaceContainerLow)
                     .width(timeColumnWidth),
                 timeRange = timeRange,
                 hourHeightDp = hourHeightDp,
