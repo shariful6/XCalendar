@@ -1,6 +1,5 @@
 package com.debanshu.xcalendar.ui.components
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
@@ -275,78 +274,79 @@ private fun DaysHeaderRow(
         modifier = modifier
             .background(XCalendarTheme.colorScheme.onPrimary)
     ) {
+        if(numDays >1) {
+            dates.forEach { date ->
+                val isToday = date == currentDate
+                val holidaysForDate = holidays.filter { holiday ->
+                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
+                }
 
-        dates.forEach { date ->
-            val isToday = date == currentDate
-            val holidaysForDate = holidays.filter { holiday ->
-                holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-            }
-
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .clickable { onDayClick(date) }
-                    .customBorder(
-                        end = true,
-                        bottom = true,
-                        start = true,
-                        startFraction = 0.85f,
-                        startLengthFraction = 1f,
-                        endFraction = 0.85f,
-                        endLengthFraction = 1f,
-                        bottomFraction = 0f,
-                        bottomLengthFraction = 1f,
-                        color = XCalendarTheme.colorScheme.surfaceVariant,
-                        width = 1.dp
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable { onDayClick(date) }
+                        .customBorder(
+                            end = true,
+                            bottom = true,
+                            start = true,
+                            startFraction = 0.85f,
+                            startLengthFraction = 1f,
+                            endFraction = 0.85f,
+                            endLengthFraction = 1f,
+                            bottomFraction = 0f,
+                            bottomLengthFraction = 1f,
+                            color = XCalendarTheme.colorScheme.surfaceVariant,
+                            width = 1.dp
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
-                    val dayNameLength = when {
-                        numDays <= 3 -> 3
-                        else -> 1
-                    }
-
-                    Text(
-                        text = date.dayOfWeek.name.take(dayNameLength),
-                        style = XCalendarTheme.typography.labelSmall
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .padding(vertical = 4.dp)
-                            .size(28.dp)
-                            .background(
-                                when {
-                                    isToday -> XCalendarTheme.colorScheme.primary
-                                    else -> XCalendarTheme.colorScheme.onPrimary
-                                },
-                                if(isToday)
-                                    CircleShape
-                                else
-                                    RectangleShape
-                            ),
-                        contentAlignment = Alignment.Center
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = date.dayOfMonth.toString(),
-                            style = XCalendarTheme.typography.bodyMedium,
-                            color = when {
-                                isToday -> XCalendarTheme.colorScheme.inverseOnSurface
-                                else -> XCalendarTheme.colorScheme.onSurface
-                            },
-                        )
-                    }
+                        val dayNameLength = when {
+                            numDays <= 3 -> 3
+                            else -> 1
+                        }
 
-                    if (holidaysForDate.isNotEmpty()) {
+                        Text(
+                            text = date.dayOfWeek.name.take(dayNameLength),
+                            style = XCalendarTheme.typography.labelSmall
+                        )
+
                         Box(
                             modifier = Modifier
-                                .size(6.dp)
-                                .background(Color(0xFF4CAF50), CircleShape)
-                        )
+                                .padding(vertical = 4.dp)
+                                .size(28.dp)
+                                .background(
+                                    when {
+                                        isToday -> XCalendarTheme.colorScheme.primary
+                                        else -> XCalendarTheme.colorScheme.onPrimary
+                                    },
+                                    if (isToday)
+                                        CircleShape
+                                    else
+                                        RectangleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = date.dayOfMonth.toString(),
+                                style = XCalendarTheme.typography.bodyMedium,
+                                color = when {
+                                    isToday -> XCalendarTheme.colorScheme.inverseOnSurface
+                                    else -> XCalendarTheme.colorScheme.onSurface
+                                },
+                            )
+                        }
+
+                        if (holidaysForDate.isNotEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .background(Color(0xFF4CAF50), CircleShape)
+                            )
+                        }
                     }
                 }
             }

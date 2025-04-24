@@ -21,16 +21,12 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -55,6 +51,11 @@ import com.debanshu.xcalendar.ui.YearMonth
 import com.debanshu.xcalendar.ui.isLeap
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import com.skydoves.landscapist.coil3.CoilImage
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Bars
+import compose.icons.fontawesomeicons.solid.CaretDown
+import compose.icons.fontawesomeicons.solid.Search
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -108,7 +109,8 @@ fun CalendarTopAppBar(
             navigationIcon = {
                 IconButton(onClick = onMenuClick) {
                     Icon(
-                        imageVector = Icons.Default.Menu,
+                        modifier = Modifier.size(20.dp),
+                        imageVector = FontAwesomeIcons.Solid.Bars,
                         contentDescription = "Menu"
                     )
                 }
@@ -131,8 +133,8 @@ fun CalendarTopAppBar(
                         color = XCalendarTheme.colorScheme.onPrimaryContainer
                     )
                     Icon(
-                        modifier = Modifier.rotate(rotationDegree),
-                        imageVector = Icons.Default.ArrowDropDown,
+                        modifier = Modifier.size(20.dp).rotate(rotationDegree),
+                        imageVector = FontAwesomeIcons.Solid.CaretDown,
                         contentDescription = "Toggle Month Dropdown",
                     )
                 }
@@ -140,7 +142,8 @@ fun CalendarTopAppBar(
             actions = {
                 IconButton(onClick = { /* Handle search */ }) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        modifier = Modifier.size(20.dp),
+                        imageVector = FontAwesomeIcons.Solid.Search,
                         contentDescription = "Search"
                     )
                 }

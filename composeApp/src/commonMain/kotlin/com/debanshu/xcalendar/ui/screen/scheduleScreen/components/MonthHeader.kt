@@ -56,6 +56,7 @@ fun MonthHeader(yearMonth: YearMonth) {
             Text(
                 text = "${yearMonth.month.name.toSentenceCase()} ${yearMonth.year}",
                 style = XCalendarTheme.typography.headlineSmall,
+                color = XCalendarTheme.colorScheme.inverseOnSurface
             )
         }
     }

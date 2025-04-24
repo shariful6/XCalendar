@@ -1,24 +1,30 @@
 package com.debanshu.xcalendar.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import com.debanshu.xcalendar.common.customBorder
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.DateStateHolder
-import com.debanshu.xcalendar.domain.states.ViewType
-import com.debanshu.xcalendar.ui.CalendarUiState
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
-import kotlinx.datetime.LocalDate
 
 /**
  * Base calendar screen that provides common structure for day, three-day, and week views.
@@ -46,6 +52,7 @@ fun BaseCalendarScreen(
     val hourHeightDp = 60f
 
     val startDate = dateState.selectedDate
+    val isToday = startDate == dateState.currentDate
     Row(
         modifier = modifier
     ) {
@@ -55,7 +62,53 @@ fun BaseCalendarScreen(
                     .height(hourHeightDp.dp)
                     .width(timeColumnWidth)
                     .background(color = XCalendarTheme.colorScheme.onPrimary)
-            )
+            ) {
+                if (numDays == 1) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .customBorder(
+                                end = true,
+                                endFraction = 0f,
+                                endLengthFraction = 1f,
+                                color = XCalendarTheme.colorScheme.surfaceVariant,
+                                width = 1.dp
+                            ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = startDate.dayOfWeek.name.take(3),
+                            style = XCalendarTheme.typography.labelSmall
+                        )
+                        Box(
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                                .size(28.dp)
+                                .background(
+                                    when {
+                                        isToday -> XCalendarTheme.colorScheme.primary
+                                        else -> XCalendarTheme.colorScheme.onPrimary
+                                    },
+                                    if (isToday)
+                                        CircleShape
+                                    else
+                                        RectangleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = startDate.dayOfMonth.toString(),
+                                style = XCalendarTheme.typography.bodyMedium,
+                                color = when {
+                                    isToday -> XCalendarTheme.colorScheme.inverseOnSurface
+                                    else -> XCalendarTheme.colorScheme.onSurface
+                                },
+                            )
+                        }
+                    }
+                }
+            }
             TimeColumn(
                 modifier = Modifier
                     .width(timeColumnWidth),
@@ -75,7 +128,6 @@ fun BaseCalendarScreen(
             onEventClick = onEventClick,
             onDateRangeChange = { newStartDate ->
                 dateStateHolder.updateSelectedDateState(newStartDate)
-//                dateStateHolder.updateViewStartDate(newStartDate)
             },
             numDays = numDays,
             timeRange = timeRange,

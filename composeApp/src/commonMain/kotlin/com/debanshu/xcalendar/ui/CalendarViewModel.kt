@@ -56,7 +56,8 @@ class CalendarViewModel(
                 val dummyUser = User(
                     id = "dwdwdw",//UUID.randomUUID().toString(),
                     name = "Demo User",
-                    email = "user@example.com"
+                    email = "user@example.com",
+                    photoUrl = "https://t4.ftcdn.net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA.jpg"
                 )
                 userRepository.addUser(dummyUser)
 
