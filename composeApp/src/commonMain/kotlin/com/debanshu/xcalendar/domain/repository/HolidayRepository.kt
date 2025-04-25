@@ -14,7 +14,6 @@ import org.koin.core.annotation.Singleton
 @Singleton
 class HolidayRepository(private val holidayDao: HolidayDao) {
     fun getHolidaysForYear(countryCode: String, year: Int): Flow<List<Holiday>> {
-        // Create start date - January 1st of the year at midnight
         val startDateTime = LocalDateTime(
             year = year,
             month = Month.JANUARY,
@@ -24,8 +23,6 @@ class HolidayRepository(private val holidayDao: HolidayDao) {
             second = 0,
             nanosecond = 0
         )
-
-        // Create end date - December 31st of the year at 23:59:59
         val endDateTime = LocalDateTime(
             year = year,
             month = Month.DECEMBER,
@@ -35,17 +32,12 @@ class HolidayRepository(private val holidayDao: HolidayDao) {
             second = 59,
             nanosecond = 999_999_999
         )
-
-        // Convert to Instant (point in time) with the system's time zone
         val timeZone = TimeZone.currentSystemDefault()
         val startInstant = startDateTime.toInstant(timeZone)
         val endInstant = endDateTime.toInstant(timeZone)
-
-        // Convert to epoch milliseconds for database query
         val startDate = startInstant.toEpochMilliseconds()
         val endDate = endInstant.toEpochMilliseconds()
 
-        // Query the database for holidays in this range
         return holidayDao.getHolidaysInRange(startDate, endDate).map { entities ->
             entities
                 .filter { it.countryCode == countryCode }

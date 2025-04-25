@@ -19,6 +19,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -74,7 +75,10 @@ fun CalendarApp(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                drawerShape = RectangleShape,
+                drawerContainerColor = XCalendarTheme.colorScheme.surfaceContainerHigh
+            ) {
                 currentRoute?.destination?.route?.let {
                     CalendarDrawer(
                         selectedView = it,

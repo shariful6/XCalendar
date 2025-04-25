@@ -211,7 +211,7 @@ fun CalendarViewOption(
     ) {
         Icon(
             modifier = Modifier
-                .size(24.dp),
+                .size(20.dp),
             imageVector = icon,
             tint = if (selected) XCalendarTheme.colorScheme.primary
             else XCalendarTheme.colorScheme.onSurfaceVariant,

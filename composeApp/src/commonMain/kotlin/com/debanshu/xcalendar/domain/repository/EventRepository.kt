@@ -23,7 +23,6 @@ class EventRepository(private val eventDao: EventDao) {
         val eventEntity = event.toEntity()
         eventDao.upsertEvent(eventEntity)
 
-        // Update reminders
         eventDao.deleteEventReminders(event.id)
         val reminderEntities = event.reminderMinutes.map { minutes ->
             EventReminderEntity(event.id, minutes)
@@ -38,7 +37,6 @@ class EventRepository(private val eventDao: EventDao) {
     }
 
     private fun EventEntity.toEvent(): Event {
-        // Note: In a real implementation, you would fetch reminders for this event
         return Event(
             id = id,
             calendarId = calendarId,
@@ -50,7 +48,7 @@ class EventRepository(private val eventDao: EventDao) {
             isAllDay = isAllDay,
             isRecurring = isRecurring,
             recurringRule = recurringRule,
-            reminderMinutes = emptyList(), // Would be populated from DB
+            reminderMinutes = emptyList(),
             color = color
         )
     }

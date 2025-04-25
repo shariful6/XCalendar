@@ -188,7 +188,7 @@ class DummyCalendarApiService : CalendarApiService {
         val endInstant = Instant.fromEpochMilliseconds(endTime)
         val timeZone = TimeZone.currentSystemDefault()
 
-        var currentDate = startInstant.toLocalDateTime(timeZone).date
+        val currentDate = startInstant.toLocalDateTime(timeZone).date
         val endDate = endInstant.toLocalDateTime(timeZone).date
 
         // Keep existing work calendar events for compatibility
