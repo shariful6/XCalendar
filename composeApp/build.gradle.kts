@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+import java.util.*
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -9,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -132,5 +134,26 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+}
+
+
+buildkonfig {
+    packageName = "com.debanshu.xcalendar"
+
+    val localProperties =
+        Properties().apply {
+            val propsFile = rootProject.file("local.properties")
+            if (propsFile.exists()) {
+                load(propsFile.inputStream())
+            }
+        }
+
+    defaultConfigs {
+        buildConfigField(
+            FieldSpec.Type.STRING,
+            "API_KEY",
+            localProperties["API_KEY"]?.toString() ?: "",
+        )
     }
 }

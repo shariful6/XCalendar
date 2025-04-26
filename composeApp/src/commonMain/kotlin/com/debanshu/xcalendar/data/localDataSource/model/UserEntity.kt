@@ -1,4 +1,4 @@
-package com.debanshu.xcalendar.data.model
+package com.debanshu.xcalendar.data.localDataSource.model
 
 import androidx.room.Entity
 import androidx.room.Index

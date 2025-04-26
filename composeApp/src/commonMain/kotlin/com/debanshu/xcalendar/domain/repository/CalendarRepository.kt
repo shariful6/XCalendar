@@ -1,7 +1,7 @@
 package com.debanshu.xcalendar.domain.repository
 
 import com.debanshu.xcalendar.data.localDataSource.CalendarDao
-import com.debanshu.xcalendar.data.model.CalendarEntity
+import com.debanshu.xcalendar.data.localDataSource.model.CalendarEntity
 import com.debanshu.xcalendar.domain.model.Calendar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

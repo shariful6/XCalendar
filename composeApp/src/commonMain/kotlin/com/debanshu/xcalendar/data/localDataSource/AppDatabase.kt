@@ -4,11 +4,11 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
-import com.debanshu.xcalendar.data.model.CalendarEntity
-import com.debanshu.xcalendar.data.model.EventEntity
-import com.debanshu.xcalendar.data.model.EventReminderEntity
-import com.debanshu.xcalendar.data.model.HolidayEntity
-import com.debanshu.xcalendar.data.model.UserEntity
+import com.debanshu.xcalendar.data.localDataSource.model.CalendarEntity
+import com.debanshu.xcalendar.data.localDataSource.model.EventEntity
+import com.debanshu.xcalendar.data.localDataSource.model.EventReminderEntity
+import com.debanshu.xcalendar.data.localDataSource.model.HolidayEntity
+import com.debanshu.xcalendar.data.localDataSource.model.UserEntity
 
 @Database(
     entities = [

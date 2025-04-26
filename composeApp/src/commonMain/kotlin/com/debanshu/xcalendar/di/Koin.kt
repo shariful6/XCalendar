@@ -30,7 +30,12 @@ expect fun getDatabase(): AppDatabase
 class DataModule {
 
     @Single
-    fun json() = Json { ignoreUnknownKeys = true }
+    fun json() = Json {
+        prettyPrint = true
+        isLenient = true
+        encodeDefaults = true
+        ignoreUnknownKeys = true
+    }
 
     @Single
     fun httpClient(json: Json) = HttpClient {

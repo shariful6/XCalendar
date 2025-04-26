@@ -1,8 +1,8 @@
 package com.debanshu.xcalendar.domain.repository
 
 import com.debanshu.xcalendar.data.localDataSource.EventDao
-import com.debanshu.xcalendar.data.model.EventEntity
-import com.debanshu.xcalendar.data.model.EventReminderEntity
+import com.debanshu.xcalendar.data.localDataSource.model.EventEntity
+import com.debanshu.xcalendar.data.localDataSource.model.EventReminderEntity
 import com.debanshu.xcalendar.domain.model.Event
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

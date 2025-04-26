@@ -8,8 +8,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
-import com.debanshu.xcalendar.data.model.EventEntity
-import com.debanshu.xcalendar.data.model.EventReminderEntity
+import com.debanshu.xcalendar.data.localDataSource.model.EventEntity
+import com.debanshu.xcalendar.data.localDataSource.model.EventReminderEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

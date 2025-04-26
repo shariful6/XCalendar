@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.debanshu.xcalendar.data.model.HolidayEntity
+import com.debanshu.xcalendar.data.localDataSource.model.HolidayEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

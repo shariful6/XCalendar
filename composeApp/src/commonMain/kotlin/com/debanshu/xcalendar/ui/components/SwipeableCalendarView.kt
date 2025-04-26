@@ -77,7 +77,7 @@ import kotlin.math.roundToInt
 fun SwipeableCalendarView(
     startDate: LocalDate,
     events: List<Event>,
-    holidays: List<Holiday> = emptyList(),
+    holidays: List<Holiday>,
     onDayClick: (LocalDate) -> Unit,
     onEventClick: (Event) -> Unit,
     onDateRangeChange: (LocalDate) -> Unit,

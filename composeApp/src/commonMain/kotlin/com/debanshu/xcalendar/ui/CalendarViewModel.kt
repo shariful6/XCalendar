@@ -4,8 +4,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.debanshu.xcalendar.data.remoteDataSource.CalendarApiService
+import com.debanshu.xcalendar.data.remoteDataSource.HolidayApiService
+import com.debanshu.xcalendar.data.remoteDataSource.Result
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
+import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.model.User
 import com.debanshu.xcalendar.domain.repository.CalendarRepository
 import com.debanshu.xcalendar.domain.repository.EventRepository
@@ -19,10 +22,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.koin.android.annotation.KoinViewModel
 import kotlin.random.Random
@@ -33,17 +40,21 @@ class CalendarViewModel(
     private val calendarRepository: CalendarRepository,
     private val eventRepository: EventRepository,
     private val holidayRepository: HolidayRepository,
-    private val apiService: CalendarApiService
+    private val apiService: CalendarApiService,
+    private val holidayApiService: HolidayApiService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
+    private val now = Clock.System.now()
+    private val currentDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     private val visibleCalendarIds = mutableStateOf<Set<String>>(emptySet())
 
     init {
         viewModelScope.launch {
-            loadUsers()
+            launch { loadUsers() }
+            launch { loadHolidays("IN", currentDate.year) }
         }
     }
 
@@ -97,8 +108,6 @@ class CalendarViewModel(
     }
 
     private suspend fun loadEventsForCalendars(calendarIds: List<String>) {
-        val now = Clock.System.now()
-        val currentDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
         val startDate = currentDate.minus(DatePeriod(months = 10))
         val endDate = currentDate.plus(DatePeriod(months = 10))
 
@@ -132,16 +141,71 @@ class CalendarViewModel(
                 }
             }
         }
-
-        // Load holidays
-        loadHolidays("IN", currentDate.year)
     }
 
     private suspend fun loadHolidays(countryCode: String, year: Int) {
         val holidays = holidayRepository.getHolidaysForYear(countryCode, year)
         holidays.collectLatest { days ->
-            if(days.isEmpty()) {
+            if (days.isEmpty()) {
+                when (val response = holidayApiService.getHolidays(countryCode, year)) {
+                    is Result.Error -> {
+                        println("HEREEEEEEE" + response.error.toString())
+                    }
+
+                    is Result.Success -> {
+                        val holidays = response.data.response
+                            .holidays.map {
+                                Holiday(
+                                    id = it.urlid, name = it.name, date =
+                                        parseDateTime(it.date.iso), countryCode
+                                )
+                            }
+                        holidayRepository.addHolidays(holidays)
+                        _uiState.update { it.copy(holidays = holidays) }
+                    }
+                }
+            } else {
                 _uiState.update { it.copy(holidays = days) }
+            }
+        }
+    }
+
+
+    /**
+     * Converts a date/time string to Unix timestamp (milliseconds).
+     * Supports ISO 8601 format with timezone (e.g., "2025-03-20T14:31:21+05:30")
+     * and simple date format (e.g., "2025-01-01").
+     *
+     * @param dateTimeString The date/time string to convert
+     * @return Unix timestamp in milliseconds
+     */
+    private fun parseDateTime(dateTimeString: String): Long {
+        return when {
+            // ISO 8601 format with timezone
+            dateTimeString.contains("T") -> {
+                try {
+                    // Parse directly as Instant
+                    Instant.parse(dateTimeString).toEpochMilliseconds()
+                } catch (e: Exception) {
+                    // Fallback if direct parsing fails
+                    val localDateTime = if (dateTimeString.contains("+") || dateTimeString.contains("Z")) {
+                        // Extract timezone info
+                        val parts = dateTimeString.split("+", "Z").first()
+                        LocalDateTime.parse(parts)
+                    } else {
+                        LocalDateTime.parse(dateTimeString)
+                    }
+
+                    // Default to UTC if timezone info can't be parsed
+                    localDateTime.toInstant(TimeZone.UTC).toEpochMilliseconds()
+                }
+            }
+
+            // Simple date format
+            else -> {
+                LocalDate.parse(dateTimeString)
+                    .atStartOfDayIn(TimeZone.UTC)
+                    .toEpochMilliseconds()
             }
         }
     }
