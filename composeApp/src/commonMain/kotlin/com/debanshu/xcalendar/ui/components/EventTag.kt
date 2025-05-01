@@ -1,4 +1,4 @@
-package com.debanshu.xcalendar.ui.screen.monthScreen.components
+package com.debanshu.xcalendar.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +16,7 @@ import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 
 @Composable
 fun EventTag(
+    modifier: Modifier = Modifier,
     text: String,
     color: Color,
 ) {
@@ -25,7 +26,7 @@ fun EventTag(
         textAlign = TextAlign.Start,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
             .background(color, RoundedCornerShape(2.dp))
             .padding(2.dp)
     )

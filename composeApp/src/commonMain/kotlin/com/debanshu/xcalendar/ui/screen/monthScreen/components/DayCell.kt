@@ -25,6 +25,7 @@ import com.debanshu.xcalendar.common.getTopSystemBarHeight
 import com.debanshu.xcalendar.common.noRippleClickable
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
+import com.debanshu.xcalendar.ui.components.EventTag
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
