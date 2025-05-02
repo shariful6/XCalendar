@@ -19,12 +19,14 @@ fun EventTag(
     modifier: Modifier = Modifier,
     text: String,
     color: Color,
+    textColor: Color,
 ) {
     Text(
         text = text,
         style = XCalendarTheme.typography.labelSmall.copy(fontSize = 8.sp),
         textAlign = TextAlign.Start,
         maxLines = 1,
+        color = textColor,
         overflow = TextOverflow.Ellipsis,
         modifier = modifier.fillMaxWidth()
             .background(color, RoundedCornerShape(2.dp))

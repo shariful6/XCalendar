@@ -1,5 +1,8 @@
 package com.debanshu.xcalendar.ui.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,10 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.customBorder
 import com.debanshu.xcalendar.domain.model.Event
@@ -50,19 +56,29 @@ fun BaseCalendarScreen(
     val verticalScrollState = rememberScrollState()
     val timeColumnWidth = 60.dp
     val timeRange = 0..23
-    val hourHeightDp = 60f
 
     val startDate = dateState.selectedDate
     val isToday = startDate == dateState.currentDate
+    val dynamicHeightOfHeaderComposableWithHolidays = remember { mutableStateOf(0) }
+    val heightDp = with(LocalDensity.current) {
+        dynamicHeightOfHeaderComposableWithHolidays.value.coerceAtLeast(160).toDp()
+    }
+
     Row(
         modifier = modifier
     ) {
         Column {
             Box(
                 modifier = Modifier
-                    .height(hourHeightDp.dp)
+                    .height(heightDp)
                     .width(timeColumnWidth)
                     .background(color = XCalendarTheme.colorScheme.surfaceContainerHigh)
+                    .animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    )
             ) {
                 if (numDays == 1) {
                     Column(
@@ -119,7 +135,6 @@ fun BaseCalendarScreen(
                     .background(XCalendarTheme.colorScheme.surfaceContainerLow)
                     .width(timeColumnWidth),
                 timeRange = timeRange,
-                hourHeightDp = hourHeightDp,
                 scrollState = verticalScrollState
             )
         }
@@ -137,9 +152,9 @@ fun BaseCalendarScreen(
             },
             numDays = numDays,
             timeRange = timeRange,
-            hourHeightDp = hourHeightDp,
             scrollState = verticalScrollState,
-            currentDate = dateState.currentDate
+            currentDate = dateState.currentDate,
+            dynamicHeaderHeightState = dynamicHeightOfHeaderComposableWithHolidays
         )
     }
 }

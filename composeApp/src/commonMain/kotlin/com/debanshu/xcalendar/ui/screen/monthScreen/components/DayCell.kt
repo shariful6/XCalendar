@@ -86,10 +86,12 @@ fun DayCell(
 
         item {
             Spacer(modifier = Modifier.height(2.dp))
-            holidays.firstOrNull()?.let { holiday ->
+            holidays.forEach { holiday ->
                 EventTag(
+                    modifier = Modifier.padding(bottom = 2.dp),
                     text = holiday.name,
-                    color = Color(0xFF7eff73),
+                    color = Color(0xFF007F73),
+                    textColor = XCalendarTheme.colorScheme.inverseOnSurface
                 )
             }
         }
@@ -99,6 +101,7 @@ fun DayCell(
             EventTag(
                 text = event.title,
                 color = Color(event.color ?: 0xFFE91E63.toInt()),
+                textColor = XCalendarTheme.colorScheme.inverseOnSurface
             )
         }
 

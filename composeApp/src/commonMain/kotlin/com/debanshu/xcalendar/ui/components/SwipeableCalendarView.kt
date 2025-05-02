@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,12 +30,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,9 +50,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -81,7 +89,7 @@ import kotlin.math.roundToInt
  * @param hourHeightDp The height of each hour cell
  * @param scrollState The scroll state to synchronize scrolling
  * @param currentDate The current date (today)
- * @param headerHeight The height of the header row
+ * @param dynamicHeaderHeightState The height of the header row
  */
 @Composable
 fun SwipeableCalendarView(
@@ -96,7 +104,7 @@ fun SwipeableCalendarView(
     hourHeightDp: Float = 60f,
     scrollState: ScrollState,
     currentDate: LocalDate,
-    headerHeight: Int = 60
+    dynamicHeaderHeightState: MutableState<Int>
 ) {
     require(numDays in 1..31) { "numDays must be between 1 and 31" }
 
@@ -176,10 +184,12 @@ fun SwipeableCalendarView(
             onEventClick = onEventClick,
             currentDate = currentDate,
             scrollState = scrollState,
-            headerHeight = headerHeight,
             modifier = Modifier
                 .fillMaxSize()
-                .offset { IntOffset(effectiveOffset.roundToInt(), 0) }
+                .offset {
+                    IntOffset(effectiveOffset.roundToInt(), 0)
+                },
+            dynamicHeaderHeightState = dynamicHeaderHeightState
         )
 
         CalendarContent(
@@ -193,7 +203,6 @@ fun SwipeableCalendarView(
             onEventClick = onEventClick,
             currentDate = currentDate,
             scrollState = scrollState,
-            headerHeight = headerHeight,
             modifier = Modifier
                 .fillMaxSize()
                 .offset {
@@ -201,7 +210,8 @@ fun SwipeableCalendarView(
                         -screenWidth.roundToInt() + effectiveOffset.roundToInt(),
                         0
                     )
-                }
+                },
+            dynamicHeaderHeightState = null
         )
 
         CalendarContent(
@@ -215,7 +225,6 @@ fun SwipeableCalendarView(
             onEventClick = onEventClick,
             currentDate = currentDate,
             scrollState = scrollState,
-            headerHeight = headerHeight,
             modifier = Modifier
                 .fillMaxSize()
                 .offset {
@@ -223,7 +232,8 @@ fun SwipeableCalendarView(
                         screenWidth.roundToInt() + effectiveOffset.roundToInt(),
                         0
                     )
-                }
+                },
+            dynamicHeaderHeightState = null
         )
     }
 }
@@ -240,8 +250,8 @@ private fun CalendarContent(
     onEventClick: (Event) -> Unit,
     currentDate: LocalDate,
     scrollState: ScrollState,
-    headerHeight: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    dynamicHeaderHeightState: MutableState<Int>?
 ) {
     Column(modifier) {
         DaysHeaderRow(
@@ -250,7 +260,8 @@ private fun CalendarContent(
             currentDate = currentDate,
             holidays = holidays,
             onDayClick = onDayClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            dynamicHeaderHeightState = dynamicHeaderHeightState
         )
 
         CalendarEventsGrid(
@@ -274,50 +285,39 @@ private fun DaysHeaderRow(
     holidays: List<Holiday>,
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
+    dynamicHeaderHeightState: MutableState<Int>?
 ) {
     val dates = List(numDays) { index ->
         startDate.plus(DatePeriod(days = index))
     }
-
-    val anyHasHoliday = dates.any { date ->
-        holidays.any { holiday ->
-            holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-        }
+    val dayNameLength = when {
+        numDays <= 3 -> 3
+        else -> 1
     }
-    val baseHeaderHeight = 60.dp
-    val expandedHeaderHeight = 84.dp
-
-    val headerHeight by animateDpAsState(
-        targetValue = if (anyHasHoliday) expandedHeaderHeight else baseHeaderHeight,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
-        label = "headerHeightAnimation"
-    )
 
     Row(
         modifier = modifier
             .background(XCalendarTheme.colorScheme.surfaceContainerHigh)
-            .requiredHeight(headerHeight)
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .height(IntrinsicSize.Min)
+            .heightIn(min = 60.dp)
+            .onGloballyPositioned {
+                if (dynamicHeaderHeightState != null) {
+                    dynamicHeaderHeightState.value = it.size.height
+                }
+            }
     ) {
         if (numDays > 1) {
             dates.forEach { date ->
                 val isToday = date == currentDate
-                val holiday = holidays.firstOrNull {
+                val currentDayHolidays = holidays.filter {
                     it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 }
 
-                Box(
+                Column(
                     modifier = Modifier
-                        .weight(1f)
                         .fillMaxHeight()
+                        .weight(1f)
+                        .padding(top = 8.dp)
                         .customBorder(
                             end = true,
                             bottom = true,
@@ -331,66 +331,78 @@ private fun DaysHeaderRow(
                             color = XCalendarTheme.colorScheme.surfaceVariant,
                             width = 1.dp
                         )
-                        .clickable { onDayClick(date) }
+                        .clickable { onDayClick(date) },
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
+                    Text(
+                        text = date.dayOfWeek.name.take(dayNameLength),
+                        style = XCalendarTheme.typography.labelSmall
+                    )
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .size(28.dp)
+                            .background(
+                                when {
+                                    isToday -> XCalendarTheme.colorScheme.primary
+                                    else -> Color.Transparent
+                                },
+                                if (isToday) CircleShape else RectangleShape
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
-                        // Day header (always shown)
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(top = 8.dp)
-                        ) {
-                            val dayNameLength = when {
-                                numDays <= 3 -> 3
-                                else -> 1
+                        Text(
+                            text = date.dayOfMonth.toString(),
+                            style = XCalendarTheme.typography.bodyMedium,
+                            color = when {
+                                isToday -> XCalendarTheme.colorScheme.inverseOnSurface
+                                else -> XCalendarTheme.colorScheme.onSurface
                             }
-
-                            Text(
-                                text = date.dayOfWeek.name.take(dayNameLength),
-                                style = XCalendarTheme.typography.labelSmall
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .padding(vertical = 4.dp)
-                                    .size(28.dp)
-                                    .background(
-                                        when {
-                                            isToday -> XCalendarTheme.colorScheme.primary
-                                            else -> Color.Transparent
-                                        },
-                                        if (isToday) CircleShape else RectangleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = date.dayOfMonth.toString(),
-                                    style = XCalendarTheme.typography.bodyMedium,
-                                    color = when {
-                                        isToday -> XCalendarTheme.colorScheme.inverseOnSurface
-                                        else -> XCalendarTheme.colorScheme.onSurface
-                                    }
+                        )
+                    }
+                    // Holiday tag (only shown if exists)
+                    if (currentDayHolidays.isNotEmpty()) {
+                        Column {
+                            currentDayHolidays.forEach { holiday ->
+                                EventTag(
+                                    modifier = Modifier
+                                        .padding(start = 4.dp, end = 4.dp, bottom = 6.dp)
+                                        .fillMaxWidth(),
+                                    text = holiday.name,
+                                    color = Color(0xFF007F73),
+                                    textColor = XCalendarTheme.colorScheme.inverseOnSurface
                                 )
                             }
                         }
-
-                        // Holiday tag (only shown if exists)
-                        if (holiday!= null) {
-                            EventTag(
-                                modifier = Modifier
-                                    .padding(start = 4.dp, end = 4.dp, bottom = 6.dp)
-                                    .fillMaxWidth(),
-                                text = holiday.name,
-                                color = Color(0xFF7eff73)
-                            )
-                        } else {
-                            // Empty space to maintain alignment when other days have holidays
-                            Spacer(modifier = Modifier.height(if (anyHasHoliday) 24.dp else 0.dp))
-                        }
                     }
+                }
+            }
+        } else {
+            val currentDayHolidays = holidays.filter {
+                it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == dates.first()
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+            ) {
+                if (currentDayHolidays.isNotEmpty()) {
+                    currentDayHolidays.forEach { holiday ->
+                        Text(
+                            text = holiday.name,
+                            style = XCalendarTheme.typography.labelMedium,
+                            textAlign = TextAlign.Start,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = XCalendarTheme.colorScheme.inverseOnSurface,
+                            modifier = modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                                .background(Color(0xFF007F73), RoundedCornerShape(2.dp))
+                                .padding(8.dp)
+                        )
+                    }
+
                 }
             }
         }
@@ -477,7 +489,8 @@ private fun CalendarEventsGrid(
                         (24 - hour) * 60 - minute
                     }
 
-                    val topOffset = (hour - timeRange.first) * hourHeightDp + (minute / 60f) * hourHeightDp
+                    val topOffset =
+                        (hour - timeRange.first) * hourHeightDp + (minute / 60f) * hourHeightDp
                     val eventHeight = (durationMinutes / 60f) * hourHeightDp
 
                     EventItem(
