@@ -75,8 +75,8 @@ fun BaseCalendarScreen(
                     .background(color = XCalendarTheme.colorScheme.surfaceContainerHigh)
                     .animateContentSize(
                         animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
+                            dampingRatio = Spring.DampingRatioHighBouncy,
+                            stiffness = Spring.StiffnessVeryLow
                         )
                     )
             ) {

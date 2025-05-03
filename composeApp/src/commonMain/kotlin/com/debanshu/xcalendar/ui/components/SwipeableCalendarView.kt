@@ -363,7 +363,7 @@ private fun DaysHeaderRow(
                     // Holiday tag (only shown if exists)
                     if (currentDayHolidays.isNotEmpty()) {
                         Column {
-                            currentDayHolidays.forEach { holiday ->
+                            currentDayHolidays.take(2).forEach { holiday ->
                                 EventTag(
                                     modifier = Modifier
                                         .padding(start = 4.dp, end = 4.dp, bottom = 6.dp)
@@ -371,6 +371,22 @@ private fun DaysHeaderRow(
                                     text = holiday.name,
                                     color = Color(0xFF007F73),
                                     textColor = XCalendarTheme.colorScheme.inverseOnSurface
+                                )
+                            }
+
+                            // If there are more than 2 holidays, show "+n" indicator
+                            if (currentDayHolidays.size > 2) {
+                                val extraCount = currentDayHolidays.size - 2
+                                Text(
+                                    text = "+$extraCount more",
+                                    style = XCalendarTheme.typography.labelMedium,
+                                    textAlign = TextAlign.Start,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = XCalendarTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .padding(start = 4.dp, end = 4.dp, bottom = 6.dp)
+                                        .fillMaxWidth()
                                 )
                             }
                         }
@@ -381,13 +397,19 @@ private fun DaysHeaderRow(
             val currentDayHolidays = holidays.filter {
                 it.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == dates.first()
             }
+            var holidaysExpanded by remember { mutableStateOf(false) }
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1f)
             ) {
                 if (currentDayHolidays.isNotEmpty()) {
-                    currentDayHolidays.forEach { holiday ->
+                    val displayHolidays = if (holidaysExpanded) {
+                        currentDayHolidays
+                    } else {
+                        currentDayHolidays.take(2)
+                    }
+                    displayHolidays.forEach { holiday ->
                         Text(
                             text = holiday.name,
                             style = XCalendarTheme.typography.labelMedium,
@@ -395,7 +417,7 @@ private fun DaysHeaderRow(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             color = XCalendarTheme.colorScheme.inverseOnSurface,
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(8.dp)
                                 .fillMaxWidth()
                                 .background(Color(0xFF007F73), RoundedCornerShape(2.dp))
@@ -403,6 +425,34 @@ private fun DaysHeaderRow(
                         )
                     }
 
+                    if (currentDayHolidays.size > 2 && !holidaysExpanded) {
+                        val extraCount = currentDayHolidays.size - 2
+                        Text(
+                            text = "+$extraCount more",
+                            style = XCalendarTheme.typography.labelMedium,
+                            textAlign = TextAlign.Start,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = XCalendarTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp,vertical = 4.dp)
+                                .fillMaxWidth()
+                                .clickable { holidaysExpanded = true }
+                        )
+                    } else if (holidaysExpanded && currentDayHolidays.size > 2) {
+                        Text(
+                            text = "Show less",
+                            style = XCalendarTheme.typography.labelMedium,
+                            textAlign = TextAlign.Start,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = XCalendarTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .fillMaxWidth()
+                                .clickable { holidaysExpanded = false }
+                        )
+                    }
                 }
             }
         }
