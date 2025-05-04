@@ -6,12 +6,12 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.debanshu.xcalendar.common.isLeap
 import com.debanshu.xcalendar.common.lengthOfMonth
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.ui.YearMonth
-import com.debanshu.xcalendar.ui.isLeap
+import com.debanshu.xcalendar.common.model.YearMonth
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone

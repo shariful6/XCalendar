@@ -12,13 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.debanshu.xcalendar.common.formatTimeRange
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -89,19 +89,4 @@ fun DayWithEvents(
             }
         }
     }
-}
-
-private fun formatTimeRange(start: LocalDateTime, end: LocalDateTime): String {
-    fun formatTime(time: LocalDateTime): String {
-        val hour = when {
-            time.hour == 0 -> 12
-            time.hour > 12 -> time.hour - 12
-            else -> time.hour
-        }
-        val minute = time.minute.toString().padStart(2, '0')
-        val amPm = if (time.hour >= 12) "am" else "pm"
-        return "$hour:$minute $amPm"
-    }
-
-    return "${formatTime(start)} – ${formatTime(end)}"
 }

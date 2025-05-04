@@ -30,7 +30,6 @@ import com.debanshu.xcalendar.domain.model.User
 import com.debanshu.xcalendar.ui.CalendarView
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import com.skydoves.landscapist.coil3.CoilImage
-import compose.icons.AllIcons
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid

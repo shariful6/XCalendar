@@ -4,11 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.domain.states.DateStateHolder
-import com.debanshu.xcalendar.domain.states.ViewType
-import com.debanshu.xcalendar.ui.CalendarUiState
+import com.debanshu.xcalendar.domain.states.dateState.DateStateHolder
 import com.debanshu.xcalendar.ui.components.BaseCalendarScreen
-import kotlinx.datetime.LocalDate
 
 /**
  * Week view screen that displays a 7-day calendar view.

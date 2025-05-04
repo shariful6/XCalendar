@@ -1,6 +1,6 @@
-package com.debanshu.xcalendar.domain.states
+package com.debanshu.xcalendar.domain.states.dateState
 
-import com.debanshu.xcalendar.ui.YearMonth
+import com.debanshu.xcalendar.common.model.YearMonth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
@@ -9,27 +9,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.annotation.Single
 
-data class DateState(
-    val currentDate: LocalDate,
-    val selectedDate: LocalDate,
-    val selectedInViewMonth: YearMonth,
-)
-
-enum class ViewType {
-    MONTH_VIEW,
-    WEEK_VIEW,
-    THREE_DAY_VIEW,
-    ONE_DAY_VIEW
-}
-
-interface DateStateHolder {
-    val currentDateState: StateFlow<DateState>
-    fun updateSelectedInViewMonthState(selectedInViewMonth: YearMonth)
-    fun updateSelectedDateState(selectedDate: LocalDate)
-}
-
 @Single
-class DateStateHolderImpl : DateStateHolder {
+class DateStateHolder {
     val date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     private val _currentDateState = MutableStateFlow(
         DateState(
@@ -38,8 +19,8 @@ class DateStateHolderImpl : DateStateHolder {
             YearMonth(date.year, date.monthNumber),
         )
     )
-    override val currentDateState: StateFlow<DateState> = _currentDateState
-    override fun updateSelectedInViewMonthState(selectedInViewMonth: YearMonth) {
+    val currentDateState: StateFlow<DateState> = _currentDateState
+    fun updateSelectedInViewMonthState(selectedInViewMonth: YearMonth) {
         _currentDateState.tryEmit(
             _currentDateState.value.copy(
                 selectedInViewMonth = selectedInViewMonth
@@ -47,7 +28,7 @@ class DateStateHolderImpl : DateStateHolder {
         )
     }
 
-    override fun updateSelectedDateState(selectedDate: LocalDate) {
+     fun updateSelectedDateState(selectedDate: LocalDate) {
         _currentDateState.tryEmit(
             _currentDateState.value.copy(
                 selectedDate = selectedDate,

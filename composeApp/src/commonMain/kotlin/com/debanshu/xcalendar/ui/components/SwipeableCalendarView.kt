@@ -360,7 +360,6 @@ private fun DaysHeaderRow(
                             }
                         )
                     }
-                    // Holiday tag (only shown if exists)
                     if (currentDayHolidays.isNotEmpty()) {
                         Column {
                             currentDayHolidays.take(2).forEach { holiday ->
@@ -374,12 +373,11 @@ private fun DaysHeaderRow(
                                 )
                             }
 
-                            // If there are more than 2 holidays, show "+n" indicator
                             if (currentDayHolidays.size > 2) {
                                 val extraCount = currentDayHolidays.size - 2
                                 Text(
                                     text = "+$extraCount more",
-                                    style = XCalendarTheme.typography.labelMedium,
+                                    style = XCalendarTheme.typography.labelSmall.copy(fontSize = 8.sp),
                                     textAlign = TextAlign.Start,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,

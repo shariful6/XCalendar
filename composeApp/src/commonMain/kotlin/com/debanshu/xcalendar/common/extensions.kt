@@ -1,23 +1,17 @@
 package com.debanshu.xcalendar.common
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
 fun Long.toLocalDateTime(timeZone: TimeZone): LocalDateTime {
@@ -43,11 +37,43 @@ fun String.toSentenceCase(): String {
     }
 }
 
-fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
-    this.clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() }) {
-        onClick()
+/**
+ * Converts a date/time string to Unix timestamp (milliseconds).
+ * Supports ISO 8601 format with timezone (e.g., "2025-03-20T14:31:21+05:30")
+ * and simple date format (e.g., "2025-01-01").
+ *
+ * @param dateTimeString The date/time string to convert
+ * @return Unix timestamp in milliseconds
+ */
+fun parseDateTime(dateTimeString: String): Long {
+    return when {
+        // ISO 8601 format with timezone
+        dateTimeString.contains("T") -> {
+            try {
+                // Parse directly as Instant
+                Instant.parse(dateTimeString).toEpochMilliseconds()
+            } catch (e: Exception) {
+                // Fallback if direct parsing fails
+                val localDateTime =
+                    if (dateTimeString.contains("+") || dateTimeString.contains("Z")) {
+                        // Extract timezone info
+                        val parts = dateTimeString.split("+", "Z").first()
+                        LocalDateTime.parse(parts)
+                    } else {
+                        LocalDateTime.parse(dateTimeString)
+                    }
+
+                // Default to UTC if timezone info can't be parsed
+                localDateTime.toInstant(TimeZone.UTC).toEpochMilliseconds()
+            }
+        }
+
+        // Simple date format
+        else -> {
+            LocalDate.parse(dateTimeString)
+                .atStartOfDayIn(TimeZone.UTC)
+                .toEpochMilliseconds()
+        }
     }
 }
 
@@ -84,115 +110,30 @@ fun formatHour(hour: Int): String {
         else -> hour.toString()
     }
     val amPm = if (hour >= 12) "pm" else "am"
-    if(hour == 0) {
+    if (hour == 0) {
         return ""
     }
     return "$displayHour $amPm"
 }
 
-/**
- * Enhanced custom border modifier that allows enabling specific sides with
- * additional control over the start position and length of each border.
- *
- * @param start Enable/disable start (left) border
- * @param top Enable/disable top border
- * @param end Enable/disable end (right) border
- * @param bottom Enable/disable bottom border
- * @param startFraction Start position of start border (0f = top, 1f = bottom)
- * @param topFraction Start position of top border (0f = left, 1f = right)
- * @param endFraction Start position of end border (0f = top, 1f = bottom)
- * @param bottomFraction Start position of bottom border (0f = left, 1f = right)
- * @param startLengthFraction Length of start border (0f = none, 1f = full height)
- * @param topLengthFraction Length of top border (0f = none, 1f = full width)
- * @param endLengthFraction Length of end border (0f = none, 1f = full height)
- * @param bottomLengthFraction Length of bottom border (0f = none, 1f = full width)
- * @param color Border color
- * @param width Border width
- */
-fun Modifier.customBorder(
-    // Enable/disable borders on each side
-    start: Boolean = false,
-    top: Boolean = false,
-    end: Boolean = false,
-    bottom: Boolean = false,
-
-    // Fractional start position for each border
-    startFraction: Float = 0f,
-    topFraction: Float = 0f,
-    endFraction: Float = 0f,
-    bottomFraction: Float = 0f,
-
-    // Fractional length for each border
-    startLengthFraction: Float = 1f,
-    topLengthFraction: Float = 1f,
-    endLengthFraction: Float = 1f,
-    bottomLengthFraction: Float = 1f,
-
-    // Styling
-    color: Color = Color.Red,
-    width: Dp = 2.dp
-) = composed {
-    drawBehind {
-        val strokeWidth = width.toPx()
-
-        if (start) {
-            val startX = 0f
-            val startY = size.height * startFraction.coerceIn(0f, 1f)
-            val endX = 0f
-            val endY = startY + (size.height * startLengthFraction.coerceIn(0f, 1f))
-                .coerceAtMost(size.height - startY)
-
-            drawLine(
-                color = color,
-                start = Offset(startX, startY),
-                end = Offset(endX, endY),
-                strokeWidth = strokeWidth
-            )
+fun formatTimeRange(start: LocalDateTime, end: LocalDateTime): String {
+    fun formatTime(time: LocalDateTime): String {
+        val hour = when {
+            time.hour == 0 -> 12
+            time.hour > 12 -> time.hour - 12
+            else -> time.hour
         }
-
-        if (top) {
-            val startX = size.width * topFraction.coerceIn(0f, 1f)
-            val startY = 0f
-            val endX = startX + (size.width * topLengthFraction.coerceIn(0f, 1f))
-                .coerceAtMost(size.width - startX)
-            val endY = 0f
-
-            drawLine(
-                color = color,
-                start = Offset(startX, startY),
-                end = Offset(endX, endY),
-                strokeWidth = strokeWidth
-            )
-        }
-
-        if (end) {
-            val startX = size.width
-            val startY = size.height * endFraction.coerceIn(0f, 1f)
-            val endX = size.width
-            val endY = startY + (size.height * endLengthFraction.coerceIn(0f, 1f))
-                .coerceAtMost(size.height - startY)
-
-            drawLine(
-                color = color,
-                start = Offset(startX, startY),
-                end = Offset(endX, endY),
-                strokeWidth = strokeWidth
-            )
-        }
-
-        if (bottom) {
-            val startX = size.width * bottomFraction.coerceIn(0f, 1f)
-            val startY = size.height
-            val endX = startX + (size.width * bottomLengthFraction.coerceIn(0f, 1f))
-                .coerceAtMost(size.width - startX)
-            val endY = size.height
-
-            drawLine(
-                color = color,
-                start = Offset(startX, startY),
-                end = Offset(endX, endY),
-                strokeWidth = strokeWidth
-            )
-        }
+        val minute = time.minute.toString().padStart(2, '0')
+        val amPm = if (time.hour >= 12) "am" else "pm"
+        return "$hour:$minute $amPm"
     }
+
+    return "${formatTime(start)} – ${formatTime(end)}"
+}
+
+/**
+ * Extension function to check if a year is a leap year
+ */
+fun Int.isLeap(): Boolean {
+    return (this % 4 == 0 && this % 100 != 0) || (this % 400 == 0)
 }

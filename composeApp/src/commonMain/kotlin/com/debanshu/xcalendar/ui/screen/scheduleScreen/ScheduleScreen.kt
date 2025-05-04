@@ -9,14 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.domain.states.DateStateHolder
-import com.debanshu.xcalendar.ui.YearMonth
+import com.debanshu.xcalendar.domain.states.dateState.DateStateHolder
+import com.debanshu.xcalendar.domain.states.scheduleState.ScheduleStateHolder
+import com.debanshu.xcalendar.common.model.YearMonth
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.DayWithEvents
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.MonthHeader
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.WeekHeader
@@ -38,8 +38,8 @@ fun ScheduleScreen(
     val currentYearMonth = YearMonth.from(currentDate)
 
     // Create a ScheduleState to manage schedule-related state
-    val scheduleState = remember(currentYearMonth, events, holidays) {
-        ScheduleState(
+    val scheduleStateHolder = remember(currentYearMonth, events, holidays) {
+        ScheduleStateHolder(
             initialMonth = currentYearMonth,
             events = events,
             holidays = holidays
@@ -55,9 +55,9 @@ fun ScheduleScreen(
     val listState = rememberLazyListState()
 
     // Apply initial scroll position after composition
-    LaunchedEffect(scheduleState.initialScrollIndex) {
-        if (scheduleState.initialScrollIndex > 0) {
-            listState.scrollToItem(scheduleState.initialScrollIndex)
+    LaunchedEffect(scheduleStateHolder.initialScrollIndex) {
+        if (scheduleStateHolder.initialScrollIndex > 0) {
+            listState.scrollToItem(scheduleStateHolder.initialScrollIndex)
         }
     }
 
@@ -72,10 +72,10 @@ fun ScheduleScreen(
                 // Find the first visible month header
                 (firstVisible until firstVisible + visibleCount)
                     .firstOrNull { idx ->
-                        idx < scheduleState.items.size &&
-                                scheduleState.items[idx] is ScheduleItem.MonthHeader
+                        idx < scheduleStateHolder.items.size &&
+                                scheduleStateHolder.items[idx] is ScheduleItem.MonthHeader
                     }
-                    ?.let { scheduleState.items[it] as? ScheduleItem.MonthHeader }
+                    ?.let { scheduleStateHolder.items[it] as? ScheduleItem.MonthHeader }
             }
                 .filterNotNull()
                 .distinctUntilChanged()
@@ -86,12 +86,12 @@ fun ScheduleScreen(
 
         // Handle backward pagination
         launch {
-            snapshotFlow { listState.firstVisibleItemIndex < ScheduleState.THRESHOLD }
+            snapshotFlow { listState.firstVisibleItemIndex < ScheduleStateHolder.THRESHOLD }
                 .distinctUntilChanged()
                 .collect { needsMore ->
                     if (needsMore) {
                         val firstVisibleIndex = listState.firstVisibleItemIndex
-                        val newItemsCount = scheduleState.loadMoreBackward()
+                        val newItemsCount = scheduleStateHolder.loadMoreBackward()
 
                         if (newItemsCount > 0) {
                             // Adjust scroll position to maintain visual position
@@ -106,12 +106,12 @@ fun ScheduleScreen(
             snapshotFlow {
                 val visibleInfo = listState.layoutInfo.visibleItemsInfo
                 val lastVisibleIndex = visibleInfo.lastOrNull()?.index ?: 0
-                lastVisibleIndex >= scheduleState.items.size - ScheduleState.THRESHOLD
+                lastVisibleIndex >= scheduleStateHolder.items.size - ScheduleStateHolder.THRESHOLD
             }
                 .distinctUntilChanged()
                 .collect { needsMore ->
                     if (needsMore) {
-                        scheduleState.loadMoreForward()
+                        scheduleStateHolder.loadMoreForward()
                     }
                 }
         }
@@ -124,7 +124,7 @@ fun ScheduleScreen(
             .background(XCalendarTheme.colorScheme.surfaceContainerLow)
     ) {
         itemsIndexed(
-            items = scheduleState.items,
+            items = scheduleStateHolder.items,
             key = { _, item -> item.uniqueId }
         ) { _, item ->
             when (item) {
@@ -138,73 +138,5 @@ fun ScheduleScreen(
                 )
             }
         }
-    }
-}
-
-/**
- * Manages the state for the schedule screen
- */
-class ScheduleState(
-    initialMonth: YearMonth,
-    val events: List<Event>,
-    val holidays: List<Holiday>
-) {
-    private val _items = mutableStateListOf<ScheduleItem>()
-    val items: List<ScheduleItem> = _items
-
-    private val monthRange = MonthRange(initialMonth)
-    val initialScrollIndex: Int
-
-    init {
-        // Load initial data synchronously in init block
-        val initialItems = createScheduleItemsForMonthRange(
-            monthRange.getMonths(),
-            events,
-            holidays
-        )
-        _items.addAll(initialItems)
-
-        // Find position of current month
-        initialScrollIndex = _items.indexOfFirst {
-            it is ScheduleItem.MonthHeader &&
-                    it.yearMonth.year == initialMonth.year &&
-                    it.yearMonth.month == initialMonth.month
-        }.coerceAtLeast(0)
-    }
-
-    /**
-     * Loads more items at the beginning of the list
-     * @return Number of new items added
-     */
-    fun loadMoreBackward(): Int {
-        monthRange.expandBackward()
-        val newMonths = monthRange.getLastAddedMonthsBackward()
-        val newItems = createScheduleItemsForMonthRange(newMonths, events, holidays)
-
-        if (newItems.isNotEmpty()) {
-            _items.addAll(0, newItems)
-            return newItems.size
-        }
-        return 0
-    }
-
-    /**
-     * Loads more items at the end of the list
-     * @return Number of new items added
-     */
-    fun loadMoreForward(): Int {
-        monthRange.expandForward()
-        val newMonths = monthRange.getLastAddedMonthsForward()
-        val newItems = createScheduleItemsForMonthRange(newMonths, events, holidays)
-
-        if (newItems.isNotEmpty()) {
-            _items.addAll(newItems)
-            return newItems.size
-        }
-        return 0
-    }
-
-    companion object {
-        const val THRESHOLD = 10
     }
 }

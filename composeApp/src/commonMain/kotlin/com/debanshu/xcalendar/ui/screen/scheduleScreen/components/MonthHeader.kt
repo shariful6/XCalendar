@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.toSentenceCase
-import com.debanshu.xcalendar.ui.YearMonth
+import com.debanshu.xcalendar.common.model.YearMonth
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.datetime.Month
@@ -46,7 +46,6 @@ fun MonthHeader(yearMonth: YearMonth) {
             modifier = Modifier.fillMaxSize()
         )
 
-        // Month and year overlay
         Box(
             modifier = Modifier
                 .fillMaxSize()

@@ -6,9 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.domain.states.DateStateHolder
-import com.debanshu.xcalendar.domain.states.ViewType
-import com.debanshu.xcalendar.ui.YearMonth
+import com.debanshu.xcalendar.domain.states.dateState.DateStateHolder
+import com.debanshu.xcalendar.common.model.YearMonth
 import com.debanshu.xcalendar.ui.screen.monthScreen.components.SwipeableMonthView
 import kotlinx.datetime.LocalDate
 

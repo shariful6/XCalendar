@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.customBorder
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.domain.states.DateStateHolder
+import com.debanshu.xcalendar.domain.states.dateState.DateStateHolder
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 
 /**
