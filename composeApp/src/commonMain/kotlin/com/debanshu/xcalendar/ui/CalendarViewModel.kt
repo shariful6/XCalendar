@@ -4,8 +4,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.debanshu.xcalendar.common.parseDateTime
-import com.debanshu.xcalendar.data.remoteDataSource.CalendarApiService
 import com.debanshu.xcalendar.data.remoteDataSource.HolidayApiService
+import com.debanshu.xcalendar.data.remoteDataSource.RemoteCalendarApiService
 import com.debanshu.xcalendar.data.remoteDataSource.Result
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
@@ -38,7 +38,7 @@ class CalendarViewModel(
     private val calendarRepository: CalendarRepository,
     private val eventRepository: EventRepository,
     private val holidayRepository: HolidayRepository,
-    private val apiService: CalendarApiService,
+    private val apiService: RemoteCalendarApiService,
     private val holidayApiService: HolidayApiService,
 ) : ViewModel() {
 
@@ -59,7 +59,7 @@ class CalendarViewModel(
         userRepository.getAllUsers().collectLatest { users ->
             if (users.isEmpty()) {
                 val dummyUser = User(
-                    id = Random.nextInt().toString(),
+                    id = "user_id",
                     name = "Demo User",
                     email = "user@example.com",
                     photoUrl = "https://t4.ftcdn.net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA.jpg"
@@ -80,15 +80,21 @@ class CalendarViewModel(
     private suspend fun loadCalendarsForUser(userId: String) {
         calendarRepository.getCalendarsForUser(userId).collectLatest { dbCalendars ->
             if (dbCalendars.isEmpty()) {
-                val apiCalendars = apiService.fetchCalendarsForUser(userId)
-                apiCalendars.forEach { calendar ->
-                    calendarRepository.upsertCalendar(calendar)
+                when(val apiCalendars = apiService.fetchCalendarsForUser(userId)){
+                    is Result.Error -> {
+                        println("HEREEEEEEE" + apiCalendars.error.toString())
+                    }
+                    is Result.Success -> {
+                        apiCalendars.data.forEach { calendar ->
+                            calendarRepository.upsertCalendar(calendar)
+                        }
+                        updateVisibleCalendars(apiCalendars.data)
+
+                        _uiState.update { it.copy(calendars = _uiState.value.calendars + apiCalendars.data) }
+
+                        loadEventsForCalendars(apiCalendars.data.map { it.id })
+                    }
                 }
-                updateVisibleCalendars(apiCalendars)
-
-                _uiState.update { it.copy(calendars = _uiState.value.calendars + apiCalendars) }
-
-                loadEventsForCalendars(apiCalendars.map { it.id })
             } else {
                 updateVisibleCalendars(dbCalendars)
 
@@ -116,18 +122,23 @@ class CalendarViewModel(
                 val allEvents = mutableListOf<Event>()
 
                 calendarIds.forEach { calendarId ->
-                    val apiEvents = apiService.fetchEventsForCalendar(calendarId, startTime, endTime)
-                    apiEvents.forEach { event ->
-                        eventRepository.addEvent(event)
+                    when(val apiEvents = apiService.fetchEventsForCalendar(calendarId, startTime, endTime)){
+                        is Result.Error -> {
+                            println("HEREEEEEEE" + apiEvents.error.toString())
+                        }
+                        is Result.Success -> {
+                            apiEvents.data.forEach { event ->
+                                eventRepository.addEvent(event)
+                            }
+                            allEvents.addAll(apiEvents.data)
+                            _uiState.update {
+                                it.copy(
+                                    events = allEvents,
+                                    upcomingEvents = CalendarUiState.getUpcomingEvents(allEvents, currentDate)
+                                )
+                            }
+                        }
                     }
-                    allEvents.addAll(apiEvents)
-                }
-
-                _uiState.update {
-                    it.copy(
-                        events = allEvents,
-                        upcomingEvents = CalendarUiState.getUpcomingEvents(allEvents, currentDate)
-                    )
                 }
             } else {
                 _uiState.update {
