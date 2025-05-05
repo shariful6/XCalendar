@@ -1,4 +1,4 @@
-package com.debanshu.xcalendar.data.remoteDataSource.model
+package com.debanshu.xcalendar.data.remoteDataSource.model.holiday
 
 
 import kotlinx.serialization.SerialName

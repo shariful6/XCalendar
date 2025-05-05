@@ -2,7 +2,7 @@ package com.debanshu.xcalendar.data.remoteDataSource
 
 import com.debanshu.xcalendar.BuildKonfig
 import com.debanshu.xcalendar.data.remoteDataSource.error.DataError
-import com.debanshu.xcalendar.data.remoteDataSource.model.HolidayResponse
+import com.debanshu.xcalendar.data.remoteDataSource.model.holiday.HolidayResponse
 import io.ktor.client.HttpClient
 import org.koin.core.annotation.Singleton
 

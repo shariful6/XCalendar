@@ -7,6 +7,8 @@ import com.debanshu.xcalendar.common.parseDateTime
 import com.debanshu.xcalendar.data.remoteDataSource.HolidayApiService
 import com.debanshu.xcalendar.data.remoteDataSource.RemoteCalendarApiService
 import com.debanshu.xcalendar.data.remoteDataSource.Result
+import com.debanshu.xcalendar.data.remoteDataSource.model.calendar.asCalendar
+import com.debanshu.xcalendar.data.remoteDataSource.model.calendar.asEvent
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
@@ -30,7 +32,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.android.annotation.KoinViewModel
-import kotlin.random.Random
 
 @KoinViewModel
 class CalendarViewModel(
@@ -85,14 +86,15 @@ class CalendarViewModel(
                         println("HEREEEEEEE" + apiCalendars.error.toString())
                     }
                     is Result.Success -> {
-                        apiCalendars.data.forEach { calendar ->
+                        val calendars= apiCalendars.data.map{it.asCalendar()}
+                        calendars.forEach { calendar ->
                             calendarRepository.upsertCalendar(calendar)
                         }
-                        updateVisibleCalendars(apiCalendars.data)
+                        updateVisibleCalendars(calendars)
 
-                        _uiState.update { it.copy(calendars = _uiState.value.calendars + apiCalendars.data) }
+                        _uiState.update { it.copy(calendars = _uiState.value.calendars + calendars) }
 
-                        loadEventsForCalendars(apiCalendars.data.map { it.id })
+                        loadEventsForCalendars(calendars.map { it.id })
                     }
                 }
             } else {
@@ -127,10 +129,11 @@ class CalendarViewModel(
                             println("HEREEEEEEE" + apiEvents.error.toString())
                         }
                         is Result.Success -> {
-                            apiEvents.data.forEach { event ->
+                            val events = apiEvents.data.map { it.asEvent() }
+                            events.forEach { event ->
                                 eventRepository.addEvent(event)
                             }
-                            allEvents.addAll(apiEvents.data)
+                            allEvents.addAll(events)
                             _uiState.update {
                                 it.copy(
                                     events = allEvents,

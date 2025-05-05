@@ -1,18 +1,19 @@
 package com.debanshu.xcalendar.data.remoteDataSource
 
 import com.debanshu.xcalendar.data.remoteDataSource.error.DataError
-import com.debanshu.xcalendar.domain.model.Calendar
-import com.debanshu.xcalendar.domain.model.Event
+import com.debanshu.xcalendar.data.remoteDataSource.model.calendar.CalendarResponseItem
+import com.debanshu.xcalendar.data.remoteDataSource.model.calendar.EventResponseItem
 import io.ktor.client.HttpClient
 import org.koin.core.annotation.Singleton
 
 @Singleton
 class RemoteCalendarApiService(client: HttpClient) {
     private val clientWrapper = ClientWrapper(client)
-    private val baseUrl = "https://www.googleapis.com/calendar/v3/"
-    suspend fun fetchCalendarsForUser(userId: String): Result<List<Calendar>, DataError> {
-        return clientWrapper.networkGetUsecase<List<Calendar>>(
-            baseUrl+"users/me/calendarList",
+    private val baseUrl = "https://raw.githubusercontent.com/Debanshu777/XCalendar/main/"
+    suspend fun fetchCalendarsForUser(userId: String): Result<List<CalendarResponseItem>,
+            DataError> {
+        return clientWrapper.networkGetUsecase<List<CalendarResponseItem>>(
+            baseUrl+"assets/calendars.json",
             mapOf(
                 "user_id" to userId
             )
@@ -23,9 +24,9 @@ class RemoteCalendarApiService(client: HttpClient) {
         calendarId: String,
         startTime: Long,
         endTime: Long
-    ): Result<List<Event>, DataError> {
-        return clientWrapper.networkGetUsecase<List<Event>>(
-            baseUrl+"calendars/${calendarId}/events",
+    ): Result<List<EventResponseItem>, DataError> {
+        return clientWrapper.networkGetUsecase<List<EventResponseItem>>(
+            baseUrl + "assets/events.json",
             mapOf(
                 "calendar_id" to calendarId,
                 "start_time" to startTime.toString(),
