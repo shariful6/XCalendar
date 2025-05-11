@@ -25,9 +25,9 @@ class ClientWrapper(val networkClient: HttpClient) {
                     }
                 }
             }
-        } catch (ex: UnresolvedAddressException) {
+        } catch (_: UnresolvedAddressException) {
             return Result.Error(DataError.Network.NO_INTERNET)
-        } catch (ex: SerializationException) {
+        } catch (_: SerializationException) {
             return Result.Error(DataError.Network.SERIALIZATION)
         } catch (ex: Exception) {
             print("HEREEEEEEE"+ex.message.toString())

@@ -1,7 +1,8 @@
 package com.debanshu.xcalendar.domain.repository
 
+import com.debanshu.xcalendar.common.model.asHolidayEntity
+import com.debanshu.xcalendar.common.model.asHoliday
 import com.debanshu.xcalendar.data.localDataSource.HolidayDao
-import com.debanshu.xcalendar.data.localDataSource.model.HolidayEntity
 import com.debanshu.xcalendar.domain.model.Holiday
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -41,18 +42,12 @@ class HolidayRepository(private val holidayDao: HolidayDao) {
         return holidayDao.getHolidaysInRange(startDate, endDate).map { entities ->
             entities
                 .filter { it.countryCode == countryCode }
-                .map { it.toHoliday() }
+                .map { it.asHoliday() }
         }
     }
 
     suspend fun addHolidays(holidays: List<Holiday>) {
-        val entities = holidays.map { it.toEntity() }
+        val entities = holidays.map { it.asHolidayEntity() }
         holidayDao.insertHolidays(entities)
     }
-
-    private fun HolidayEntity.toHoliday(): Holiday =
-        Holiday(id, name, date, countryCode)
-
-    private fun Holiday.toEntity(): HolidayEntity =
-        HolidayEntity(id, name, date, countryCode)
 }

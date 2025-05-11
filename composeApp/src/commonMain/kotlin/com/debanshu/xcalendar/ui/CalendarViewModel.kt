@@ -3,15 +3,14 @@ package com.debanshu.xcalendar.ui
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.debanshu.xcalendar.common.parseDateTime
+import com.debanshu.xcalendar.common.model.asCalendar
+import com.debanshu.xcalendar.common.model.asEvent
+import com.debanshu.xcalendar.common.model.asHoliday
 import com.debanshu.xcalendar.data.remoteDataSource.HolidayApiService
 import com.debanshu.xcalendar.data.remoteDataSource.RemoteCalendarApiService
 import com.debanshu.xcalendar.data.remoteDataSource.Result
-import com.debanshu.xcalendar.data.remoteDataSource.model.calendar.asCalendar
-import com.debanshu.xcalendar.data.remoteDataSource.model.calendar.asEvent
 import com.debanshu.xcalendar.domain.model.Calendar
 import com.debanshu.xcalendar.domain.model.Event
-import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.model.User
 import com.debanshu.xcalendar.domain.repository.CalendarRepository
 import com.debanshu.xcalendar.domain.repository.EventRepository
@@ -80,37 +79,35 @@ class CalendarViewModel(
 
     private suspend fun loadCalendarsForUser(userId: String) {
         calendarRepository.getCalendarsForUser(userId).collectLatest { dbCalendars ->
-            if (dbCalendars.isEmpty()) {
+           if (dbCalendars.isEmpty()) {
                 when(val apiCalendars = apiService.fetchCalendarsForUser(userId)){
                     is Result.Error -> {
                         println("HEREEEEEEE" + apiCalendars.error.toString())
                     }
                     is Result.Success -> {
-                        val calendars= apiCalendars.data.map{it.asCalendar()}
+                        val calendars = apiCalendars.data.map { it.asCalendar() }
+                        _uiState.update { it.copy(calendars = calendars) }
                         calendars.forEach { calendar ->
                             calendarRepository.upsertCalendar(calendar)
                         }
-                        updateVisibleCalendars(calendars)
-
-                        _uiState.update { it.copy(calendars = _uiState.value.calendars + calendars) }
-
                         loadEventsForCalendars(calendars.map { it.id })
+                        //updateVisibleCalendars(calendars)
                     }
                 }
             } else {
-                updateVisibleCalendars(dbCalendars)
+                //updateVisibleCalendars(dbCalendars)
 
-                _uiState.update { it.copy(calendars = _uiState.value.calendars + dbCalendars) }
+                _uiState.update { it.copy(calendars = dbCalendars) }
 
                 loadEventsForCalendars(dbCalendars.map { it.id })
             }
         }
     }
 
-    private fun updateVisibleCalendars(calendars: List<Calendar>) {
-        val visibleIds = calendars.filter { it.isVisible }.map { it.id }.toSet()
-        visibleCalendarIds.value += visibleIds
-    }
+//    private fun updateVisibleCalendars(calendars: List<Calendar>) {
+//        val visibleIds = calendars.filter { it.isVisible }.map { it.id }.toSet()
+//        visibleCalendarIds.value += visibleIds
+//    }
 
     private suspend fun loadEventsForCalendars(calendarIds: List<String>) {
         val startDate = currentDate.minus(DatePeriod(months = 10))
@@ -122,7 +119,6 @@ class CalendarViewModel(
         eventRepository.getEventsForCalendarsInRange(calendarIds, startTime, endTime).collectLatest { dbEvents ->
             if (dbEvents.isEmpty()) {
                 val allEvents = mutableListOf<Event>()
-
                 calendarIds.forEach { calendarId ->
                     when(val apiEvents = apiService.fetchEventsForCalendar(calendarId, startTime, endTime)){
                         is Result.Error -> {
@@ -164,14 +160,7 @@ class CalendarViewModel(
                     }
 
                     is Result.Success -> {
-                        val remoteHolidays = response.data.response
-                            .holidays.map {
-                                Holiday(
-                                    id = it.urlid,
-                                    name = it.name,
-                                    date = parseDateTime(it.date.iso), countryCode
-                                )
-                            }
+                        val remoteHolidays = response.data.response.holidays.map { it.asHoliday() }
                         holidayRepository.addHolidays(remoteHolidays)
                         _uiState.update { it.copy(holidays = remoteHolidays) }
                     }

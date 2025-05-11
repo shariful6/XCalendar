@@ -70,6 +70,7 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(libs.icons)
             implementation(libs.materialKolor)
+            implementation(libs.store)
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)

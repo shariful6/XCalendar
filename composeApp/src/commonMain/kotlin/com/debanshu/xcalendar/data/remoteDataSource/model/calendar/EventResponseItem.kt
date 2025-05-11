@@ -1,7 +1,5 @@
 package com.debanshu.xcalendar.data.remoteDataSource.model.calendar
 
-
-import com.debanshu.xcalendar.domain.model.Event
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -20,9 +18,9 @@ data class EventResponseItem(
     @SerialName("isRecurring")
     val isRecurring: Boolean,
     @SerialName("location")
-    val location: String,
+    val location: String? = null,
     @SerialName("recurringRule")
-    val recurringRule: String,
+    val recurringRule: String? = null,
     @SerialName("reminderMinutes")
     val reminderMinutes: List<Int>,
     @SerialName("startTime")
@@ -30,19 +28,3 @@ data class EventResponseItem(
     @SerialName("title")
     val title: String
 )
-
-fun EventResponseItem.asEvent(): Event {
-    return Event(
-        id = id,
-        title = title,
-        description = description,
-        location = location,
-        startTime = startTime,
-        endTime = endTime,
-        isAllDay = isAllDay,
-        isRecurring = isRecurring,
-        recurringRule = recurringRule,
-        reminderMinutes = reminderMinutes,
-        calendarId = calendarId
-    )
-}

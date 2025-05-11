@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Response(
     @SerialName("holidays")
-    val holidays: List<Holiday>
+    val holidays: List<HolidayItem>
 )

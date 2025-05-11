@@ -1,7 +1,5 @@
 package com.debanshu.xcalendar.data.remoteDataSource.model.calendar
 
-
-import com.debanshu.xcalendar.domain.model.Calendar
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -20,14 +18,3 @@ data class CalendarResponseItem(
     @SerialName("userId")
     val userId: String
 )
-
-fun CalendarResponseItem.asCalendar(): Calendar {
-    return Calendar(
-        id = id,
-        name = name,
-        color = color,
-        isVisible = isVisible,
-        isPrimary = isPrimary,
-        userId = userId
-    )
-}

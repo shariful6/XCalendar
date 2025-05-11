@@ -1,24 +1,25 @@
 [versions]
-agp = "8.9.2"
+agp = "8.10.0"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activityCompose = "1.10.1"
 androidx-lifecycle = "2.8.4"
 coil3 = "2.4.7"
-compose-multiplatform = "1.8.0-rc01"
+compose-multiplatform = "1.8.0"
 kotlin = "2.1.20"
 room_version = "2.7.1"
-ksp = "2.1.10-1.0.31"
-sqlite = "2.5.0"
-ktor-bom = "3.1.2"
+ksp = "2.1.20-1.0.31"
+sqlite = "2.5.1"
+ktor-bom = "3.1.3"
 koin-bom = "4.1.0-Beta8"
 koin-annotations-bom = "2.0.0"
 kotlinx-datetime = "0.6.2"
-navigation = "2.9.0-alpha17"
+navigation = "2.9.0-beta01"
 composeIcons = "1.1.1"
 materialKolor = "2.1.1"
 config = "0.17.1"
+store = "5.1.0-alpha06"
 
 [libraries]
 landscapist-coil3 = { module = "com.github.skydoves:landscapist-coil3", version.ref = "coil3" }
@@ -49,6 +50,7 @@ sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.r
 navigation-compose = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 icons = { group = "br.com.devsrsouza.compose.icons", name = "font-awesome", version.ref = "composeIcons" }
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
+store = { module = "org.mobilenativefoundation.store:store5", version.ref = "store" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

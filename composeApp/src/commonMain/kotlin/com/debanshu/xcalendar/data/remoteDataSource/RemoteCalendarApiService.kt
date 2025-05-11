@@ -10,10 +10,10 @@ import org.koin.core.annotation.Singleton
 class RemoteCalendarApiService(client: HttpClient) {
     private val clientWrapper = ClientWrapper(client)
     private val baseUrl = "https://raw.githubusercontent.com/Debanshu777/XCalendar/main/"
-    suspend fun fetchCalendarsForUser(userId: String): Result<List<CalendarResponseItem>,
-            DataError> {
+
+    suspend fun fetchCalendarsForUser(userId: String): Result<List<CalendarResponseItem>, DataError> {
         return clientWrapper.networkGetUsecase<List<CalendarResponseItem>>(
-            baseUrl+"assets/calendars.json",
+            baseUrl + "assets/calendars.json",
             mapOf(
                 "user_id" to userId
             )

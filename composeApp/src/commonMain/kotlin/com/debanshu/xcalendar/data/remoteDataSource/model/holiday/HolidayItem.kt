@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Holiday(
+data class HolidayItem(
     @SerialName("canonical_url")
     val canonicalUrl: String,
     @SerialName("country")
