@@ -13,6 +13,14 @@ fun HolidayItem.asHoliday(): Holiday =
         countryCode = country.id
     )
 
+fun HolidayItem.asHolidayEntity(): HolidayEntity =
+    HolidayEntity(
+        id = urlid,
+        name = name,
+        date = parseDateTime(date.iso),
+        countryCode = country.id
+    )
+
 fun HolidayEntity.asHoliday(): Holiday =
     Holiday(id, name, date, countryCode)
 

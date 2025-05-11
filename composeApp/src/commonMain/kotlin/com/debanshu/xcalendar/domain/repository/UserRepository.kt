@@ -10,6 +10,15 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class UserRepository(private val userDao: UserDao) {
+    suspend fun getUserFromApi() {
+        val dummyUser = User(
+            id = "user_id",
+            name = "Demo User",
+            email = "user@example.com",
+            photoUrl = "https://t4.ftcdn.net/jpg/00/04/09/63/360_F_4096398_nMeewldssGd7guDmvmEDXqPJUmkDWyqA.jpg"
+        )
+        addUser(dummyUser)
+    }
     fun getAllUsers(): Flow<List<User>> =
         userDao.getAllUsers().map { entities -> entities.map { it.asUser() } }
 

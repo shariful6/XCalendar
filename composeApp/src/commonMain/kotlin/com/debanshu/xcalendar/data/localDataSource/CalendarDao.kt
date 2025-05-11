@@ -13,7 +13,7 @@ interface CalendarDao {
     fun getCalendarsByUserId(userId: String): Flow<List<CalendarEntity>>
 
     @Upsert
-    suspend fun upsertCalendar(calendar: CalendarEntity)
+    suspend fun upsertCalendar(calendars: List<CalendarEntity>)
 
     @Delete
     suspend fun deleteCalendar(calendar: CalendarEntity)
