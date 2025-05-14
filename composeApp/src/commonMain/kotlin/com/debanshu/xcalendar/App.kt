@@ -6,18 +6,25 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
@@ -60,7 +67,7 @@ fun App() {
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarApp(
     viewModel: CalendarViewModel, dateStateHolder: DateStateHolder
@@ -71,6 +78,10 @@ fun CalendarApp(
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     val currentRoute by navController.currentBackStackEntryAsState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -121,7 +132,7 @@ fun CalendarApp(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { viewModel.showAddEventDialog() },
+                    onClick = { showBottomSheet = true },
                 ) {
                     Icon(
                         modifier = Modifier.size(20.dp),
@@ -203,21 +214,25 @@ fun CalendarApp(
                                 onEventClick = { event -> viewModel.selectEvent(event) }
                             )
                         }
-
                     }
                 }
             }
 
-            if (calendarUiState.showAddEventDialog) {
-                AddEventDialog(
-                    calendars = calendarUiState.calendars.filter { it.isVisible },
-                    selectedDate = calendarUiState.selectedDay,
-                    onSave = { event ->
-                        viewModel.addEvent(event)
-                        viewModel.hideAddEventDialog()
+            if (showBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        showBottomSheet = false
                     },
-                    onDismiss = { viewModel.hideAddEventDialog() },
-                )
+                    sheetState = sheetState,
+                    properties = ModalBottomSheetProperties(
+                        shouldDismissOnBackPress = true
+                    )
+                ) {
+                    AddEventDialog(
+                        calendars = calendarUiState.calendars.filter { it.isVisible },
+                        selectedDate = dataState.currentDate,
+                    )
+                }
             }
 
             if (calendarUiState.selectedEvent != null) {

@@ -32,11 +32,11 @@ class EventRepository(
     }
 
     fun getEventsForCalendarsInRange(
-        calendarIds: List<String>,
+        userId: String,
         start: Long,
         end: Long
     ): Flow<List<Event>> =
-        eventDao.getEventsBetweenDates(calendarIds, start, end).map { entities ->
+        eventDao.getEventsBetweenDates(userId, start, end).map { entities ->
             entities.map { it.asEvent() }
         }
 

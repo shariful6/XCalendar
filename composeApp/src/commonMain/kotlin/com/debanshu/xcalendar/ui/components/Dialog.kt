@@ -54,8 +54,6 @@ import kotlinx.datetime.toInstant
 fun AddEventDialog(
     calendars: List<Calendar>,
     selectedDate: LocalDate,
-    onSave: (Event) -> Unit,
-    onDismiss: () -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -79,149 +77,120 @@ fun AddEventDialog(
         )
     }
 
-    AlertDialog(onDismissRequest = onDismiss, title = { Text("Add Event") }, text = {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
+    ) {
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Title") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = location,
+            onValueChange = { location = it },
+            label = { Text("Location") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Calendar selection
+        Text(
+            text = "Calendar",
+            style = XCalendarTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Title") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            items(calendars) { calendar ->
+                Box(
+                    modifier = Modifier.size(24.dp).clip(CircleShape)
+                        .background(Color(calendar.color)).border(
+                            width = 2.dp,
+                            color = if (selectedCalendarId == calendar.id) XCalendarTheme.colorScheme
+                                .primary else Color.Transparent,
+                            shape = CircleShape
+                        ).clickable { selectedCalendarId = calendar.id })
+            }
+        }
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = location,
-                onValueChange = { location = it },
-                label = { Text("Location") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Calendar selection
+        // All day toggle
+        Row(
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
+        ) {
             Text(
-                text = "Calendar",
+                text = "All day", style = XCalendarTheme.typography.bodySmall
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Switch(
+                checked = isAllDay, onCheckedChange = { isAllDay = it })
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Date and time pickers (simplified for this example)
+        if (!isAllDay) {
+            Text(
+                text = "Start time",
                 style = XCalendarTheme.typography.bodySmall,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(calendars) { calendar ->
-                    Box(
-                        modifier = Modifier.size(24.dp).clip(CircleShape)
-                            .background(Color(calendar.color)).border(
-                                width = 2.dp,
-                                color = if (selectedCalendarId == calendar.id) XCalendarTheme.colorScheme
-                                    .primary else Color.Transparent,
-                                shape = CircleShape
-                            ).clickable { selectedCalendarId = calendar.id })
-                }
-            }
+            // Simplified time picker - in a real app you'd use a proper time picker
+            Text(
+                text = "${startDateTime.hour}:${
+                    startDateTime.minute.toString().padStart(2, '0')
+                }",
+                style = XCalendarTheme.typography.bodySmall,
+                modifier = Modifier.clip(RoundedCornerShape(4.dp))
+                    .background(XCalendarTheme.colorScheme.surface).padding(8.dp)
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // All day toggle
-            Row(
-                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "All day", style = XCalendarTheme.typography.bodySmall
-                )
+            Text(
+                text = "End time",
+                style = XCalendarTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
 
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Switch(
-                    checked = isAllDay, onCheckedChange = { isAllDay = it })
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Date and time pickers (simplified for this example)
-            if (!isAllDay) {
-                Text(
-                    text = "Start time",
-                    style = XCalendarTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Simplified time picker - in a real app you'd use a proper time picker
-                Text(
-                    text = "${startDateTime.hour}:${
-                        startDateTime.minute.toString().padStart(2, '0')
-                    }",
-                    style = XCalendarTheme.typography.bodySmall,
-                    modifier = Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(XCalendarTheme.colorScheme.surface).padding(8.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "End time",
-                    style = XCalendarTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "${endDateTime.hour}:${
-                        endDateTime.minute.toString().padStart(2, '0')
-                    }",
-                    style = XCalendarTheme.typography.bodySmall,
-                    modifier = Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(XCalendarTheme.colorScheme.surface).padding(8.dp)
-                )
-            }
+            Text(
+                text = "${endDateTime.hour}:${
+                    endDateTime.minute.toString().padStart(2, '0')
+                }",
+                style = XCalendarTheme.typography.bodySmall,
+                modifier = Modifier.clip(RoundedCornerShape(4.dp))
+                    .background(XCalendarTheme.colorScheme.surface).padding(8.dp)
+            )
         }
-    }, confirmButton = {
-        Button(
-            onClick = {
-                val calendar = calendars.first { it.id == selectedCalendarId }
-                val startInstant = startDateTime.toInstant(TimeZone.currentSystemDefault())
-                val endInstant = endDateTime.toInstant(TimeZone.currentSystemDefault())
-
-                val event = Event(
-                    id = "efjbewkbfkjbewkjfb",
-                    calendarId = selectedCalendarId,
-                    title = title,
-                    description = description,
-                    location = location.takeIf { it.isNotEmpty() },
-                    startTime = startInstant.toEpochMilliseconds(),
-                    endTime = endInstant.toEpochMilliseconds(),
-                    isAllDay = isAllDay,
-                    color = calendar.color
-                )
-
-                onSave(event)
-            }, enabled = title.isNotEmpty() && selectedCalendarId.isNotEmpty()
-        ) {
-            Text("Save")
-        }
-    }, dismissButton = {
-        TextButton(onClick = onDismiss) {
-            Text("Cancel")
-        }
-    })
+    }
 }
 
 @Composable

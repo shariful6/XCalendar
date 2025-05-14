@@ -14,8 +14,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EventDao {
-    @Query("SELECT * FROM events WHERE calendarId IN (:calendarIds) AND startTime >= :startTime AND endTime <= :endTime")
-    fun getEventsBetweenDates(calendarIds: List<String>, startTime: Long, endTime: Long): Flow<List<EventEntity>>
+    @Query("SELECT * FROM events " +
+            "INNER JOIN calendars ON events.calendarId = calendars.id "+
+            "WHERE calendars.userId = :userId AND startTime >= :startTime AND endTime <= :endTime")
+    fun getEventsBetweenDates(userId: String, startTime: Long, endTime: Long): Flow<List<EventEntity>>
 
     @Query("SELECT * FROM events WHERE id = :eventId")
     suspend fun getEventById(eventId: String): EventEntity?

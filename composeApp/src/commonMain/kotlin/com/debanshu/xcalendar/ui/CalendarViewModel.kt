@@ -46,20 +46,18 @@ class CalendarViewModel(
     private val users = userRepository.getAllUsers()
     private val holidays = holidayRepository.getHolidaysForYear("IN", currentDate.year)
     private val calendars = calendarRepository.getCalendarsForUser("user_id")
-    private val events = eventRepository.getEventsForCalendarsInRange(
-        listOf("cal_001", "cal_002", "cal_003", "cal_004", "cal_005"),
-        startTime,
-        endTime
-    )
+    private val events = eventRepository.getEventsForCalendarsInRange("user_id", startTime, endTime)
 
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState = combine(
         _uiState,
+        users,
         holidays,
         calendars,
         events,
-    ) { state, holidays, calendars, events ->
+    ) { state, users,holidays, calendars, events ->
         state.copy(
+            accounts = users,
             holidays = holidays,
             calendars = calendars,
             events = events
@@ -109,14 +107,6 @@ class CalendarViewModel(
         }
     }
 
-    fun showAddEventDialog() {
-        _uiState.update { it.copy(showAddEventDialog = true) }
-    }
-
-    fun hideAddEventDialog() {
-        _uiState.update { it.copy(showAddEventDialog = false) }
-    }
-
     fun selectEvent(event: Event) {
         _uiState.update { it.copy(selectedEvent = event) }
     }
@@ -133,10 +123,6 @@ class CalendarViewModel(
                 val updatedEvents = it.events + event
                 it.copy(
                     events = updatedEvents,
-                    upcomingEvents = CalendarUiState.getUpcomingEvents(
-                        updatedEvents,
-                        it.selectedDay
-                    )
                 )
             }
         }
@@ -152,10 +138,6 @@ class CalendarViewModel(
                 }
                 it.copy(
                     events = updatedEvents,
-                    upcomingEvents = CalendarUiState.getUpcomingEvents(
-                        updatedEvents,
-                        it.selectedDay
-                    ),
                     selectedEvent = null
                 )
             }
@@ -170,10 +152,6 @@ class CalendarViewModel(
                 val updatedEvents = it.events.filter { e -> e.id != event.id }
                 it.copy(
                     events = updatedEvents,
-                    upcomingEvents = CalendarUiState.getUpcomingEvents(
-                        updatedEvents,
-                        it.selectedDay
-                    ),
                     selectedEvent = null
                 )
             }
