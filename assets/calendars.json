@@ -2,7 +2,6 @@
   {
     "id": "cal_001",
     "name": "Personal",
-    "color": 14575885,
     "userId": "user_id",
     "isVisible": true,
     "isPrimary": true
@@ -10,7 +9,6 @@
   {
     "id": "cal_002",
     "name": "Work",
-    "color": 2818048,
     "userId": "user_id",
     "isVisible": true,
     "isPrimary": false
@@ -18,7 +16,6 @@
   {
     "id": "cal_003",
     "name": "Family",
-    "color": 7667712,
     "userId": "user_id",
     "isVisible": true,
     "isPrimary": false
@@ -26,7 +23,6 @@
   {
     "id": "cal_004",
     "name": "Birthdays",
-    "color": 499549,
     "userId": "user_id",
     "isVisible": true,
     "isPrimary": false
@@ -34,7 +30,6 @@
   {
     "id": "cal_005",
     "name": "Gym",
-    "color": 6543440,
     "userId": "user_id",
     "isVisible": true,
     "isPrimary": false

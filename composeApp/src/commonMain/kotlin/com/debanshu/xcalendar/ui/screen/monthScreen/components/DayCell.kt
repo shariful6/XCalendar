@@ -100,7 +100,7 @@ fun DayCell(
             Spacer(modifier = Modifier.height(2.dp))
             EventTag(
                 text = event.title,
-                color = Color(event.color ?: 0xFFE91E63.toInt()),
+                color = Color(event.color),
                 textColor = XCalendarTheme.colorScheme.inverseOnSurface
             )
         }

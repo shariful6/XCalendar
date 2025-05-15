@@ -1,5 +1,6 @@
 package com.debanshu.xcalendar.common.model
 
+import com.debanshu.xcalendar.common.stringToColor
 import com.debanshu.xcalendar.data.localDataSource.model.EventEntity
 import com.debanshu.xcalendar.data.remoteDataSource.model.calendar.EventResponseItem
 import com.debanshu.xcalendar.domain.model.Event
@@ -17,7 +18,9 @@ fun EventResponseItem.asEvent(): Event {
         isRecurring = isRecurring,
         recurringRule = recurringRule,
         reminderMinutes = reminderMinutes,
-        calendarId = calendarId
+        calendarId = calendarId,
+        calendarName = calenderName,
+        color = stringToColor(calendarId)
     )
 }
 
@@ -34,7 +37,8 @@ fun EventEntity.asEvent(): Event {
         isRecurring = isRecurring,
         recurringRule = recurringRule,
         reminderMinutes = emptyList(),
-        color = color
+        calendarName = calendarName,
+        color = stringToColor(calendarId)
     )
 }
 
@@ -49,21 +53,6 @@ fun Event.asEntity(): EventEntity =
         endTime = endTime,
         isAllDay = isAllDay,
         isRecurring = isRecurring,
+        calendarName = calendarName,
         recurringRule = recurringRule,
-        color = color
-    )
-
-fun Event.EventResponseItem(): EventResponseItem =
-    EventResponseItem(
-        id = id,
-        calendarId = calendarId,
-        title = title,
-        description = description ?: "",
-        location = location,
-        startTime = startTime,
-        endTime = endTime,
-        isAllDay = isAllDay,
-        isRecurring = isRecurring,
-        recurringRule = recurringRule,
-        reminderMinutes = reminderMinutes
     )

@@ -23,6 +23,7 @@ import androidx.room.PrimaryKey
 data class EventEntity(
     @PrimaryKey val id: String,
     val calendarId: String,
+    val calendarName: String,
     val title: String,
     val description: String? = null,
     val location: String? = null,
@@ -31,5 +32,4 @@ data class EventEntity(
     val isAllDay: Boolean,
     val isRecurring: Boolean,
     val recurringRule: String? = null,
-    val color: Int? = null
 )

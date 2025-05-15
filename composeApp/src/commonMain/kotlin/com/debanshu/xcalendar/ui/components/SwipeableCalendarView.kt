@@ -568,7 +568,7 @@ private fun EventItem(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(Color(event.color ?: 0xFF4285F4.toInt()))
+            .background(Color(event.color))
             .clickable(onClick = onClick)
             .padding(4.dp)
     ) {

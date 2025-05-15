@@ -23,7 +23,6 @@ import androidx.room.PrimaryKey
 data class CalendarEntity(
     @PrimaryKey val id: String,
     val name: String,
-    val color: Int,
     val userId: String,
     val isVisible: Boolean,
     val isPrimary: Boolean

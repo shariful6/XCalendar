@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "77784ade28dc47ed55ab6649f651d52e",
+    "identityHash": "6abcdbdb3c8762822c68a836d87f3c13",
     "entities": [
       {
         "tableName": "users",
@@ -62,7 +62,7 @@
       },
       {
         "tableName": "calendars",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `color` INTEGER NOT NULL, `userId` TEXT NOT NULL, `isVisible` INTEGER NOT NULL, `isPrimary` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`userId`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `userId` TEXT NOT NULL, `isVisible` INTEGER NOT NULL, `isPrimary` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`userId`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -74,12 +74,6 @@
             "fieldPath": "name",
             "columnName": "name",
             "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "color",
-            "columnName": "color",
-            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -143,7 +137,7 @@
       },
       {
         "tableName": "events",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `calendarId` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `location` TEXT, `startTime` INTEGER NOT NULL, `endTime` INTEGER NOT NULL, `isAllDay` INTEGER NOT NULL, `isRecurring` INTEGER NOT NULL, `recurringRule` TEXT, `color` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`calendarId`) REFERENCES `calendars`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `calendarId` TEXT NOT NULL, `calendarName` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `location` TEXT, `startTime` INTEGER NOT NULL, `endTime` INTEGER NOT NULL, `isAllDay` INTEGER NOT NULL, `isRecurring` INTEGER NOT NULL, `recurringRule` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`calendarId`) REFERENCES `calendars`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -154,6 +148,12 @@
           {
             "fieldPath": "calendarId",
             "columnName": "calendarId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "calendarName",
+            "columnName": "calendarName",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -201,11 +201,6 @@
             "fieldPath": "recurringRule",
             "columnName": "recurringRule",
             "affinity": "TEXT"
-          },
-          {
-            "fieldPath": "color",
-            "columnName": "color",
-            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -325,7 +320,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '77784ade28dc47ed55ab6649f651d52e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6abcdbdb3c8762822c68a836d87f3c13')"
     ]
   }
 }

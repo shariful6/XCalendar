@@ -3,6 +3,7 @@ package com.debanshu.xcalendar.domain.model
 data class Event(
     val id: String,
     val calendarId: String,
+    val calendarName: String,
     val title: String,
     val description: String? = null,
     val location: String? = null,
@@ -12,5 +13,5 @@ data class Event(
     val isRecurring: Boolean = false,
     val recurringRule: String? = null,
     val reminderMinutes: List<Int> = emptyList(),
-    val color: Int? = null  // Optional override of calendar color
+    val color: Int,
 )

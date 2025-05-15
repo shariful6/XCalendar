@@ -82,7 +82,7 @@ fun DayWithEvents(
 
                 EventItem(
                     title = event.title,
-                    color = Color(event.color ?: 0xFFE91E63.toInt()),
+                    color = Color(event.color),
                     onClick = { onEventClick(event) },
                     timeText = timeText
                 )

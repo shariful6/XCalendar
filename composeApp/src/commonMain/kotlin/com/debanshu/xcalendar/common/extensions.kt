@@ -13,6 +13,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.abs
 
 fun Long.toLocalDateTime(timeZone: TimeZone): LocalDateTime {
     return Instant.fromEpochMilliseconds(this).toLocalDateTime(timeZone)
@@ -136,4 +137,29 @@ fun formatTimeRange(start: LocalDateTime, end: LocalDateTime): String {
  */
 fun Int.isLeap(): Boolean {
     return (this % 4 == 0 && this % 100 != 0) || (this % 400 == 0)
+}
+
+/*
+ * Extension function to convert a string to a color
+ */
+fun stringToColor(string: String, alpha: Int = 255): Int {
+    // If empty string, return a default color
+    if (string.isEmpty()) {
+        return 0xFF000000.toInt() // Black
+    }
+
+    // Generate a hash code from the string
+    val hash = string.hashCode()
+
+    // Extract RGB components with good distribution
+    // Using prime numbers helps distribute colors better
+    val r = (abs(hash) % 255)
+    val g = (abs(hash / 7) % 255)
+    val b = (abs(hash / 13) % 255)
+
+    // Compose ARGB value
+    return ((alpha and 0xFF) shl 24) or
+            ((r and 0xFF) shl 16) or
+            ((g and 0xFF) shl 8) or
+            (b and 0xFF)
 }

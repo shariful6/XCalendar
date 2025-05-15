@@ -304,7 +304,7 @@ private fun TopAppBarDayCell(
                     modifier = Modifier
                         .size(6.dp)
                         .background(
-                            Color((event.color ?: 0xFFE91E63).toInt()),
+                            Color(event.color),
                             CircleShape
                         )
                         .padding(1.dp)

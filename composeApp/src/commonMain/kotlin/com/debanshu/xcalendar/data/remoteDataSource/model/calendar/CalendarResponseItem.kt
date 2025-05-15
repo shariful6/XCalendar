@@ -5,8 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CalendarResponseItem(
-    @SerialName("color")
-    val color: Int,
     @SerialName("id")
     val id: String,
     @SerialName("isPrimary")

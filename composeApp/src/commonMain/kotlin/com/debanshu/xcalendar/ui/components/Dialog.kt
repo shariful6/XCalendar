@@ -216,7 +216,7 @@ fun EventDetailsDialog(
             // Event color bar
             Box(
                 modifier = Modifier.fillMaxWidth().height(8.dp)
-                    .background(Color((event.color ?: 0xFFE91E63) as Int))
+                    .background(Color(event.color))
             )
 
             Spacer(modifier = Modifier.height(16.dp))
