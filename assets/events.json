@@ -1,7 +1,8 @@
 [
   {
     "id": "ev_001",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Movie Night",
     "description": "Watch the new sci-fi movie at PVR",
     "location": "PVR Cinemas, Mumbai",
@@ -16,7 +17,8 @@
   },
   {
     "id": "ev_002",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Team Meeting",
     "description": "Weekly sprint planning session",
     "location": "Conference Room A",
@@ -32,7 +34,8 @@
   },
   {
     "id": "ev_003",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Family Dinner",
     "description": "Monthly dinner with extended family",
     "location": "Mom's House",
@@ -48,7 +51,8 @@
   },
   {
     "id": "ev_004",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Raj's Birthday",
     "description": "Don't forget to buy a gift!",
     "startTime": 1738323600000,
@@ -63,7 +67,8 @@
   },
   {
     "id": "ev_005",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Gym Session",
     "description": "Leg day",
     "location": "Fitness First, Bandra",
@@ -78,7 +83,8 @@
   },
   {
     "id": "ev_006",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Dentist Appointment",
     "description": "Regular check-up",
     "location": "Dr. Shah's Clinic",
@@ -93,7 +99,8 @@
   },
   {
     "id": "ev_007",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Client Presentation",
     "description": "Final pitch for the new product",
     "location": "Client Office, BKC",
@@ -108,7 +115,8 @@
   },
   {
     "id": "ev_008",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "School Parent-Teacher Meeting",
     "description": "Discuss Arjun's progress",
     "location": "DPS School",
@@ -122,7 +130,8 @@
   },
   {
     "id": "ev_009",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Weekend Getaway",
     "description": "Relaxing trip to Lonavala",
     "location": "Lonavala",
@@ -137,7 +146,8 @@
   },
   {
     "id": "ev_010",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Quarterly Review",
     "description": "Present Q1 results to management",
     "location": "Boardroom",
@@ -154,7 +164,8 @@
   },
   {
     "id": "ev_011",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Anniversary Dinner",
     "description": "Dinner at Taj",
     "location": "Taj Hotel, Colaba",
@@ -170,7 +181,8 @@
   },
   {
     "id": "ev_012",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Flight to Delhi",
     "description": "Business trip",
     "location": "Mumbai Airport",
@@ -185,7 +197,8 @@
   },
   {
     "id": "ev_013",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Delhi Client Meeting",
     "description": "Demo new features",
     "location": "Client Office, Delhi",
@@ -200,7 +213,8 @@
   },
   {
     "id": "ev_014",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Return Flight",
     "description": "Delhi to Mumbai",
     "location": "Delhi Airport",
@@ -214,7 +228,8 @@
   },
   {
     "id": "ev_015",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Yoga Class",
     "description": "Weekly session",
     "location": "Yoga Studio, Andheri",
@@ -229,7 +244,8 @@
   },
   {
     "id": "ev_016",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Mom's Birthday",
     "description": "Plan a surprise party",
     "startTime": 1742028000000,
@@ -244,7 +260,8 @@
   },
   {
     "id": "ev_017",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Dinner with Priya",
     "description": "Catch up over dinner",
     "location": "Social, BKC",
@@ -258,7 +275,8 @@
   },
   {
     "id": "ev_018",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Product Demo",
     "description": "Show new features to the team",
     "location": "Meeting Room B",
@@ -272,7 +290,8 @@
   },
   {
     "id": "ev_019",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Doctor's Appointment",
     "description": "Annual health check-up",
     "location": "Lilavati Hospital",
@@ -287,7 +306,8 @@
   },
   {
     "id": "ev_020",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Weekend Movie",
     "description": "Family movie time",
     "location": "Home",
@@ -302,7 +322,8 @@
   },
   {
     "id": "ev_021",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Team Lunch",
     "description": "Monthly team bonding",
     "location": "The Bombay Canteen",
@@ -317,7 +338,8 @@
   },
   {
     "id": "ev_022",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Haircut",
     "description": "Regular trim",
     "location": "Enrich Salon, Juhu",
@@ -331,7 +353,8 @@
   },
   {
     "id": "ev_023",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Swimming",
     "description": "Lap swimming session",
     "location": "Club Swimming Pool",
@@ -346,7 +369,8 @@
   },
   {
     "id": "ev_024",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Weekly Report Due",
     "description": "Submit project progress report",
     "startTime": 1735603200000,
@@ -361,7 +385,8 @@
   },
   {
     "id": "ev_025",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Grocery Shopping",
     "description": "Weekly grocery run",
     "location": "D-Mart, Powai",
@@ -376,7 +401,8 @@
   },
   {
     "id": "ev_026",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Book Club Meeting",
     "description": "Discussing 'The Silent Patient'",
     "location": "Starbucks, Bandra",
@@ -392,7 +418,8 @@
   },
   {
     "id": "ev_027",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Dad's Birthday",
     "description": "Plan dinner at his favorite restaurant",
     "startTime": 1743458400000,
@@ -407,7 +434,8 @@
   },
   {
     "id": "ev_028",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Client Call",
     "description": "Monthly progress update",
     "startTime": 1743499800000,
@@ -422,7 +450,8 @@
   },
   {
     "id": "ev_029",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Running Session",
     "description": "5K practice run",
     "location": "Marine Drive",
@@ -437,7 +466,8 @@
   },
   {
     "id": "ev_030",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Home Maintenance",
     "description": "AC servicing appointment",
     "location": "Home",
@@ -452,7 +482,8 @@
   },
   {
     "id": "ev_031",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Pay Electricity Bill",
     "description": "Monthly utility payment",
     "startTime": 1735516800000,
@@ -467,7 +498,8 @@
   },
   {
     "id": "ev_032",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Project Deadline",
     "description": "Final submission for UI redesign",
     "location": "Office",
@@ -483,7 +515,8 @@
   },
   {
     "id": "ev_033",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Kid's Sports Day",
     "description": "Annual school sports event",
     "location": "School Ground",
@@ -497,7 +530,8 @@
   },
   {
     "id": "ev_034",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Car Service",
     "description": "Regular maintenance",
     "location": "Honda Service Center",
@@ -511,7 +545,8 @@
   },
   {
     "id": "ev_035",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Marathon Training",
     "description": "Long distance run",
     "location": "Joggers Park",
@@ -526,7 +561,8 @@
   },
   {
     "id": "ev_036",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Neha's Birthday",
     "description": "Office colleague",
     "startTime": 1736455200000,
@@ -540,7 +576,8 @@
   },
   {
     "id": "ev_037",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Code Review",
     "description": "Review pull requests from junior devs",
     "location": "Meeting Room C",
@@ -555,7 +592,8 @@
   },
   {
     "id": "ev_038",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Bank Appointment",
     "description": "Discuss investment options",
     "location": "HDFC Bank, Bandra Branch",
@@ -570,7 +608,8 @@
   },
   {
     "id": "ev_039",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Family Shopping",
     "description": "Buy new clothes for the kids",
     "location": "Phoenix Mall",
@@ -584,7 +623,8 @@
   },
   {
     "id": "ev_040",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Meditation Session",
     "description": "Group meditation",
     "location": "Yoga Studio",
@@ -599,7 +639,8 @@
   },
   {
     "id": "ev_041",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "1:1 with Manager",
     "description": "Weekly check-in",
     "location": "Manager's Office",
@@ -614,7 +655,8 @@
   },
   {
     "id": "ev_042",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Renew Passport",
     "description": "Appointment at passport office",
     "location": "Passport Seva Kendra",
@@ -629,7 +671,8 @@
   },
   {
     "id": "ev_043",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Parent's Anniversary",
     "description": "Plan a surprise celebration",
     "location": "Parents' Home",
@@ -645,7 +688,8 @@
   },
   {
     "id": "ev_044",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Badminton Game",
     "description": "Weekly match with friends",
     "location": "Sports Complex",
@@ -660,7 +704,8 @@
   },
   {
     "id": "ev_045",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Department Meeting",
     "description": "Monthly updates and roadmap discussion",
     "location": "Conference Hall",
@@ -676,7 +721,8 @@
   },
   {
     "id": "ev_046",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Visa Application",
     "description": "Submit documents for business visa",
     "location": "VFS Global Center",
@@ -691,7 +737,8 @@
   },
   {
     "id": "ev_047",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "School Annual Day",
     "description": "Kids' performance in school play",
     "location": "School Auditorium",
@@ -705,7 +752,8 @@
   },
   {
     "id": "ev_048",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Karan's Birthday",
     "description": "Best friend",
     "startTime": 1737937200000,
@@ -720,7 +768,8 @@
   },
   {
     "id": "ev_049",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Wellness Checkup",
     "description": "Fitness assessment",
     "location": "Gym",
@@ -735,7 +784,8 @@
   },
   {
     "id": "ev_050",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Project Kickoff",
     "description": "Start new client project",
     "location": "Meeting Room A",
@@ -750,7 +800,8 @@
   },
   {
     "id": "ev_051",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Tax Filing",
     "description": "Meet with accountant",
     "location": "Accountant's Office",
@@ -765,7 +816,8 @@
   },
   {
     "id": "ev_052",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Team Building Activity",
     "description": "Escape room challenge",
     "location": "Mystery Rooms, Andheri",
@@ -779,7 +831,8 @@
   },
   {
     "id": "ev_053",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "House Cleaning",
     "description": "Deep cleaning with professional service",
     "location": "Home",
@@ -793,7 +846,8 @@
   },
   {
     "id": "ev_054",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Friend's Wedding",
     "description": "Amit's wedding ceremony",
     "location": "Grand Hyatt",
@@ -808,7 +862,8 @@
   },
   {
     "id": "ev_055",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Hiking Trip",
     "description": "Day hike at nearby hills",
     "location": "Sanjay Gandhi National Park",
@@ -822,7 +877,8 @@
   },
   {
     "id": "ev_056",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Training Session",
     "description": "New technology workshop",
     "location": "Training Center",
@@ -837,7 +893,8 @@
   },
   {
     "id": "ev_057",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Internet Installation",
     "description": "Upgrade to fiber connection",
     "location": "Home",
@@ -852,7 +909,8 @@
   },
   {
     "id": "ev_058",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Family Game Night",
     "description": "Board games and snacks",
     "location": "Home",
@@ -867,7 +925,8 @@
   },
   {
     "id": "ev_059",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Sneha's Birthday",
     "description": "Sister",
     "startTime": 1739232000000,
@@ -882,7 +941,8 @@
   },
   {
     "id": "ev_060",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Tennis Lesson",
     "description": "Beginner's class",
     "location": "Tennis Club",
@@ -897,7 +957,8 @@
   },
   {
     "id": "ev_061",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Product Roadmap Planning",
     "description": "Q2 planning session",
     "location": "Conference Room B",
@@ -912,7 +973,8 @@
   },
   {
     "id": "ev_062",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Apartment Hunting",
     "description": "View potential new apartments",
     "location": "Powai",
@@ -927,7 +989,8 @@
   },
   {
     "id": "ev_063",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Kid's Dental Checkup",
     "description": "Regular 6-month checkup",
     "location": "Pediatric Dental Clinic",
@@ -941,7 +1004,8 @@
   },
   {
     "id": "ev_064",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "CrossFit Class",
     "description": "High intensity workout",
     "location": "CrossFit Box",
@@ -956,7 +1020,8 @@
   },
   {
     "id": "ev_065",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Budget Review",
     "description": "Department budget analysis",
     "location": "Finance Conference Room",
@@ -971,7 +1036,8 @@
   },
   {
     "id": "ev_066",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Concert",
     "description": "Live music show",
     "location": "NCPA, Nariman Point",
@@ -986,7 +1052,8 @@
   },
   {
     "id": "ev_067",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "School Science Fair",
     "description": "Support kid's project presentation",
     "location": "School Hall",
@@ -1000,7 +1067,8 @@
   },
   {
     "id": "ev_068",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Aunt Meera's Birthday",
     "description": "Send flowers and call",
     "startTime": 1740355200000,
@@ -1014,7 +1082,8 @@
   },
   {
     "id": "ev_069",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Cycling Tour",
     "description": "Coastal ride with cycling group",
     "location": "Bandstand to Worli Sea Link",
@@ -1028,7 +1097,8 @@
   },
   {
     "id": "ev_070",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Product Launch",
     "description": "Official launch of new mobile app",
     "location": "Company HQ",
@@ -1043,7 +1113,8 @@
   },
   {
     "id": "ev_071",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Driving License Renewal",
     "description": "Visit RTO office",
     "location": "RTO Office, Andheri",
@@ -1058,7 +1129,8 @@
   },
   {
     "id": "ev_072",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Career Fair",
     "description": "Recruiting for engineering team",
     "location": "IIT Bombay Campus",
@@ -1072,7 +1144,8 @@
   },
   {
     "id": "ev_073",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Home Repairs",
     "description": "Plumber visit for bathroom leak",
     "location": "Home",
@@ -1086,7 +1159,8 @@
   },
   {
     "id": "ev_074",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Nutrition Consultation",
     "description": "Diet planning with nutritionist",
     "location": "Wellness Center",
@@ -1101,7 +1175,8 @@
   },
   {
     "id": "ev_075",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Industry Conference",
     "description": "Annual tech conference",
     "location": "Convention Center",
@@ -1116,7 +1191,8 @@
   },
   {
     "id": "ev_076",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Shopping for New Laptop",
     "description": "Compare models at electronics store",
     "location": "Croma, Phoenix Mall",
@@ -1130,7 +1206,8 @@
   },
   {
     "id": "ev_077",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Family Picnic",
     "description": "Outdoor lunch and games",
     "location": "Shivaji Park",
@@ -1144,7 +1221,8 @@
   },
   {
     "id": "ev_078",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Grandma's Birthday",
     "description": "Visit and celebrate together",
     "startTime": 1741564800000,
@@ -1159,7 +1237,8 @@
   },
   {
     "id": "ev_079",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Half Marathon",
     "description": "Mumbai Marathon participation",
     "location": "Marine Drive",
@@ -1174,7 +1253,8 @@
   },
   {
     "id": "ev_080",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Website Redesign Kickoff",
     "description": "Start company website revamp project",
     "location": "Design Studio",
@@ -1189,7 +1269,8 @@
   },
   {
     "id": "ev_081",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Apartment Lease Signing",
     "description": "Finalize new apartment rental",
     "location": "Property Manager's Office",
@@ -1203,7 +1284,8 @@
   },
   {
     "id": "ev_082",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Kid's School Concert",
     "description": "Music recital",
     "location": "School Auditorium",
@@ -1217,7 +1299,8 @@
   },
   {
     "id": "ev_083",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Yoga Workshop",
     "description": "Advanced techniques session",
     "location": "Yoga Studio",
@@ -1231,7 +1314,8 @@
   },
   {
     "id": "ev_084",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Vendor Meeting",
     "description": "Discuss new service contract",
     "location": "Vendor Office",
@@ -1246,7 +1330,8 @@
   },
   {
     "id": "ev_085",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Apartment Moving Day",
     "description": "Relocation to new place",
     "location": "New Apartment",
@@ -1261,7 +1346,8 @@
   },
   {
     "id": "ev_086",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Certification Exam",
     "description": "Professional certification test",
     "location": "Testing Center",
@@ -1276,7 +1362,8 @@
   },
   {
     "id": "ev_087",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Kid's Karate Class",
     "description": "First session after registration",
     "location": "Martial Arts Academy",
@@ -1291,7 +1378,8 @@
   },
   {
     "id": "ev_088",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Cousin's Birthday",
     "description": "Call and send gift",
     "startTime": 1742856000000,
@@ -1305,7 +1393,8 @@
   },
   {
     "id": "ev_089",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Rock Climbing",
     "description": "Indoor climbing session",
     "location": "Adventure Sports Center",
@@ -1319,7 +1408,8 @@
   },
   {
     "id": "ev_090",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Annual Performance Review",
     "description": "Year-end evaluation",
     "location": "HR Office",
@@ -1334,7 +1424,8 @@
   },
   {
     "id": "ev_091",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Apartment Warming Party",
     "description": "Celebrate new home with friends",
     "location": "New Apartment",
@@ -1349,7 +1440,8 @@
   },
   {
     "id": "ev_092",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "School Project Shopping",
     "description": "Buy materials for science project",
     "location": "Craft Store",
@@ -1363,7 +1455,8 @@
   },
   {
     "id": "ev_093",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Dance Class",
     "description": "Beginner's salsa",
     "location": "Dance Studio",
@@ -1378,7 +1471,8 @@
   },
   {
     "id": "ev_094",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Company Offsite",
     "description": "Team building retreat",
     "location": "Resort, Alibaug",
@@ -1393,7 +1487,8 @@
   },
   {
     "id": "ev_095",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Furniture Shopping",
     "description": "Buy new sofa for apartment",
     "location": "IKEA",
@@ -1407,7 +1502,8 @@
   },
   {
     "id": "ev_096",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Parent-Teacher Conference",
     "description": "End of term review",
     "location": "School",
@@ -1421,7 +1517,8 @@
   },
   {
     "id": "ev_097",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Uncle Ravi's Birthday",
     "description": "Call and wish",
     "startTime": 1743988800000,
@@ -1435,7 +1532,8 @@
   },
   {
     "id": "ev_098",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Spa Appointment",
     "description": "Relaxation massage",
     "location": "Spa Center",
@@ -1449,7 +1547,8 @@
   },
   {
     "id": "ev_099",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "User Testing Session",
     "description": "Product usability testing",
     "location": "UX Lab",
@@ -1464,7 +1563,8 @@
   },
   {
     "id": "ev_100",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Internet Provider Switch",
     "description": "Technician visit for new connection",
     "location": "Home",
@@ -1478,7 +1578,8 @@
   },
   {
     "id": "ev_101",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Dinner Reservation",
     "description": "Anniversary dinner",
     "location": "Taj Mahal Palace Hotel",
@@ -1493,7 +1594,8 @@
   },
   {
     "id": "ev_102",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "API Integration Meeting",
     "description": "Discuss third-party integrations",
     "location": "Meeting Room C",
@@ -1508,7 +1610,8 @@
   },
   {
     "id": "ev_103",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Kids' Swimming Lesson",
     "description": "Weekly swimming class",
     "location": "Community Pool",
@@ -1523,7 +1626,8 @@
   },
   {
     "id": "ev_104",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Friend's Birthday",
     "description": "Sonal's birthday celebration",
     "location": "The Bombay Canteen",
@@ -1538,7 +1642,8 @@
   },
   {
     "id": "ev_105",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Personal Training Session",
     "description": "One-on-one with trainer",
     "location": "Fitness First",
@@ -1553,7 +1658,8 @@
   },
   {
     "id": "ev_106",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Blood Test",
     "description": "Fasting blood work",
     "location": "Diagnostic Center",
@@ -1568,7 +1674,8 @@
   },
   {
     "id": "ev_107",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Project Status Meeting",
     "description": "Weekly progress update",
     "location": "Conference Room A",
@@ -1583,7 +1690,8 @@
   },
   {
     "id": "ev_108",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Piano Lesson",
     "description": "Child's music lesson",
     "location": "Music School",
@@ -1598,7 +1706,8 @@
   },
   {
     "id": "ev_109",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Veterinarian Appointment",
     "description": "Cat's annual checkup",
     "location": "Pet Clinic",
@@ -1613,7 +1722,8 @@
   },
   {
     "id": "ev_110",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Group Fitness Class",
     "description": "HIIT workout",
     "location": "Fitness Studio",
@@ -1628,7 +1738,8 @@
   },
   {
     "id": "ev_111",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Brunch with Friends",
     "description": "Catch up over food",
     "location": "Cafe Mondegar",
@@ -1642,7 +1753,8 @@
   },
   {
     "id": "ev_112",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Zoo Visit",
     "description": "Family day out",
     "location": "Mumbai Zoo",
@@ -1657,7 +1769,8 @@
   },
   {
     "id": "ev_113",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Marketing Strategy Meeting",
     "description": "Quarterly planning",
     "location": "Meeting Room B",
@@ -1672,7 +1785,8 @@
   },
   {
     "id": "ev_114",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Grandpa's Birthday",
     "description": "Video call celebration",
     "startTime": 1736809200000,
@@ -1686,7 +1800,8 @@
   },
   {
     "id": "ev_115",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Kayaking",
     "description": "Water adventure activity",
     "location": "Powai Lake",
@@ -1700,7 +1815,8 @@
   },
   {
     "id": "ev_116",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Phone Bill Payment",
     "description": "Monthly bill due",
     "startTime": 1736991300000,
@@ -1715,7 +1831,8 @@
   },
   {
     "id": "ev_117",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "DevOps Workshop",
     "description": "Learning CI/CD pipelines",
     "location": "Training Room",
@@ -1730,7 +1847,8 @@
   },
   {
     "id": "ev_118",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Parent's Council Meeting",
     "description": "School volunteer work",
     "location": "School Conference Room",
@@ -1744,7 +1862,8 @@
   },
   {
     "id": "ev_119",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Pilates Class",
     "description": "Core strengthening",
     "location": "Fitness Studio",
@@ -1759,7 +1878,8 @@
   },
   {
     "id": "ev_120",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Customer Feedback Session",
     "description": "Gather user insights",
     "location": "Meeting Room C",
@@ -1774,7 +1894,8 @@
   },
   {
     "id": "ev_121",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Art Exhibition",
     "description": "Contemporary art showcase",
     "location": "Jehangir Art Gallery",
@@ -1788,7 +1909,8 @@
   },
   {
     "id": "ev_122",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Family Movie Day",
     "description": "Watch new animated film",
     "location": "INOX Cinema",
@@ -1802,7 +1924,8 @@
   },
   {
     "id": "ev_123",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Colleague's Birthday",
     "description": "Office celebration",
     "location": "Office Break Room",
@@ -1817,7 +1940,8 @@
   },
   {
     "id": "ev_124",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Cycling Class",
     "description": "Indoor spinning session",
     "location": "Fitness Center",
@@ -1832,7 +1956,8 @@
   },
   {
     "id": "ev_125",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Software Release Planning",
     "description": "Version 3.0 roadmap",
     "location": "Conference Room B",
@@ -1847,7 +1972,8 @@
   },
   {
     "id": "ev_126",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Visa Interview",
     "description": "Tourist visa application",
     "location": "Consulate General",
@@ -1863,7 +1989,8 @@
   },
   {
     "id": "ev_127",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "School Field Trip",
     "description": "Chaperoning kid's class trip",
     "location": "Science Museum",
@@ -1877,7 +2004,8 @@
   },
   {
     "id": "ev_128",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Boxing Class",
     "description": "Beginner's session",
     "location": "Boxing Gym",
@@ -1892,7 +2020,8 @@
   },
   {
     "id": "ev_129",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "UX Research Planning",
     "description": "Schedule user interviews",
     "location": "UX Lab",
@@ -1906,7 +2035,8 @@
   },
   {
     "id": "ev_130",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Cooking Class",
     "description": "Italian cuisine workshop",
     "location": "Culinary School",
@@ -1921,7 +2051,8 @@
   },
   {
     "id": "ev_131",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Kid's Doctor Appointment",
     "description": "Annual checkup",
     "location": "Pediatrician's Office",
@@ -1935,7 +2066,8 @@
   },
   {
     "id": "ev_132",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Brother's Birthday",
     "description": "Dinner celebration",
     "location": "Home",
@@ -1951,7 +2083,8 @@
   },
   {
     "id": "ev_133",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Squash Game",
     "description": "Match with colleague",
     "location": "Sports Club",
@@ -1965,7 +2098,8 @@
   },
   {
     "id": "ev_134",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Data Privacy Training",
     "description": "Mandatory compliance session",
     "location": "Training Room",
@@ -1980,7 +2114,8 @@
   },
   {
     "id": "ev_135",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Theater Show",
     "description": "Broadway musical touring show",
     "location": "NCPA",
@@ -1995,7 +2130,8 @@
   },
   {
     "id": "ev_136",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Science Project Help",
     "description": "Work on kid's school project",
     "location": "Home",
@@ -2009,7 +2145,8 @@
   },
   {
     "id": "ev_137",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Fitness Assessment",
     "description": "Quarterly progress check",
     "location": "Gym",
@@ -2024,7 +2161,8 @@
   },
   {
     "id": "ev_138",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Security Audit",
     "description": "IT infrastructure review",
     "location": "IT Department",
@@ -2039,7 +2177,8 @@
   },
   {
     "id": "ev_139",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Weekend Market Trip",
     "description": "Shop for fresh produce",
     "location": "Farmers Market",
@@ -2054,7 +2193,8 @@
   },
   {
     "id": "ev_140",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "Kid's Football Match",
     "description": "School tournament game",
     "location": "School Field",
@@ -2068,7 +2208,8 @@
   },
   {
     "id": "ev_141",
-    "calendarId": "cal_004", "calendarName":"Birthdays",
+    "calendarId": "cal_004",
+    "calendarName": "Birthdays",
     "title": "Friend's Birthday",
     "description": "Vikram's party",
     "location": "His Home",
@@ -2083,7 +2224,8 @@
   },
   {
     "id": "ev_142",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Meditation Retreat",
     "description": "Full day mindfulness practice",
     "location": "Wellness Center",
@@ -2097,7 +2239,8 @@
   },
   {
     "id": "ev_143",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Leadership Workshop",
     "description": "Management skills development",
     "location": "Training Center",
@@ -2112,7 +2255,8 @@
   },
   {
     "id": "ev_144",
-    "calendarId": "cal_001", "calendarName":"Personal",
+    "calendarId": "cal_001",
+    "calendarName": "Personal",
     "title": "Art Class",
     "description": "Beginner's watercolor painting",
     "location": "Art Studio",
@@ -2127,7 +2271,8 @@
   },
   {
     "id": "ev_145",
-    "calendarId": "cal_003", "calendarName":"Family",
+    "calendarId": "cal_003",
+    "calendarName": "Family",
     "title": "School Meeting",
     "description": "Summer activities planning",
     "location": "School Hall",
@@ -2141,7 +2286,8 @@
   },
   {
     "id": "ev_146",
-    "calendarId": "cal_005", "calendarName":"Gym",
+    "calendarId": "cal_005",
+    "calendarName": "Gym",
     "title": "Nutrition Workshop",
     "description": "Healthy eating seminar",
     "location": "Community Center",
@@ -2155,7 +2301,8 @@
   },
   {
     "id": "ev_147",
-    "calendarId": "cal_002", "calendarName":"Work",
+    "calendarId": "cal_002",
+    "calendarName": "Work",
     "title": "Product Testing",
     "description": "Beta version trial session",
     "location": "Lab",

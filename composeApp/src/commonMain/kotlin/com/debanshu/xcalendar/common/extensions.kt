@@ -142,7 +142,7 @@ fun Int.isLeap(): Boolean {
 /*
  * Extension function to convert a string to a color
  */
-fun stringToColor(string: String, alpha: Int = 255): Int {
+fun convertStringToColor(string: String, alpha: Int = 255): Int {
     // If empty string, return a default color
     if (string.isEmpty()) {
         return 0xFF000000.toInt() // Black

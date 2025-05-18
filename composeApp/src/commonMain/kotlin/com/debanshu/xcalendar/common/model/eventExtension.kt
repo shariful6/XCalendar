@@ -1,6 +1,6 @@
 package com.debanshu.xcalendar.common.model
 
-import com.debanshu.xcalendar.common.stringToColor
+import com.debanshu.xcalendar.common.convertStringToColor
 import com.debanshu.xcalendar.data.localDataSource.model.EventEntity
 import com.debanshu.xcalendar.data.remoteDataSource.model.calendar.EventResponseItem
 import com.debanshu.xcalendar.domain.model.Event
@@ -19,8 +19,8 @@ fun EventResponseItem.asEvent(): Event {
         recurringRule = recurringRule,
         reminderMinutes = reminderMinutes,
         calendarId = calendarId,
-        calendarName = calenderName,
-        color = stringToColor(calendarId)
+        calendarName = calenderName ?: "",
+        color = convertStringToColor(calendarId + calenderName)
     )
 }
 
@@ -38,7 +38,7 @@ fun EventEntity.asEvent(): Event {
         recurringRule = recurringRule,
         reminderMinutes = emptyList(),
         calendarName = calendarName,
-        color = stringToColor(calendarId)
+        color = convertStringToColor(calendarId + calendarName)
     )
 }
 
