@@ -19,8 +19,8 @@ fun EventResponseItem.asEvent(): Event {
         recurringRule = recurringRule,
         reminderMinutes = reminderMinutes,
         calendarId = calendarId,
-        calendarName = calenderName ?: "",
-        color = convertStringToColor(calendarId + calenderName)
+        calendarName = calendarName ?: "",
+        color = convertStringToColor(calendarId + calendarName)
     )
 }
 

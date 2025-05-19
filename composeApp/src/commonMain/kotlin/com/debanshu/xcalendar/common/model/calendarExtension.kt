@@ -9,7 +9,7 @@ fun CalendarResponseItem.asCalendar(): Calendar {
     return Calendar(
         id = id,
         name = name,
-        color = convertStringToColor(id),
+        color = convertStringToColor(id + name),
         isVisible = isVisible,
         isPrimary = isPrimary,
         userId = userId
