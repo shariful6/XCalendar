@@ -143,19 +143,19 @@ fun Int.isLeap(): Boolean {
  * Extension function to convert a string to a color
  */
 fun convertStringToColor(string: String, alpha: Int = 255): Int {
-    // If empty string, return a default color
+    // If empty string, return a default light color
     if (string.isEmpty()) {
-        return 0xFF000000.toInt() // Black
+        return 0xFFF0F0F0.toInt() // Light gray instead of black
     }
 
     // Generate a hash code from the string
     val hash = string.hashCode()
 
-    // Extract RGB components with good distribution
-    // Using prime numbers helps distribute colors better
-    val r = (abs(hash) % 255)
-    val g = (abs(hash / 7) % 255)
-    val b = (abs(hash / 13) % 255)
+    // Create pastel colors by ensuring higher base values
+    // Base of 180 ensures colors are lighter, range of 75 gives some variation
+    val r = 180 + (abs(hash) % 75)
+    val g = 180 + (abs(hash / 7) % 75)
+    val b = 180 + (abs(hash / 13) % 75)
 
     // Compose ARGB value
     return ((alpha and 0xFF) shl 24) or
