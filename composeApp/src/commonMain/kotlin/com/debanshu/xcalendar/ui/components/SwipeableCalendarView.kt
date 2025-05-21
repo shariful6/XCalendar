@@ -47,6 +47,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
@@ -518,64 +521,149 @@ private fun CalendarEventsGrid(
             }
         }
 
+        // Process events by date and detect overlaps
         dates.forEachIndexed { dayIndex, date ->
             val dayEvents = events.filter { event ->
                 event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
             }
 
-            dayEvents.forEach { event ->
-                val eventStart = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
-                val eventEnd = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
+            // Group overlapping events
+            val eventGroups = groupOverlappingEvents(dayEvents)
 
-                val hour = eventStart.hour
-                val minute = eventStart.minute
+            eventGroups.forEach { (_, group) ->
+                val totalOverlapping = group.size
 
-                if (hour in timeRange) {
-                    val durationMinutes = if (eventStart.date == eventEnd.date) {
-                        (eventEnd.hour - hour) * 60 + (eventEnd.minute - minute)
-                    } else {
-                        (24 - hour) * 60 - minute
+                group.forEachIndexed { eventIndex, event ->
+                    val eventStart = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
+                    val eventEnd = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
+
+                    val hour = eventStart.hour
+                    val minute = eventStart.minute
+
+                    if (hour in timeRange) {
+                        val durationMinutes = if (eventStart.date == eventEnd.date) {
+                            (eventEnd.hour - hour) * 60 + (eventEnd.minute - minute)
+                        } else {
+                            (24 - hour) * 60 - minute
+                        }
+
+                        val topOffset = (hour - timeRange.first) * hourHeightDp + (minute / 60f) * hourHeightDp
+                        val eventHeight = (durationMinutes / 60f) * hourHeightDp
+
+                        // Calculate width and horizontal position based on overlap
+                        val eventWidth = dayColumnWidth / totalOverlapping
+                        val horizontalOffset = eventWidth * eventIndex
+
+                        EventItem(
+                            event = event,
+                            onClick = { onEventClick(event) },
+                            modifier = Modifier
+                                .offset(
+                                    x = dayColumnWidth * dayIndex + horizontalOffset,
+                                    y = topOffset.dp
+                                )
+                                .width(eventWidth)
+                                .height(eventHeight.dp.coerceAtLeast(30.dp))
+                                .padding(1.dp),
+                            isOverlapping = totalOverlapping > 1
+                        )
                     }
-
-                    val topOffset =
-                        (hour - timeRange.first) * hourHeightDp + (minute / 60f) * hourHeightDp
-                    val eventHeight = (durationMinutes / 60f) * hourHeightDp
-
-                    EventItem(
-                        event = event,
-                        onClick = { onEventClick(event) },
-                        modifier = Modifier
-                            .offset(
-                                x = dayColumnWidth * dayIndex,
-                                y = topOffset.dp
-                            )
-                            .width(dayColumnWidth)
-                            .height(eventHeight.dp.coerceAtLeast(30.dp))
-                            .padding(1.dp)
-                    )
                 }
             }
         }
     }
 }
 
+// Helper function to group overlapping events
+private fun groupOverlappingEvents(events: List<Event>): Map<Int, List<Event>> {
+    // Sort events by start time
+    val sortedEvents = events.sortedBy { it.startTime }
+
+    // Group events that overlap in time
+    val groups = mutableMapOf<Int, MutableList<Event>>()
+    var groupId = 0
+
+    sortedEvents.forEach { event ->
+        val eventStart = event.startTime
+        val eventEnd = event.endTime
+
+        // Find a group where this event doesn't overlap with any event in the group
+        val existingGroup = groups.entries.firstOrNull { (_, groupEvents) ->
+            groupEvents.none {
+                // Check if events overlap
+                (eventStart < it.endTime && eventEnd > it.startTime)
+            }
+        }
+
+        if (existingGroup != null) {
+            // Add to existing group
+            existingGroup.value.add(event)
+        } else {
+            // Create a new group
+            groups[groupId] = mutableListOf(event)
+            groupId++
+        }
+    }
+
+    return groups
+}
+
 @Composable
 private fun EventItem(
     event: Event,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isOverlapping: Boolean = false
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(Color(event.color))
+            .border(1.dp, color = Color(event.color))
+            .background(Color(event.color).copy(alpha = if (isOverlapping) 0.7f else 0.9f))
             .clickable(onClick = onClick)
+            .then(
+                if (isOverlapping) {
+                    Modifier.drawWithCache() {
+                        // This block is re-executed only if the size changes
+                        // or a state object read here changes.
+                        val strokeWidthPx = 1.dp.toPx() // Convert Dp to Px for drawing
+                        val spacingPx = 8.dp.toPx()     // Convert Dp to Px
+                        val hatchColor = Color.Black.copy(alpha = 0.1f)
+
+                        // Option 1: Keep the loop (simpler, often sufficient with drawWithCache)
+                        onDrawBehind {
+                            val width = size.width
+                            val height = size.height
+                            // The loop range can be optimized. We only need to draw lines
+                            // that actually cross the composable's area.
+                            // Lines are of the form y = -x + c.
+                            // c ranges from 0 to width + height.
+                            var c = 0f
+                            while (c < width + height) {
+                                drawLine(
+                                    color = hatchColor,
+                                    start = Offset(
+                                        x = 0f.coerceAtLeast(c - height),
+                                        y = c.coerceAtMost(height)
+                                    ),
+                                    end = Offset(
+                                        x = c.coerceAtMost(width),
+                                        y = 0f.coerceAtLeast(c - width)
+                                    ),
+                                    strokeWidth = strokeWidthPx
+                                )
+                                c += spacingPx
+                            }
+                        }
+                    }
+                } else Modifier
+            )
             .padding(4.dp)
     ) {
         Text(
             text = event.title,
             style = XCalendarTheme.typography.labelSmall,
-            fontSize = 10.sp,
+            color = XCalendarTheme.colorScheme.inverseOnSurface,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
