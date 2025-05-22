@@ -559,7 +559,7 @@ private fun CalendarEventsGrid(
                             onClick = { onEventClick(event) },
                             modifier = Modifier
                                 .offset(
-                                    x = dayColumnWidth * dayIndex + horizontalOffset,
+                                    x = dayColumnWidth * dayIndex,
                                     y = topOffset.dp
                                 )
                                 .width(eventWidth)
