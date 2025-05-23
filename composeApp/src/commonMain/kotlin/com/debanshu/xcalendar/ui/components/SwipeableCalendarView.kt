@@ -551,9 +551,6 @@ private fun CalendarEventsGrid(
                         val eventHeight = (durationMinutes / 60f) * hourHeightDp
 
                         // Calculate width and horizontal position based on overlap
-                        val eventWidth = dayColumnWidth / totalOverlapping
-                        val horizontalOffset = eventWidth * eventIndex
-
                         EventItem(
                             event = event,
                             onClick = { onEventClick(event) },
@@ -562,7 +559,7 @@ private fun CalendarEventsGrid(
                                     x = dayColumnWidth * dayIndex,
                                     y = topOffset.dp
                                 )
-                                .width(eventWidth)
+                                .width(dayColumnWidth)
                                 .height(eventHeight.dp.coerceAtLeast(30.dp))
                                 .padding(1.dp),
                             isOverlapping = totalOverlapping > 1
@@ -621,43 +618,6 @@ private fun EventItem(
             .border(1.dp, color = Color(event.color))
             .background(Color(event.color).copy(alpha = if (isOverlapping) 0.7f else 0.9f))
             .clickable(onClick = onClick)
-            .then(
-                if (isOverlapping) {
-                    Modifier.drawWithCache() {
-                        // This block is re-executed only if the size changes
-                        // or a state object read here changes.
-                        val strokeWidthPx = 1.dp.toPx() // Convert Dp to Px for drawing
-                        val spacingPx = 8.dp.toPx()     // Convert Dp to Px
-                        val hatchColor = Color.Black.copy(alpha = 0.1f)
-
-                        // Option 1: Keep the loop (simpler, often sufficient with drawWithCache)
-                        onDrawBehind {
-                            val width = size.width
-                            val height = size.height
-                            // The loop range can be optimized. We only need to draw lines
-                            // that actually cross the composable's area.
-                            // Lines are of the form y = -x + c.
-                            // c ranges from 0 to width + height.
-                            var c = 0f
-                            while (c < width + height) {
-                                drawLine(
-                                    color = hatchColor,
-                                    start = Offset(
-                                        x = 0f.coerceAtLeast(c - height),
-                                        y = c.coerceAtMost(height)
-                                    ),
-                                    end = Offset(
-                                        x = c.coerceAtMost(width),
-                                        y = 0f.coerceAtLeast(c - width)
-                                    ),
-                                    strokeWidth = strokeWidthPx
-                                )
-                                c += spacingPx
-                            }
-                        }
-                    }
-                } else Modifier
-            )
             .padding(4.dp)
     ) {
         Text(

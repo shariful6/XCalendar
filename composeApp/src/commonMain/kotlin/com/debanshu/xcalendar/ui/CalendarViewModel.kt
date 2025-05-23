@@ -10,9 +10,11 @@ import com.debanshu.xcalendar.domain.repository.EventRepository
 import com.debanshu.xcalendar.domain.repository.HolidayRepository
 import com.debanshu.xcalendar.domain.repository.UserRepository
 import com.debanshu.xcalendar.domain.states.CalendarUiState
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -25,6 +27,7 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.android.annotation.KoinViewModel
+import kotlin.time.Duration.Companion.milliseconds
 
 @KoinViewModel
 class CalendarViewModel(
@@ -49,26 +52,28 @@ class CalendarViewModel(
     private val events = eventRepository.getEventsForCalendarsInRange("user_id", startTime, endTime)
 
     private val _uiState = MutableStateFlow(CalendarUiState())
+    @OptIn(FlowPreview::class)
     val uiState = combine(
         _uiState,
         users,
         holidays,
         calendars,
         events,
-    ) { state, users,holidays, calendars, events ->
+    ) { state, users, holidays, calendars, events ->
         state.copy(
             accounts = users,
             holidays = holidays,
             calendars = calendars,
             events = events
         )
-    }.onStart {
-        init()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = CalendarUiState()
-    )
+    }.debounce(250.milliseconds)
+        .onStart {
+            init()
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = CalendarUiState()
+        )
 
     private fun init() {
         viewModelScope.launch {
