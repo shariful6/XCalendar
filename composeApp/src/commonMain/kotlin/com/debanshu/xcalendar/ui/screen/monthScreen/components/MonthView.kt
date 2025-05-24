@@ -21,8 +21,8 @@ import kotlinx.datetime.number
 fun MonthView(
     modifier: Modifier,
     month: YearMonth,
-    events: List<Event>,
-    holidays: List<Holiday>,
+    events: () -> List<Event>,
+    holidays: () -> List<Holiday>,
     onDayClick: (LocalDate) -> Unit,
 ) {
     val firstDayOfMonth = LocalDate(month.year, month.month, 1)
@@ -53,10 +53,10 @@ fun MonthView(
                 DayCell(
                     modifier = Modifier,
                     date = date,
-                    events = events.filter { event ->
+                    events = events().filter { event ->
                         event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                     },
-                    holidays = holidays.filter { holiday ->
+                    holidays = holidays().filter { holiday ->
                         holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                     },
                     isCurrentMonth = false,
@@ -70,10 +70,10 @@ fun MonthView(
             DayCell(
                 modifier = Modifier,
                 date = date,
-                events = events.filter { event ->
+                events = events().filter { event ->
                     event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 },
-                holidays = holidays.filter { holiday ->
+                holidays = holidays().filter { holiday ->
                     holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 },
                 isCurrentMonth = true,
@@ -90,10 +90,10 @@ fun MonthView(
             DayCell(
                 modifier = Modifier,
                 date = date,
-                events = events.filter { event ->
+                events = events().filter { event ->
                     event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 },
-                holidays = holidays.filter { holiday ->
+                holidays = holidays().filter { holiday ->
                     holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
                 },
                 isCurrentMonth = false,

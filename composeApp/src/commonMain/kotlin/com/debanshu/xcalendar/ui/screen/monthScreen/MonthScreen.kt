@@ -15,8 +15,8 @@ import kotlinx.datetime.LocalDate
 fun MonthScreen(
     modifier: Modifier = Modifier,
     dateStateHolder: DateStateHolder,
-    events: List<Event>,
-    holidays: List<Holiday>,
+    events: () -> List<Event>,
+    holidays: () -> List<Holiday>,
     onDateClick: (LocalDate) -> Unit,
 ) {
     val dateState by dateStateHolder.currentDateState.collectAsState()

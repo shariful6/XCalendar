@@ -156,8 +156,8 @@ fun CalendarApp(
                             MonthScreen(
                                 modifier = Modifier.padding(paddingValues),
                                 dateStateHolder,
-                                calendarUiState.events,
-                                calendarUiState.holidays,
+                                { calendarUiState.events },
+                                { calendarUiState.holidays },
                                 onDateClick = {
                                     navController.navigate(CalendarView.Day.toString())
                                 }

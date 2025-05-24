@@ -32,8 +32,8 @@ import kotlin.math.roundToInt
 fun SwipeableMonthView(
     modifier: Modifier = Modifier,
     currentMonth: YearMonth,
-    events: List<Event>,
-    holidays: List<Holiday>,
+    events: () -> List<Event>,
+    holidays: () -> List<Holiday>,
     onSpecificDayClicked: (LocalDate) -> Unit,
     onMonthChange: (YearMonth) -> Unit
 ) {
@@ -99,7 +99,7 @@ fun SwipeableMonthView(
     ) {
         MonthView(
             month = currentMonth,
-            events = events,
+            events =  events,
             holidays = holidays,
             onDayClick = onSpecificDayClicked,
             modifier = Modifier
