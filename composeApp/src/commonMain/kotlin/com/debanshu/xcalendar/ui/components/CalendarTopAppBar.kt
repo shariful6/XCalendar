@@ -104,7 +104,8 @@ fun CalendarTopAppBar(
                 scrolledContainerColor = XCalendarTheme.colorScheme.surfaceContainerHigh,
                 navigationIconContentColor = XCalendarTheme.colorScheme.onSurface,
                 titleContentColor = XCalendarTheme.colorScheme.onSurface,
-                actionIconContentColor = XCalendarTheme.colorScheme.onSurface
+                actionIconContentColor = XCalendarTheme.colorScheme.onSurface,
+                subtitleContentColor = XCalendarTheme.colorScheme.onSurface
             ),
             navigationIcon = {
                 IconButton(onClick = onMenuClick) {
@@ -149,7 +150,7 @@ fun CalendarTopAppBar(
                 }
                 IconButton(onClick = { onSelectToday() }) {
                     Text(
-                        text = dateState.currentDate.dayOfMonth.toString(),
+                        text = dateState.currentDate.day.toString(),
                         style = XCalendarTheme.typography.bodyMedium,
                     )
                 }
@@ -256,7 +257,7 @@ private fun TopAppBarDayCell(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = date.dayOfMonth.toString(),
+            text = date.day.toString(),
             style = XCalendarTheme.typography.bodySmall,
             color = when {
                 isToday -> XCalendarTheme.colorScheme.inverseOnSurface

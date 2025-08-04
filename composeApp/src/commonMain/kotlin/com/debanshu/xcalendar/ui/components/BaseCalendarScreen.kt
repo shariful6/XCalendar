@@ -119,7 +119,7 @@ fun BaseCalendarScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = startDate.dayOfMonth.toString(),
+                                text = startDate.day.toString(),
                                 style = XCalendarTheme.typography.bodyMedium,
                                 color = when {
                                     isToday -> XCalendarTheme.colorScheme.inverseOnSurface

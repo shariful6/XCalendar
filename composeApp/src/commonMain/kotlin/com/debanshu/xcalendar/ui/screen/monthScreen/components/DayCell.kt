@@ -75,7 +75,7 @@ fun DayCell(
                         CircleShape
                     )
                     .padding(4.dp),
-                text = date.dayOfMonth.toString(),
+                text = date.day.toString(),
                 style = XCalendarTheme.typography.labelSmall,
                 color = when {
                     isToday -> XCalendarTheme.colorScheme.inverseOnSurface

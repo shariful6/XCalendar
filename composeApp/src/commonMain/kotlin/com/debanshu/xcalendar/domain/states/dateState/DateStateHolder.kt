@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.annotation.Single
 import kotlin.time.ExperimentalTime
@@ -18,7 +19,7 @@ class DateStateHolder {
         DateState(
             date,
             date,
-            YearMonth(date.year, date.monthNumber),
+            YearMonth(date.year, date.month.number),
         )
     )
     val currentDateState: StateFlow<DateState> = _currentDateState

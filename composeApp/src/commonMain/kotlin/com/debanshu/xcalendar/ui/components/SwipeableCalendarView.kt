@@ -340,7 +340,7 @@ private fun DaysHeaderRow(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = date.dayOfMonth.toString(),
+                            text = date.day.toString(),
                             style = XCalendarTheme.typography.bodyMedium,
                             color = when {
                                 isToday -> XCalendarTheme.colorScheme.inverseOnSurface

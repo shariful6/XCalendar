@@ -45,7 +45,7 @@ class HolidayRepository(
         val endDateTime = LocalDateTime(
             year = year,
             month = Month.DECEMBER,
-            dayOfMonth = 31,
+            day = 31,
             hour = 23,
             minute = 59,
             second = 59,

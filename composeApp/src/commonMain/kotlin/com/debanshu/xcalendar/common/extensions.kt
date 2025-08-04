@@ -28,7 +28,6 @@ fun Month.lengthOfMonth(isLeap: Boolean): Int {
 
         Month.APRIL, Month.JUNE, Month.SEPTEMBER, Month.NOVEMBER -> 30
         Month.FEBRUARY -> if (isLeap) 29 else 28
-        else -> 0
     }
 }
 

@@ -30,7 +30,6 @@ private fun getMonthImageUrl(month: Month): String {
         Month.OCTOBER -> "https://weandthecolor.com/wp-content/uploads/2014/11/10-October-harvest-time.jpg"
         Month.NOVEMBER -> "https://weandthecolor.com/wp-content/uploads/2014/11/11-November-cold-and-rainy.jpg"
         Month.DECEMBER -> "https://weandthecolor.com/wp-content/uploads/2014/11/12-December-the-beginning-of-winter.jpg"
-        else -> "https://weandthecolor.com/wp-content/uploads/2014/11/15-Additional-illustration.jpg"
     }
 }
 

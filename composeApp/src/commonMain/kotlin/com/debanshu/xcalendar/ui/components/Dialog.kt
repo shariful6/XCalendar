@@ -65,14 +65,14 @@ fun AddEventDialog(
     var startDateTime by remember {
         mutableStateOf(
             LocalDateTime(
-                selectedDate.year, selectedDate.month, selectedDate.dayOfMonth, 9, 0
+                selectedDate.year, selectedDate.month, selectedDate.day, 9, 0
             )
         )
     }
     var endDateTime by remember {
         mutableStateOf(
             LocalDateTime(
-                selectedDate.year, selectedDate.month, selectedDate.dayOfMonth, 10, 0
+                selectedDate.year, selectedDate.month, selectedDate.day, 10, 0
             )
         )
     }
@@ -201,7 +201,7 @@ fun EventDetailsDialog(
     val endDateTime = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
 
     val formattedDate =
-        "${startDateTime.date.month.name} ${startDateTime.date.dayOfMonth}, ${startDateTime.date.year}"
+        "${startDateTime.date.month.name} ${startDateTime.date.day}, ${startDateTime.date.year}"
     val formattedStartTime = "${startDateTime.hour % 12}:${
         startDateTime.minute.toString().padStart(2, '0')
     } ${if (startDateTime.hour >= 12) "PM" else "AM"}"

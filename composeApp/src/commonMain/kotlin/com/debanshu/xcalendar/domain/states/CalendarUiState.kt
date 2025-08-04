@@ -5,13 +5,6 @@ import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.model.User
 import com.debanshu.xcalendar.ui.TopBarCalendarView
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
 
 data class CalendarUiState(
     val showMonthDropdown: TopBarCalendarView = TopBarCalendarView.NoView,

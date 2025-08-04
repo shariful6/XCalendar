@@ -15,7 +15,7 @@ sealed class ScheduleItem {
 
     data class WeekHeader(val startDate: LocalDate, val endDate: LocalDate) : ScheduleItem() {
         override val uniqueId: String =
-            "week_${startDate.year}_${startDate.monthNumber}_${startDate.dayOfMonth}"
+            "week_${startDate.year}_${startDate.month}_${startDate.day}"
     }
 
     data class DayEvents(
@@ -23,6 +23,6 @@ sealed class ScheduleItem {
         val events: List<Event>,
         val holidays: List<Holiday>
     ) : ScheduleItem() {
-        override val uniqueId: String = "day_${date.year}_${date.monthNumber}_${date.dayOfMonth}"
+        override val uniqueId: String = "day_${date.year}_${date.month}_${date.day}"
     }
 }

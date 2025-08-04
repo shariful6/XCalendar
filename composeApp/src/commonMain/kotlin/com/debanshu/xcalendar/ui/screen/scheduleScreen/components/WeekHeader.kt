@@ -21,7 +21,8 @@ fun WeekHeader(startDate: LocalDate, endDate: LocalDate) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${startDate.dayOfMonth} – ${endDate.dayOfMonth} ${endDate.month.name.take(3)}".uppercase(),
+            text = "${startDate.day} – ${endDate.day} ${endDate.month.name.take(3)}"
+                .uppercase(),
             style = XCalendarTheme.typography.labelSmall,
             fontWeight = FontWeight.Medium,
             color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.7f)
