@@ -12,6 +12,7 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import org.koin.core.annotation.Singleton
+import kotlin.time.ExperimentalTime
 
 @Singleton
 class HolidayRepository(
@@ -30,11 +31,12 @@ class HolidayRepository(
             }
         }
     }
+    @OptIn(ExperimentalTime::class)
     fun getHolidaysForYear(countryCode: String, year: Int): Flow<List<Holiday>> {
         val startDateTime = LocalDateTime(
             year = year,
             month = Month.JANUARY,
-            dayOfMonth = 1,
+            day = 1,
             hour = 0,
             minute = 0,
             second = 0,

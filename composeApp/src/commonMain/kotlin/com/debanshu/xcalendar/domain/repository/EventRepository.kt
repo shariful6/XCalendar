@@ -43,7 +43,8 @@ class EventRepository(
 
     suspend fun addEvent(event: Event) {
         val eventEntity = event.asEntity()
-        val reminderEntities = event.reminderMinutes.map { minutes -> EventReminderEntity(event.id, minutes) }
+        val reminderEntities =
+            event.reminderMinutes.map { minutes -> EventReminderEntity(event.id, minutes) }
         eventDao.insertEventWithReminders(eventEntity, reminderEntities)
     }
 

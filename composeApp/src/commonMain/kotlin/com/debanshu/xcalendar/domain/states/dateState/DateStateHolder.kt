@@ -3,14 +3,16 @@ package com.debanshu.xcalendar.domain.states.dateState
 import com.debanshu.xcalendar.common.model.YearMonth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.annotation.Single
+import kotlin.time.ExperimentalTime
 
 @Single
 class DateStateHolder {
+    @OptIn(ExperimentalTime::class)
     val date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     private val _currentDateState = MutableStateFlow(
         DateState(
@@ -28,7 +30,7 @@ class DateStateHolder {
         )
     }
 
-     fun updateSelectedDateState(selectedDate: LocalDate) {
+    fun updateSelectedDateState(selectedDate: LocalDate) {
         _currentDateState.tryEmit(
             _currentDateState.value.copy(
                 selectedDate = selectedDate,

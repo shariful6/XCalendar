@@ -12,21 +12,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.debanshu.xcalendar.common.customBorder
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun WeekdayHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        val ordinalToday = if(today.dayOfWeek.ordinal == 6) 0 else today.dayOfWeek.ordinal + 1
+        val today =
+            Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val ordinalToday = if (today.dayOfWeek.ordinal == 6) 0 else today.dayOfWeek.ordinal + 1
         val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
 
-        daysOfWeek.forEachIndexed {dayIndex, day ->
+        daysOfWeek.forEachIndexed { dayIndex, day ->
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -50,7 +53,7 @@ fun WeekdayHeader() {
                 Text(
                     text = day,
                     style = XCalendarTheme.typography.bodySmall,
-                    color = if(dayIndex == ordinalToday)
+                    color = if (dayIndex == ordinalToday)
                         XCalendarTheme.colorScheme.primary
                     else
                         XCalendarTheme.colorScheme.onSurface

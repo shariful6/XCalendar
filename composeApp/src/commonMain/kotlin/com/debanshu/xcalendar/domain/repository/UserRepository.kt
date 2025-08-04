@@ -19,6 +19,7 @@ class UserRepository(private val userDao: UserDao) {
         )
         addUser(dummyUser)
     }
+
     fun getAllUsers(): Flow<List<User>> =
         userDao.getAllUsers().map { entities -> entities.map { it.asUser() } }
 

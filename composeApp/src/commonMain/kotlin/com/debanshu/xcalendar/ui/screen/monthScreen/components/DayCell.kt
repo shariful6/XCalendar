@@ -27,12 +27,14 @@ import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.ui.components.EventTag
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun DayCell(
     modifier: Modifier,
@@ -96,7 +98,7 @@ fun DayCell(
             }
         }
 
-        items(displayedEvents){ event ->
+        items(displayedEvents) { event ->
             Spacer(modifier = Modifier.height(2.dp))
             EventTag(
                 text = event.title,

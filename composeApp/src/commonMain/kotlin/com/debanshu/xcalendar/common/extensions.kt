@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
@@ -14,7 +14,9 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.abs
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 fun Long.toLocalDateTime(timeZone: TimeZone): LocalDateTime {
     return Instant.fromEpochMilliseconds(this).toLocalDateTime(timeZone)
 }
@@ -46,6 +48,7 @@ fun String.toSentenceCase(): String {
  * @param dateTimeString The date/time string to convert
  * @return Unix timestamp in milliseconds
  */
+@OptIn(ExperimentalTime::class)
 fun parseDateTime(dateTimeString: String): Long {
     return when {
         // ISO 8601 format with timezone

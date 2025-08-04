@@ -17,11 +17,13 @@ import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun DayWithEvents(
     date: LocalDate,
@@ -50,7 +52,7 @@ fun DayWithEvents(
             )
 
             Text(
-                text = date.dayOfMonth.toString(),
+                text = date.day.toString(),
                 style = XCalendarTheme.typography.headlineSmall,
                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
                 color = XCalendarTheme.colorScheme.onSurface
@@ -75,7 +77,8 @@ fun DayWithEvents(
             // All events with consistent styling
             events.forEach { event ->
                 val timeText = if (!event.isAllDay) {
-                    val startDateTime = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
+                    val startDateTime =
+                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
                     val endDateTime = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
                     formatTimeRange(startDateTime, endDateTime)
                 } else null

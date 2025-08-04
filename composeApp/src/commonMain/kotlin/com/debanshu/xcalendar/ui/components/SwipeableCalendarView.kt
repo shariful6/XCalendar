@@ -1,25 +1,17 @@
 package com.debanshu.xcalendar.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,10 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -38,7 +28,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,18 +36,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -68,7 +52,6 @@ import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.ui.theme.XCalendarTheme
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -77,6 +60,8 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * A swipeable calendar view that can be used for day, three-day or week views.
@@ -436,7 +421,7 @@ private fun DaysHeaderRow(
                             overflow = TextOverflow.Ellipsis,
                             color = XCalendarTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
-                                .padding(horizontal = 8.dp,vertical = 4.dp)
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
                                 .fillMaxWidth()
                                 .clickable { holidaysExpanded = true }
                         )
@@ -461,6 +446,7 @@ private fun DaysHeaderRow(
 }
 
 
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun CalendarEventsGrid(
     startDate: LocalDate,
@@ -534,7 +520,8 @@ private fun CalendarEventsGrid(
                 val totalOverlapping = group.size
 
                 group.forEachIndexed { eventIndex, event ->
-                    val eventStart = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
+                    val eventStart =
+                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
                     val eventEnd = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
 
                     val hour = eventStart.hour
@@ -547,7 +534,8 @@ private fun CalendarEventsGrid(
                             (24 - hour) * 60 - minute
                         }
 
-                        val topOffset = (hour - timeRange.first) * hourHeightDp + (minute / 60f) * hourHeightDp
+                        val topOffset =
+                            (hour - timeRange.first) * hourHeightDp + (minute / 60f) * hourHeightDp
                         val eventHeight = (durationMinutes / 60f) * hourHeightDp
 
                         // Calculate width and horizontal position based on overlap

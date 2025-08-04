@@ -9,7 +9,7 @@ sealed class CalendarView {
 }
 
 sealed class TopBarCalendarView {
-    data object NoView: TopBarCalendarView()
+    data object NoView : TopBarCalendarView()
     data object Week : TopBarCalendarView()
     data object Month : TopBarCalendarView()
 }

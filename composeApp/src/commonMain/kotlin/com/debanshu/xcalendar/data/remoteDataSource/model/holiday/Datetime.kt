@@ -9,7 +9,7 @@ data class Datetime(
     @SerialName("day")
     val day: Int,
     @SerialName("hour")
-    val hour: Int? = 0 ,
+    val hour: Int? = 0,
     @SerialName("minute")
     val minute: Int? = 0,
     @SerialName("month")

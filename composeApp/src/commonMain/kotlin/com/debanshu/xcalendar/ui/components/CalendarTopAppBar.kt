@@ -55,10 +55,11 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Bars
 import compose.icons.fontawesomeicons.solid.CaretDown
 import compose.icons.fontawesomeicons.solid.Search
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -240,6 +241,7 @@ private fun TopAppBarWeekdayHeader() {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun TopAppBarDayCell(
     date: LocalDate,

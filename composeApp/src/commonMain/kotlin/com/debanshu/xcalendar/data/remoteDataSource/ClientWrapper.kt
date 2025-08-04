@@ -30,7 +30,7 @@ class ClientWrapper(val networkClient: HttpClient) {
         } catch (_: SerializationException) {
             return Result.Error(DataError.Network.SERIALIZATION)
         } catch (ex: Exception) {
-            print("HEREEEEEEE"+ex.message.toString())
+            print("HEREEEEEEE" + ex.message.toString())
             return Result.Error(DataError.Network.UNKNOWN)
         }
         return when (response.status.value) {
@@ -42,6 +42,7 @@ class ClientWrapper(val networkClient: HttpClient) {
                 val data = json.decodeFromString<T>(response.body())
                 Result.Success(data)
             }
+
             401 -> Result.Error(DataError.Network.UNAUTHORIZED)
             409 -> Result.Error(DataError.Network.CONFLICT)
             408 -> Result.Error(DataError.Network.REQUEST_TIMEOUT)

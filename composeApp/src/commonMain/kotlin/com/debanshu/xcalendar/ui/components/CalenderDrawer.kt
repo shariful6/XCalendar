@@ -64,7 +64,7 @@ fun CalendarDrawer(
         CalendarViewOption(
             name = "Schedule",
             selected = selectedView == CalendarView.Schedule.toString(),
-                icon = FontAwesomeIcons.Regular.ListAlt,
+            icon = FontAwesomeIcons.Regular.ListAlt,
             onClick = { onViewSelect(CalendarView.Schedule) }
         )
 
@@ -123,7 +123,7 @@ fun CalendarDrawer(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {  }
+                .clickable { }
                 .padding(horizontal = 8.dp)
         ) {
             Checkbox(
@@ -155,7 +155,7 @@ fun CalendarDrawer(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {  }
+                .clickable { }
                 .padding(horizontal = 8.dp)
         ) {
             Checkbox(

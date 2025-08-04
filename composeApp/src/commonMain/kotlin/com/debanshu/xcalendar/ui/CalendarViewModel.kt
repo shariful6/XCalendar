@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -32,6 +32,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.koin.android.annotation.KoinViewModel
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.time.ExperimentalTime
 
 @KoinViewModel
 class CalendarViewModel(
@@ -41,10 +42,13 @@ class CalendarViewModel(
     private val holidayRepository: HolidayRepository,
 ) : ViewModel() {
 
+    @OptIn(ExperimentalTime::class)
     private val currentDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    @OptIn(ExperimentalTime::class)
     private val startTime = currentDate
         .minus(DatePeriod(months = 10))
         .atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+    @OptIn(ExperimentalTime::class)
     private val endTime = currentDate
         .plus(DatePeriod(months = 10))
         .atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()

@@ -16,11 +16,12 @@ class CalendarRepository(
     private val calendarDao: CalendarDao,
     private val apiService: RemoteCalendarApiService,
 ) {
-    suspend fun getCalendersForUser(userId: String){
-        when(val apiCalendars = apiService.fetchCalendarsForUser(userId)){
+    suspend fun getCalendersForUser(userId: String) {
+        when (val apiCalendars = apiService.fetchCalendarsForUser(userId)) {
             is Result.Error -> {
                 println("HEREEEEEEE" + apiCalendars.error.toString())
             }
+
             is Result.Success -> {
                 println("HEREEEEEEE 2" + apiCalendars.toString())
                 val calendars = apiCalendars.data.map { it.asCalendar() }
@@ -28,8 +29,10 @@ class CalendarRepository(
             }
         }
     }
+
     fun getCalendarsForUser(userId: String): Flow<List<Calendar>> =
-        calendarDao.getCalendarsByUserId(userId).map { entities -> entities.map { it.asCalendar() } }
+        calendarDao.getCalendarsByUserId(userId)
+            .map { entities -> entities.map { it.asCalendar() } }
 
     suspend fun upsertCalendar(calendars: List<Calendar>) {
         calendarDao.upsertCalendar(calendars.map { it.asCalendarEntity() })

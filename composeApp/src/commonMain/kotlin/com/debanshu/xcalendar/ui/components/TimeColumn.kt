@@ -80,7 +80,7 @@ private fun TimeCell(
             textAlign = TextAlign.End,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .offset(y= (-8).dp)
+                .offset(y = (-8).dp)
         )
     }
 }
