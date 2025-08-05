@@ -1,6 +1,7 @@
 package com.debanshu.xcalendar.domain.repository
 
 import com.debanshu.xcalendar.common.model.asHoliday
+import com.debanshu.xcalendar.common.model.asHolidayEntity
 import com.debanshu.xcalendar.data.localDataSource.HolidayDao
 import com.debanshu.xcalendar.data.remoteDataSource.HolidayApiService
 import com.debanshu.xcalendar.data.remoteDataSource.Result
@@ -26,8 +27,8 @@ class HolidayRepository(
             }
 
             is Result.Success -> {
-//                val remoteHolidays = response.data.response.holidays.map { it.asHoliday() }
-//                holidayDao.insertHolidays(remoteHolidays.map { it.asHolidayEntity() })
+                val remoteHolidays = response.data.response.holidays.map { it.asHoliday() }
+                holidayDao.insertHolidays(remoteHolidays.map { it.asHolidayEntity() })
             }
         }
     }

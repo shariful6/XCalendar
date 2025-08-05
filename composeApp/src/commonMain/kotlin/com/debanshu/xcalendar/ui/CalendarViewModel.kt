@@ -15,6 +15,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -43,11 +44,14 @@ class CalendarViewModel(
 ) : ViewModel() {
 
     @OptIn(ExperimentalTime::class)
-    private val currentDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    private val currentDate =
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+
     @OptIn(ExperimentalTime::class)
     private val startTime = currentDate
         .minus(DatePeriod(months = 10))
         .atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+
     @OptIn(ExperimentalTime::class)
     private val endTime = currentDate
         .plus(DatePeriod(months = 10))
@@ -55,6 +59,7 @@ class CalendarViewModel(
 
     // Internal state management
     private val _uiState = MutableStateFlow(CalendarUiState(isLoading = true))
+
     @OptIn(ExperimentalAtomicApi::class)
     private val _isInitialized = AtomicBoolean(false)
 
@@ -139,10 +144,12 @@ class CalendarViewModel(
                 try {
                     // Launch all initialization tasks concurrently
                     val initJobs = listOf(
-                        async { initializeUsers() },
+                        async {
+                            initializeUsers()
+                            initializeCalendars()
+                            initializeEvents()
+                        },
                         async { initializeHolidays() },
-                        async { initializeCalendars() },
-                        async { initializeEvents() }
                     )
 
                     // Wait for all to complete
@@ -166,7 +173,11 @@ class CalendarViewModel(
 
     private suspend fun initializeHolidays() {
         runCatching {
-            holidayRepository.updateHolidays("IN", currentDate.year)
+            holidayRepository.getHolidaysForYear("IN", currentDate.year).collectLatest {
+                if (it.isEmpty()) {
+                    holidayRepository.updateHolidays("IN", currentDate.year)
+                }
+            }
         }.onFailure { exception ->
             handleError("Failed to initialize holidays", exception)
         }
