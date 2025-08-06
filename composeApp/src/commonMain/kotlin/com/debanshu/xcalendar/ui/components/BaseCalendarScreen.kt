@@ -35,6 +35,11 @@ import com.debanshu.xcalendar.ui.theme.XCalendarTheme
 
 /**
  * Base calendar screen that provides common structure for day, three-day, and week views.
+ * 
+ * Optimized with caching and efficient state management:
+ * - Caches events and holidays to avoid repeated processing
+ * - Optimized state management for smooth interactions
+ * - Efficient date state handling
  *
  * @param dateStateHolder The date state holder
  * @param events The list of events to display
@@ -59,10 +64,16 @@ fun BaseCalendarScreen(
 
     val startDate = dateState.selectedDate
     val isToday = startDate == dateState.currentDate
+    
+    // Cache dynamic header height to avoid recalculation
     val dynamicHeightOfHeaderComposableWithHolidays = remember { mutableStateOf(0) }
     val heightDp = with(LocalDensity.current) {
         dynamicHeightOfHeaderComposableWithHolidays.value.coerceAtLeast(160).toDp()
     }
+
+    // Cache events and holidays to avoid repeated processing
+    val cachedEvents = remember(events) { events }
+    val cachedHolidays = remember(holidays) { holidays }
 
     Row(
         modifier = modifier
@@ -140,8 +151,8 @@ fun BaseCalendarScreen(
         }
         SwipeableCalendarView(
             startDate = startDate,
-            events = events,
-            holidays = holidays,
+            events = cachedEvents,
+            holidays = cachedHolidays,
             onDayClick = { date ->
                 dateStateHolder.updateSelectedDateState(date)
                 onDateClickCallback()

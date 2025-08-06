@@ -17,7 +17,6 @@ fun DayScreen(
     events: List<Event>,
     holidays: List<Holiday>,
     onEventClick: (Event) -> Unit,
-    onDateClickCallback: () -> Unit,
 ) {
     BaseCalendarScreen(
         modifier = modifier,
@@ -26,6 +25,6 @@ fun DayScreen(
         holidays = holidays,
         onEventClick = onEventClick,
         numDays = 1,
-        onDateClickCallback = onDateClickCallback
+        onDateClickCallback = {}
     )
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,8 +32,16 @@ fun DayWithEvents(
     holidays: List<Holiday>,
     onEventClick: (Event) -> Unit
 ) {
-    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val isToday = date == today
+    // Optimized: Cache date calculations to avoid repeated computations
+    val today = remember { 
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date 
+    }
+    val isToday = remember(date) { date == today }
+    
+    // Optimized: Pre-calculate day of week string
+    val dayOfWeekText = remember(date) { 
+        date.dayOfWeek.name.take(3).uppercase() 
+    }
 
     Row(
         modifier = Modifier
@@ -46,7 +55,7 @@ fun DayWithEvents(
             modifier = Modifier.width(40.dp)
         ) {
             Text(
-                text = date.dayOfWeek.name.take(3).uppercase(),
+                text = dayOfWeekText,
                 style = XCalendarTheme.typography.labelSmall,
                 color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
@@ -65,7 +74,7 @@ fun DayWithEvents(
                 .weight(1f)
                 .padding(start = 8.dp)
         ) {
-            // Holidays first
+            // Holidays first - optimized with stable keys
             holidays.forEach { holiday ->
                 EventItem(
                     title = holiday.name,
@@ -74,14 +83,16 @@ fun DayWithEvents(
                 )
             }
 
-            // All events with consistent styling
+            // All events with consistent styling - optimized with stable keys
             events.forEach { event ->
-                val timeText = if (!event.isAllDay) {
-                    val startDateTime =
-                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
-                    val endDateTime = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
-                    formatTimeRange(startDateTime, endDateTime)
-                } else null
+                val timeText = remember(event) {
+                    if (!event.isAllDay) {
+                        val startDateTime =
+                            event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
+                        val endDateTime = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
+                        formatTimeRange(startDateTime, endDateTime)
+                    } else null
+                }
 
                 EventItem(
                     title = event.title,

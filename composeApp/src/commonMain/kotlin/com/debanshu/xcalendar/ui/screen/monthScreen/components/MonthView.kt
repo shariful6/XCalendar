@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.common.isLeap
 import com.debanshu.xcalendar.common.lengthOfMonth
@@ -33,6 +34,20 @@ fun MonthView(
     val totalDaysDisplayed = if (skipPreviousPadding) daysInMonth else firstDayOfWeek + daysInMonth
     val remainingCells = 42 - totalDaysDisplayed
 
+    val eventsByDate = remember(month, events) {
+        val allEvents = events()
+        allEvents.groupBy { event ->
+            event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        }
+    }
+
+    val holidaysByDate = remember(month, holidays) {
+        val allHolidays = holidays()
+        allHolidays.groupBy { holiday ->
+            holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        }
+    }
+
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
         columns = GridCells.Fixed(7),
@@ -53,12 +68,8 @@ fun MonthView(
                 DayCell(
                     modifier = Modifier,
                     date = date,
-                    events = events().filter { event ->
-                        event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
-                    holidays = holidays().filter { holiday ->
-                        holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                    },
+                    events = eventsByDate[date] ?: emptyList(),
+                    holidays = holidaysByDate[date] ?: emptyList(),
                     isCurrentMonth = false,
                     onDayClick = onDayClick
                 )
@@ -70,12 +81,8 @@ fun MonthView(
             DayCell(
                 modifier = Modifier,
                 date = date,
-                events = events().filter { event ->
-                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                },
-                holidays = holidays().filter { holiday ->
-                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                },
+                events = eventsByDate[date] ?: emptyList(),
+                holidays = holidaysByDate[date] ?: emptyList(),
                 isCurrentMonth = true,
                 onDayClick = onDayClick
             )
@@ -90,12 +97,8 @@ fun MonthView(
             DayCell(
                 modifier = Modifier,
                 date = date,
-                events = events().filter { event ->
-                    event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                },
-                holidays = holidays().filter { holiday ->
-                    holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date == date
-                },
+                events = eventsByDate[date] ?: emptyList(),
+                holidays = holidaysByDate[date] ?: emptyList(),
                 isCurrentMonth = false,
                 onDayClick = onDayClick
             )

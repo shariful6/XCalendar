@@ -2,9 +2,12 @@ package com.debanshu.xcalendar.domain.states.scheduleState
 
 import com.debanshu.xcalendar.common.model.YearMonth
 
-data class ScheduleState(private val startMonth: YearMonth) {
-    private var minOffset = -25
-    private var maxOffset = 25
+data class ScheduleState(
+    private val startMonth: YearMonth,
+    private val initialRange: Int = 25 // Default to 25 for backward compatibility
+) {
+    private var minOffset = -initialRange
+    private var maxOffset = initialRange
     private var lastMinOffset = minOffset
     private var lastMaxOffset = maxOffset
 

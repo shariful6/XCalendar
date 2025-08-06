@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import com.debanshu.xcalendar.domain.model.Event
@@ -28,6 +29,13 @@ import kotlin.math.roundToInt
 /**
  * A swipeable month view component that allows infinite horizontal paging through months
  * while preserving the selected day between swipes.
+ * 
+ * Optimized with sliding window approach to minimize recomposition:
+ * - Only generates new month data when actually needed
+ * - Maintains a window of 3 months (previous, current, next)
+ * - Updates the window efficiently when swiping
+ * - Caches events and holidays to avoid repeated calculations
+ * - Optimized state management for smooth animations
  */
 @Composable
 fun SwipeableMonthView(
@@ -38,33 +46,52 @@ fun SwipeableMonthView(
     onSpecificDayClicked: (LocalDate) -> Unit,
     onMonthChange: (YearMonth) -> Unit
 ) {
-    // Consolidated swipe state to minimize recompositions
     var swipeState by remember { mutableStateOf(SwipeState()) }
     var screenSize by remember { mutableStateOf(IntSize.Zero) }
 
-    // Derive screen width only when size changes
     val screenWidth by remember {
         derivedStateOf { screenSize.width.toFloat() }
     }
 
-    // Pre-calculate month data with stable references
-    val monthData = remember(currentMonth) {
-        MonthData(
-            current = MonthViewData(currentMonth, events, holidays),
-            previous = MonthViewData(currentMonth.plusMonths(-1), events, holidays),
-            next = MonthViewData(currentMonth.plusMonths(1), events, holidays)
+    // Optimized sliding window with persistent state - only created once
+    val monthWindow by remember {
+        mutableStateOf(
+            MonthWindow(
+                previous = MonthViewData(currentMonth.plusMonths(-1), events, holidays),
+                current = MonthViewData(currentMonth, events, holidays),
+                next = MonthViewData(currentMonth.plusMonths(1), events, holidays)
+            )
         )
     }
 
-    // Animate offset with proper state management
+    // Update window only when month actually changes (not on every recomposition)
+    val currentMonthKey = remember(currentMonth) { currentMonth.toString() }
+    remember(currentMonthKey) {
+        // Only update if the month actually changed
+        if (monthWindow.current.month != currentMonth) {
+            monthWindow.updateToMonth(currentMonth, events, holidays)
+        }
+    }
+
+    // Optimized animation with better state management
     val animatedOffset by animateFloatAsState(
         targetValue = swipeState.targetOffsetX,
-        animationSpec = tween(durationMillis = 300),
+        animationSpec = tween(durationMillis = 250), // Slightly faster animation
         finishedListener = { finalValue ->
             if (swipeState.isAnimating) {
                 when {
-                    finalValue > 0 -> onMonthChange(currentMonth.plusMonths(-1))
-                    finalValue < 0 -> onMonthChange(currentMonth.plusMonths(1))
+                    finalValue > 0 -> {
+                        // Swiped to previous month
+                        val newCurrentMonth = currentMonth.plusMonths(-1)
+                        monthWindow.updateForPreviousMonth(newCurrentMonth, events, holidays)
+                        onMonthChange(newCurrentMonth)
+                    }
+                    finalValue < 0 -> {
+                        // Swiped to next month
+                        val newCurrentMonth = currentMonth.plusMonths(1)
+                        monthWindow.updateForNextMonth(newCurrentMonth, events, holidays)
+                        onMonthChange(newCurrentMonth)
+                    }
                 }
                 swipeState = SwipeState() // Reset to initial state
             }
@@ -74,7 +101,6 @@ fun SwipeableMonthView(
 
     val effectiveOffset = if (swipeState.isAnimating) animatedOffset else swipeState.offsetX
 
-
     Surface(
         modifier = modifier
             .fillMaxSize()
@@ -83,10 +109,10 @@ fun SwipeableMonthView(
                     screenSize = newSize
                 }
             }
-            .pointerInput(screenWidth) { // Key on screenWidth to reset when size changes
+            .pointerInput(screenWidth) {
                 detectHorizontalDragGestures(
                     onDragEnd = {
-                        val threshold = screenWidth * 0.3f
+                        val threshold = screenWidth * 0.25f // Slightly more sensitive
                         swipeState = if (abs(swipeState.offsetX) > threshold) {
                             swipeState.copy(
                                 isAnimating = true,
@@ -100,12 +126,12 @@ fun SwipeableMonthView(
                         swipeState = swipeState.copy(isAnimating = true, targetOffsetX = 0f)
                     },
                     onHorizontalDrag = { change, dragAmount ->
-                        swipeState = swipeState.copy(
-                            targetOffsetX = swipeState.targetOffsetX + dragAmount
-                        )
+                        // Optimize drag handling to reduce state updates
                         if (!swipeState.isAnimating) {
+                            val newOffsetX = swipeState.offsetX + dragAmount
                             swipeState = swipeState.copy(
-                                offsetX = swipeState.offsetX + dragAmount
+                                offsetX = newOffsetX,
+                                targetOffsetX = newOffsetX
                             )
                             change.consume()
                         }
@@ -115,7 +141,7 @@ fun SwipeableMonthView(
     ) {
         // Current month view
         MonthViewContainer(
-            monthViewData = monthData.current,
+            monthViewData = monthWindow.current,
             onDayClick = onSpecificDayClicked,
             modifier = Modifier
                 .fillMaxSize()
@@ -124,7 +150,7 @@ fun SwipeableMonthView(
 
         // Previous month view
         MonthViewContainer(
-            monthViewData = monthData.previous,
+            monthViewData = monthWindow.previous,
             onDayClick = onSpecificDayClicked,
             modifier = Modifier
                 .fillMaxSize()
@@ -138,7 +164,7 @@ fun SwipeableMonthView(
 
         // Next month view
         MonthViewContainer(
-            monthViewData = monthData.next,
+            monthViewData = monthWindow.next,
             onDayClick = onSpecificDayClicked,
             modifier = Modifier
                 .fillMaxSize()
@@ -152,31 +178,29 @@ fun SwipeableMonthView(
     }
 }
 
-/**
- * Container for MonthView that handles lazy data evaluation
- */
 @Composable
 private fun MonthViewContainer(
     monthViewData: MonthViewData,
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Lazy evaluate events and holidays only when needed
-    val events = remember(monthViewData.month) { monthViewData.events() }
-    val holidays = remember(monthViewData.month) { monthViewData.holidays() }
+    // Cache events and holidays for this specific month to avoid repeated calculations
+    val events = remember(monthViewData.month) { 
+        monthViewData.events() 
+    }
+    val holidays = remember(monthViewData.month) { 
+        monthViewData.holidays() 
+    }
 
     MonthView(
+        modifier=modifier.testTag("MonthView_${monthViewData.month}"),
         month = monthViewData.month,
         events = { events },
         holidays = { holidays },
-        onDayClick = onDayClick,
-        modifier = modifier
+        onDayClick = onDayClick
     )
 }
 
-/**
- * Consolidated swipe state to minimize recompositions
- */
 @Stable
 private data class SwipeState(
     val offsetX: Float = 0f,
@@ -184,9 +208,6 @@ private data class SwipeState(
     val targetOffsetX: Float = 0f
 )
 
-/**
- * Stable data holder for month view data
- */
 @Stable
 private data class MonthViewData(
     val month: YearMonth,
@@ -195,11 +216,50 @@ private data class MonthViewData(
 )
 
 /**
- * Container for all three month data instances
+ * Optimized sliding window that maintains 3 months of data
+ * and efficiently updates when swiping to minimize recomposition
  */
 @Stable
-private data class MonthData(
-    val current: MonthViewData,
-    val previous: MonthViewData,
-    val next: MonthViewData
-)
+private class MonthWindow(
+    previous: MonthViewData,
+    current: MonthViewData,
+    next: MonthViewData
+) {
+    var previous by mutableStateOf(previous)
+    var current by mutableStateOf(current)
+    var next by mutableStateOf(next)
+
+    /**
+     * Updates the window when swiping to the previous month
+     * - Current becomes next
+     * - Previous becomes current  
+     * - Generate new previous month
+     */
+    fun updateForPreviousMonth(newCurrentMonth: YearMonth, events: () -> List<Event>, holidays: () -> List<Holiday>) {
+        next = current
+        current = previous
+        previous = MonthViewData(newCurrentMonth.plusMonths(-1), events, holidays)
+    }
+
+    /**
+     * Updates the window when swiping to the next month
+     * - Previous becomes current
+     * - Current becomes next
+     * - Generate new next month
+     */
+    fun updateForNextMonth(newCurrentMonth: YearMonth, events: () -> List<Event>, holidays: () -> List<Holiday>) {
+        previous = current
+        current = next
+        next = MonthViewData(newCurrentMonth.plusMonths(1), events, holidays)
+    }
+
+    /**
+     * Updates the window to a specific month (for external month changes)
+     * This is used when the month is changed from outside (not by swiping)
+     */
+    fun updateToMonth(targetMonth: YearMonth, events: () -> List<Event>, holidays: () -> List<Holiday>) {
+        current = MonthViewData(targetMonth, events, holidays)
+        previous = MonthViewData(targetMonth.plusMonths(-1), events, holidays)
+        next = MonthViewData(targetMonth.plusMonths(1), events, holidays)
+    }
+}

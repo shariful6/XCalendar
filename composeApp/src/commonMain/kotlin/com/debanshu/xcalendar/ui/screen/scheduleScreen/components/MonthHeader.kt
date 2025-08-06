@@ -17,19 +17,21 @@ import com.skydoves.landscapist.coil3.CoilImage
 import kotlinx.datetime.Month
 
 private fun getMonthImageUrl(month: Month): String {
+    val baseUrl = "https://raw.githubusercontent.com/Debanshu777/XCalendar/main/assets/"
+
     return when (month) {
-        Month.JANUARY -> "https://weandthecolor.com/wp-content/uploads/2014/11/1-January-Artwork-by-Lotta-Nieminen-for-Google-Calendar-app.jpg"
-        Month.FEBRUARY -> "https://weandthecolor.com/wp-content/uploads/2014/11/2-February-Artwork-from-a-series-of-illustrations-for-the-Google-Calendar-app.jpg"
-        Month.MARCH -> "https://weandthecolor.com/wp-content/uploads/2014/11/3-March-early-spring-landscape.jpg"
-        Month.APRIL -> "https://weandthecolor.com/wp-content/uploads/2014/11/4-April-outdoor-activities-in-spring.jpg"
-        Month.MAY -> "https://weandthecolor.com/wp-content/uploads/2014/11/5-May-enjoying-the-weather.jpg"
-        Month.JUNE -> "https://weandthecolor.com/wp-content/uploads/2014/11/6-June-the-beginning-of-summer-fun-and-swimming.jpg"
-        Month.JULY -> "https://weandthecolor.com/wp-content/uploads/2014/11/7-July-Camping-and-traveling.jpg"
-        Month.AUGUST -> "https://weandthecolor.com/wp-content/uploads/2014/11/8-August-Beautiful-summertime.jpg"
-        Month.SEPTEMBER -> "https://weandthecolor.com/wp-content/uploads/2014/11/9-September-the-beginning-of-autumn.jpg"
-        Month.OCTOBER -> "https://weandthecolor.com/wp-content/uploads/2014/11/10-October-harvest-time.jpg"
-        Month.NOVEMBER -> "https://weandthecolor.com/wp-content/uploads/2014/11/11-November-cold-and-rainy.jpg"
-        Month.DECEMBER -> "https://weandthecolor.com/wp-content/uploads/2014/11/12-December-the-beginning-of-winter.jpg"
+        Month.JANUARY -> "${baseUrl}January.jpg"
+        Month.FEBRUARY -> "${baseUrl}February.jpg"
+        Month.MARCH -> "${baseUrl}March.jpg"
+        Month.APRIL -> "${baseUrl}April.jpg"
+        Month.MAY -> "${baseUrl}May.jpg"
+        Month.JUNE -> "${baseUrl}June.jpg"
+        Month.JULY -> "${baseUrl}July.jpg"
+        Month.AUGUST -> "${baseUrl}August.jpg"
+        Month.SEPTEMBER -> "${baseUrl}September.jpg"
+        Month.OCTOBER -> "${baseUrl}October.jpg"
+        Month.NOVEMBER -> "${baseUrl}November.jpg"
+        Month.DECEMBER -> "${baseUrl}December.jpg"
     }
 }
 
