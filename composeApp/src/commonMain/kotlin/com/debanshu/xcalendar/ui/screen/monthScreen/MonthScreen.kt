@@ -3,6 +3,7 @@ package com.debanshu.xcalendar.ui.screen.monthScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.debanshu.xcalendar.domain.model.Event
@@ -21,6 +22,21 @@ fun MonthScreen(
     onDateClick: () -> Unit,
 ) {
     val dateState by dateStateHolder.currentDateState.collectAsState()
+    
+    // Create stable callbacks to prevent unnecessary recompositions
+    val onSpecificDayClicked = remember(dateStateHolder, onDateClick) {
+        { date: LocalDate ->
+            dateStateHolder.updateSelectedDateState(date)
+            onDateClick()
+        }
+    }
+    
+    val onMonthChange = remember(dateStateHolder) {
+        { yearMonth: YearMonth ->
+            dateStateHolder.updateSelectedInViewMonthState(yearMonth)
+        }
+    }
+    
     SwipeableMonthView(
         modifier = modifier.testTag("SwipeableMonthView"),
         currentMonth = YearMonth(
@@ -29,12 +45,7 @@ fun MonthScreen(
         ),
         events = events,
         holidays = holidays,
-        onSpecificDayClicked = { date ->
-            dateStateHolder.updateSelectedDateState(date)
-            onDateClick()
-        },
-        onMonthChange = { yearMonth ->
-            dateStateHolder.updateSelectedInViewMonthState(yearMonth)
-        }
+        onSpecificDayClicked = onSpecificDayClicked,
+        onMonthChange = onMonthChange
     )
 }

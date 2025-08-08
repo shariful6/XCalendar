@@ -12,14 +12,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.debanshu.xcalendar.common.model.YearMonth
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
 import com.debanshu.xcalendar.domain.states.dateState.DateStateHolder
 import com.debanshu.xcalendar.domain.states.scheduleState.ScheduleStateHolder
-import com.debanshu.xcalendar.common.model.YearMonth
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.DayWithEvents
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.MonthHeader
 import com.debanshu.xcalendar.ui.screen.scheduleScreen.components.WeekHeader
@@ -34,25 +35,27 @@ fun ScheduleScreen(
     dateStateHolder: DateStateHolder,
     events: List<Event>,
     holidays: List<Holiday>,
-    onEventClick: (Event) -> Unit
+    onEventClick: (Event) -> Unit,
 ) {
     val dateState by dateStateHolder.currentDateState.collectAsState()
     val currentDate = dateState.currentDate
     val currentYearMonth = YearMonth.from(currentDate)
 
     // Optimized: Create ScheduleStateHolder with stable keys to prevent unnecessary recreations
-    val scheduleStateHolder = remember(
-        currentYearMonth.year,
-        currentYearMonth.month,
-        events.size, // Use size instead of full list to reduce recomposition
-        holidays.size
-    ) {
-        ScheduleStateHolder(
-            initialMonth = currentYearMonth,
-            events = events,
-            holidays = holidays
-        )
-    }
+    val currentEvents = rememberUpdatedState(events)
+    val currentHolidays = rememberUpdatedState(holidays)
+
+    val scheduleStateHolder =
+        remember(
+            currentYearMonth.year,
+            currentYearMonth.month,
+        ) {
+            ScheduleStateHolder(
+                initialMonth = currentYearMonth,
+                events = currentEvents.value,
+                holidays = currentHolidays.value,
+            )
+        }
 
     // Initialize month in the TopAppBar immediately
     LaunchedEffect(currentYearMonth) {
@@ -61,6 +64,10 @@ fun ScheduleScreen(
 
     // Create list state with initial position
     val listState = rememberLazyListState()
+
+    // Track pagination state to prevent multiple simultaneous requests
+    val isPaginatingBackward = remember { androidx.compose.runtime.mutableStateOf(false) }
+    val isPaginatingForward = remember { androidx.compose.runtime.mutableStateOf(false) }
 
     // Apply initial scroll position after composition
     LaunchedEffect(scheduleStateHolder.initialScrollIndex) {
@@ -81,11 +88,9 @@ fun ScheduleScreen(
                 (firstVisible until firstVisible + visibleCount)
                     .firstOrNull { idx ->
                         idx < scheduleStateHolder.items.size &&
-                                scheduleStateHolder.items[idx] is ScheduleItem.MonthHeader
-                    }
-                    ?.let { idx -> scheduleStateHolder.items[idx] as? ScheduleItem.MonthHeader }
-            }
-                .filterNotNull()
+                            scheduleStateHolder.items[idx] is ScheduleItem.MonthHeader
+                    }?.let { idx -> scheduleStateHolder.items[idx] as? ScheduleItem.MonthHeader }
+            }.filterNotNull()
                 .distinctUntilChanged()
                 .collect { header ->
                     dateStateHolder.updateSelectedInViewMonthState(header.yearMonth)
@@ -94,17 +99,38 @@ fun ScheduleScreen(
 
         // Handle backward pagination with optimized threshold checking
         launch {
-            snapshotFlow { listState.firstVisibleItemIndex < ScheduleStateHolder.THRESHOLD }
-                .distinctUntilChanged()
+            snapshotFlow {
+                !isPaginatingBackward.value &&
+                    listState.firstVisibleItemIndex < ScheduleStateHolder.THRESHOLD
+            }.distinctUntilChanged()
                 .collect { needsMore ->
-                    if (needsMore) {
+                    if (needsMore && !isPaginatingBackward.value) {
+                        isPaginatingBackward.value = true
+
+                        // Store current visible item info before adding new items
                         val firstVisibleIndex = listState.firstVisibleItemIndex
+                        val firstVisibleItemOffset = listState.firstVisibleItemScrollOffset
+
                         val newItemsCount = scheduleStateHolder.loadMoreBackward()
 
                         if (newItemsCount > 0) {
-                            // Adjust scroll position to maintain visual position
-                            listState.scrollToItem(firstVisibleIndex + newItemsCount)
+                            // Wait for the list to update with new items
+                            kotlinx.coroutines.delay(100)
+
+                            try {
+                                // Directly scroll to maintain position without animation
+                                listState.scrollToItem(
+                                    index = firstVisibleIndex + newItemsCount,
+                                    scrollOffset = firstVisibleItemOffset,
+                                )
+                            } catch (e: Exception) {
+                                // Silently handle scroll position adjustment failures
+                            }
                         }
+
+                        // Reset pagination flag after a delay
+                        kotlinx.coroutines.delay(500)
+                        isPaginatingBackward.value = false
                     }
                 }
         }
@@ -114,12 +140,20 @@ fun ScheduleScreen(
             snapshotFlow {
                 val visibleInfo = listState.layoutInfo.visibleItemsInfo
                 val lastVisibleIndex = visibleInfo.lastOrNull()?.index ?: 0
-                lastVisibleIndex >= scheduleStateHolder.items.size - ScheduleStateHolder.THRESHOLD
-            }
-                .distinctUntilChanged()
+                val totalItems = scheduleStateHolder.items.size
+                // Trigger when we're within THRESHOLD items of the end
+                !isPaginatingForward.value &&
+                    lastVisibleIndex >= totalItems - ScheduleStateHolder.THRESHOLD &&
+                    totalItems > 0
+            }.distinctUntilChanged()
                 .collect { needsMore ->
-                    if (needsMore) {
+                    if (needsMore && !isPaginatingForward.value) {
+                        isPaginatingForward.value = true
                         scheduleStateHolder.loadMoreForward()
+
+                        // Reset pagination flag after a delay
+                        kotlinx.coroutines.delay(500)
+                        isPaginatingForward.value = false
                     }
                 }
         }
@@ -129,30 +163,39 @@ fun ScheduleScreen(
     if (scheduleStateHolder.items.isEmpty()) {
         Box(
             modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             CircularProgressIndicator()
         }
     } else {
         LazyColumn(
             state = listState,
-            modifier = modifier
-                .fillMaxSize()
-                .background(XCalendarTheme.colorScheme.surfaceContainerLow)
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .background(XCalendarTheme.colorScheme.surfaceContainerLow),
         ) {
             itemsIndexed(
                 items = scheduleStateHolder.items,
-                key = { index, item -> item.uniqueId }
-            ) { index, item ->
+                key = { _, item -> item.uniqueId },
+                contentType = { _, item ->
+                    when (item) {
+                        is ScheduleItem.MonthHeader -> "month_header"
+                        is ScheduleItem.WeekHeader -> "week_header"
+                        is ScheduleItem.DayEvents -> "day_events"
+                    }
+                },
+            ) { _, item ->
                 when (item) {
                     is ScheduleItem.MonthHeader -> MonthHeader(item.yearMonth)
                     is ScheduleItem.WeekHeader -> WeekHeader(item.startDate, item.endDate)
-                    is ScheduleItem.DayEvents -> DayWithEvents(
-                        date = item.date,
-                        events = item.events,
-                        holidays = item.holidays,
-                        onEventClick = onEventClick
-                    )
+                    is ScheduleItem.DayEvents ->
+                        DayWithEvents(
+                            date = item.date,
+                            events = item.events,
+                            holidays = item.holidays,
+                            onEventClick = onEventClick,
+                        )
                 }
             }
         }

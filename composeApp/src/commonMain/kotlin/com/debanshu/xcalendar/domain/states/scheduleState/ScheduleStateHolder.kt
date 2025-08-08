@@ -25,7 +25,7 @@ class ScheduleStateHolder(
     private val _items = mutableStateListOf<ScheduleItem>()
     val items: List<ScheduleItem> = _items
 
-    // Optimized: Reduced initial range from 51 months to 7 months for faster startup
+    // Optimized: Using smaller initial range for faster load, with dynamic pagination
     private val monthRange = ScheduleState(initialMonth, initialRange = 3)
     val initialScrollIndex: Int
 

@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.common.isLeap
@@ -34,15 +35,17 @@ fun MonthView(
     val totalDaysDisplayed = if (skipPreviousPadding) daysInMonth else firstDayOfWeek + daysInMonth
     val remainingCells = 42 - totalDaysDisplayed
 
-    val eventsByDate = remember(month, events) {
-        val allEvents = events()
+    // Optimize: Use better remember keys to avoid unnecessary recalculations
+    val allEvents = events()
+    val allHolidays = holidays()
+    
+    val eventsByDate = remember(month.year, month.month, allEvents) {
         allEvents.groupBy { event ->
             event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date
         }
     }
 
-    val holidaysByDate = remember(month, holidays) {
-        val allHolidays = holidays()
+    val holidaysByDate = remember(month.year, month.month, allHolidays) {
         allHolidays.groupBy { holiday ->
             holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date
         }

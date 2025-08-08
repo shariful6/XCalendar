@@ -1,5 +1,6 @@
 package com.debanshu.xcalendar.common.model
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.number
@@ -7,6 +8,7 @@ import kotlinx.datetime.number
 /**
  * Represents a year-month combination without a day component
  */
+@Immutable
 data class YearMonth(val year: Int, val month: Month) {
 
     constructor(year: Int, monthNumber: Int) : this(

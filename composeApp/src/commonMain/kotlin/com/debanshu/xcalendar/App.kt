@@ -77,6 +77,10 @@ fun CalendarApp(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by remember { mutableStateOf(false) }
 
+    // Extract drawer-specific state to prevent unnecessary recompositions
+    val drawerAccounts = remember(calendarUiState.accounts) { calendarUiState.accounts }
+    val drawerCalendars = remember(calendarUiState.calendars) { calendarUiState.calendars }
+    
     val visibleCalendars by remember(calendarUiState.calendars) {
         derivedStateOf { calendarUiState.calendars.filter { it.isVisible } }
     }
@@ -89,19 +93,28 @@ fun CalendarApp(
                 drawerShape = RectangleShape,
                 drawerContainerColor = XCalendarTheme.colorScheme.surfaceContainerHigh
             ) {
-                currentRoute?.destination?.route?.let { route ->
+                // Use stable route to avoid recomposition from navigation state changes
+                val stableRoute = remember(currentRoute?.destination?.route) {
+                    currentRoute?.destination?.route
+                }
+                
+                stableRoute?.let { route ->
                     CalendarDrawer(
                         selectedView = route,
-                        onViewSelect = { view ->
-                            scope.launch {
-                                navController.navigate(view.toString())
-                                drawerState.close()
+                        onViewSelect = remember {
+                            { view ->
+                                scope.launch {
+                                    navController.navigate(view.toString())
+                                    drawerState.close()
+                                }
                             }
                         },
-                        accounts = calendarUiState.accounts,
-                        calendars = calendarUiState.calendars,
-                        onCalendarToggle = { calendar ->
-                            viewModel.toggleCalendarVisibility(calendar)
+                        accounts = drawerAccounts,
+                        calendars = drawerCalendars,
+                        onCalendarToggle = remember {
+                            { calendar ->
+                                viewModel.toggleCalendarVisibility(calendar)
+                            }
                         }
                     )
                 }
@@ -142,14 +155,27 @@ fun CalendarApp(
                 startDestination = CalendarView.Month.toString()
             ) {
                 composable(route = CalendarView.Month.toString()) {
+                    // Extract only the state that MonthScreen actually needs
+                    val events = calendarUiState.events
+                    val holidays = calendarUiState.holidays
+                    
+                    // Create stable lambda providers
+                    val eventsProvider = remember(events) {
+                        { events }
+                    }
+                    val holidaysProvider = remember(holidays) {
+                        { holidays }
+                    }
+                    val onDateClickCallback = remember(navController) {
+                        { navController.navigate(CalendarView.Day.toString()) }
+                    }
+                    
                     MonthScreen(
                         modifier = Modifier.padding(paddingValues),
-                        dateStateHolder,
-                        { calendarUiState.events },
-                        { calendarUiState.holidays },
-                        onDateClick = {
-                            navController.navigate(CalendarView.Day.toString())
-                        }
+                        dateStateHolder = dateStateHolder,
+                        events = eventsProvider,
+                        holidays = holidaysProvider,
+                        onDateClick = onDateClickCallback
                     )
                 }
                 composable(route = CalendarView.Week.toString()) {
