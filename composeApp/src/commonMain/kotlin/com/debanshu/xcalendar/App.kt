@@ -25,7 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -66,7 +65,7 @@ fun App() {
 @Composable
 fun CalendarApp(
     viewModel: CalendarViewModel,
-    dateStateHolder: DateStateHolder
+    dateStateHolder: DateStateHolder,
 ) {
     val calendarUiState by viewModel.uiState.collectAsState()
     val dataState by dateStateHolder.currentDateState.collectAsState()
@@ -80,7 +79,7 @@ fun CalendarApp(
     // Extract drawer-specific state to prevent unnecessary recompositions
     val drawerAccounts = remember(calendarUiState.accounts) { calendarUiState.accounts }
     val drawerCalendars = remember(calendarUiState.calendars) { calendarUiState.calendars }
-    
+
     val visibleCalendars by remember(calendarUiState.calendars) {
         derivedStateOf { calendarUiState.calendars.filter { it.isVisible } }
     }
@@ -91,35 +90,38 @@ fun CalendarApp(
         drawerContent = {
             ModalDrawerSheet(
                 drawerShape = RectangleShape,
-                drawerContainerColor = XCalendarTheme.colorScheme.surfaceContainerHigh
+                drawerContainerColor = XCalendarTheme.colorScheme.surfaceContainerHigh,
             ) {
                 // Use stable route to avoid recomposition from navigation state changes
-                val stableRoute = remember(currentRoute?.destination?.route) {
-                    currentRoute?.destination?.route
-                }
-                
+                val stableRoute =
+                    remember(currentRoute?.destination?.route) {
+                        currentRoute?.destination?.route
+                    }
+
                 stableRoute?.let { route ->
                     CalendarDrawer(
                         selectedView = route,
-                        onViewSelect = remember {
-                            { view ->
-                                scope.launch {
-                                    navController.navigate(view.toString())
-                                    drawerState.close()
+                        onViewSelect =
+                            remember {
+                                { view ->
+                                    scope.launch {
+                                        navController.navigate(view.toString())
+                                        drawerState.close()
+                                    }
                                 }
-                            }
-                        },
+                            },
                         accounts = drawerAccounts,
                         calendars = drawerCalendars,
-                        onCalendarToggle = remember {
-                            { calendar ->
-                                viewModel.toggleCalendarVisibility(calendar)
-                            }
-                        }
+                        onCalendarToggle =
+                            remember {
+                                { calendar ->
+                                    viewModel.toggleCalendarVisibility(calendar)
+                                }
+                            },
                     )
                 }
             }
-        }
+        },
     ) {
         Scaffold(
             topBar = {
@@ -137,7 +139,7 @@ fun CalendarApp(
                         dateStateHolder.updateSelectedDateState(date)
                     },
                     calendarUiState.events,
-                    calendarUiState.holidays
+                    calendarUiState.holidays,
                 )
             },
             floatingActionButton = {
@@ -145,37 +147,40 @@ fun CalendarApp(
                     Icon(
                         modifier = Modifier.size(20.dp),
                         imageVector = FontAwesomeIcons.Solid.Plus,
-                        contentDescription = "Add Event"
+                        contentDescription = "Add Event",
                     )
                 }
-            }
+            },
         ) { paddingValues ->
             NavHost(
                 navController = navController,
-                startDestination = CalendarView.Month.toString()
+                startDestination = CalendarView.Month.toString(),
             ) {
                 composable(route = CalendarView.Month.toString()) {
                     // Extract only the state that MonthScreen actually needs
                     val events = calendarUiState.events
                     val holidays = calendarUiState.holidays
-                    
+
                     // Create stable lambda providers
-                    val eventsProvider = remember(events) {
-                        { events }
-                    }
-                    val holidaysProvider = remember(holidays) {
-                        { holidays }
-                    }
-                    val onDateClickCallback = remember(navController) {
-                        { navController.navigate(CalendarView.Day.toString()) }
-                    }
-                    
+                    val eventsProvider =
+                        remember(events) {
+                            { events }
+                        }
+                    val holidaysProvider =
+                        remember(holidays) {
+                            { holidays }
+                        }
+                    val onDateClickCallback =
+                        remember(navController) {
+                            { navController.navigate(CalendarView.Day.toString()) }
+                        }
+
                     MonthScreen(
                         modifier = Modifier.padding(paddingValues),
                         dateStateHolder = dateStateHolder,
                         events = eventsProvider,
                         holidays = holidaysProvider,
-                        onDateClick = onDateClickCallback
+                        onDateClick = onDateClickCallback,
                     )
                 }
                 composable(route = CalendarView.Week.toString()) {
@@ -187,7 +192,7 @@ fun CalendarApp(
                         onEventClick = { event -> viewModel.selectEvent(event) },
                         onDateClickCallback = {
                             navController.navigate(CalendarView.Day.toString())
-                        }
+                        },
                     )
                 }
                 composable(route = CalendarView.Day.toString()) {
@@ -196,7 +201,7 @@ fun CalendarApp(
                         dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) }
+                        onEventClick = { event -> viewModel.selectEvent(event) },
                     )
                 }
                 composable(route = CalendarView.ThreeDay.toString()) {
@@ -208,7 +213,7 @@ fun CalendarApp(
                         onEventClick = { event -> viewModel.selectEvent(event) },
                         onDateClickCallback = {
                             navController.navigate(CalendarView.Day.toString())
-                        }
+                        },
                     )
                 }
                 composable(route = CalendarView.Schedule.toString()) {
@@ -217,7 +222,7 @@ fun CalendarApp(
                         dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) }
+                        onEventClick = { event -> viewModel.selectEvent(event) },
                     )
                 }
             }
@@ -225,11 +230,11 @@ fun CalendarApp(
                 ModalBottomSheet(
                     onDismissRequest = { showBottomSheet = false },
                     sheetState = sheetState,
-                    properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true)
+                    properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
                 ) {
                     AddEventDialog(
                         calendars = visibleCalendars,
-                        selectedDate = dataState.currentDate
+                        selectedDate = dataState.currentDate,
                     )
                 }
             }
@@ -239,7 +244,7 @@ fun CalendarApp(
                     event = event,
                     onEdit = { viewModel.editEvent(it) },
                     onDelete = { viewModel.deleteEvent(it) },
-                    onDismiss = { viewModel.clearSelectedEvent() }
+                    onDismiss = { viewModel.clearSelectedEvent() },
                 )
             }
         }

@@ -1,7 +1,6 @@
 package com.debanshu.xcalendar.domain.model
 
 import androidx.compose.runtime.Immutable
-
 import androidx.compose.runtime.Stable
 
 @Stable

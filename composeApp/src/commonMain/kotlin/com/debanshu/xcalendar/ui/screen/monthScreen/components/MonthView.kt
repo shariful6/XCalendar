@@ -5,15 +5,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.debanshu.xcalendar.common.isLeap
 import com.debanshu.xcalendar.common.lengthOfMonth
+import com.debanshu.xcalendar.common.model.YearMonth
 import com.debanshu.xcalendar.common.toLocalDateTime
 import com.debanshu.xcalendar.domain.model.Event
 import com.debanshu.xcalendar.domain.model.Holiday
-import com.debanshu.xcalendar.common.model.YearMonth
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
@@ -38,23 +37,25 @@ fun MonthView(
     // Optimize: Use better remember keys to avoid unnecessary recalculations
     val allEvents = events()
     val allHolidays = holidays()
-    
-    val eventsByDate = remember(month.year, month.month, allEvents) {
-        allEvents.groupBy { event ->
-            event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date
-        }
-    }
 
-    val holidaysByDate = remember(month.year, month.month, allHolidays) {
-        allHolidays.groupBy { holiday ->
-            holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val eventsByDate =
+        remember(month.year, month.month, allEvents) {
+            allEvents.groupBy { event ->
+                event.startTime.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            }
         }
-    }
+
+    val holidaysByDate =
+        remember(month.year, month.month, allHolidays) {
+            allHolidays.groupBy { holiday ->
+                holiday.date.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            }
+        }
 
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
         columns = GridCells.Fixed(7),
-        userScrollEnabled = false
+        userScrollEnabled = false,
     ) {
         item(span = { GridItemSpan(7) }) {
             WeekdayHeader()
@@ -74,7 +75,7 @@ fun MonthView(
                     events = eventsByDate[date] ?: emptyList(),
                     holidays = holidaysByDate[date] ?: emptyList(),
                     isCurrentMonth = false,
-                    onDayClick = onDayClick
+                    onDayClick = onDayClick,
                 )
             }
         }
@@ -87,7 +88,7 @@ fun MonthView(
                 events = eventsByDate[date] ?: emptyList(),
                 holidays = holidaysByDate[date] ?: emptyList(),
                 isCurrentMonth = true,
-                onDayClick = onDayClick
+                onDayClick = onDayClick,
             )
         }
 
@@ -103,7 +104,7 @@ fun MonthView(
                 events = eventsByDate[date] ?: emptyList(),
                 holidays = holidaysByDate[date] ?: emptyList(),
                 isCurrentMonth = false,
-                onDayClick = onDayClick
+                onDayClick = onDayClick,
             )
         }
     }

@@ -123,7 +123,7 @@ fun ScheduleScreen(
                                     index = firstVisibleIndex + newItemsCount,
                                     scrollOffset = firstVisibleItemOffset,
                                 )
-                            } catch (e: Exception) {
+                            } catch (_: Exception) {
                                 // Silently handle scroll position adjustment failures
                             }
                         }
