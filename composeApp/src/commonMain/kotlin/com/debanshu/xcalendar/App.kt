@@ -233,8 +233,17 @@ fun CalendarApp(
                     properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
                 ) {
                     AddEventDialog(
+                        user = calendarUiState.accounts[0],
                         calendars = visibleCalendars,
                         selectedDate = dataState.currentDate,
+                        onSave = { event ->
+                            // Handle saving the event
+                            viewModel.addEvent(event)
+                            showBottomSheet = false
+                        },
+                        onDismiss = {
+                            showBottomSheet = false
+                        },
                     )
                 }
             }
