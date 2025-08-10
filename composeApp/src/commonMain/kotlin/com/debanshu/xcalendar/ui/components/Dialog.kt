@@ -3,6 +3,7 @@ package com.debanshu.xcalendar.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -57,7 +56,7 @@ import compose.icons.fontawesomeicons.solid.Bell
 import compose.icons.fontawesomeicons.solid.Clock
 import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.LocationArrow
-import compose.icons.fontawesomeicons.solid.Trash
+import compose.icons.fontawesomeicons.solid.Times
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -78,6 +77,7 @@ fun AddEventDialog(
     var location by remember { mutableStateOf("") }
     var selectedCalendarId by remember { mutableStateOf(calendars.firstOrNull()?.id ?: "") }
     var isAllDay by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
     var selectedEventType by remember { mutableStateOf(EventType.EVENT) }
     var startDateTime by remember {
         mutableStateOf(
@@ -116,7 +116,7 @@ fun AddEventDialog(
                 "Cancel",
                 modifier =
                     Modifier.clickable {
-                        onDismiss
+                        onDismiss()
                     },
                 color = XCalendarTheme.colorScheme.primary,
             )
@@ -166,7 +166,14 @@ fun AddEventDialog(
                                                 .toEpochMilliseconds()
                                         },
                                     isAllDay = isAllDay,
-                                    reminderMinutes = if (reminderMinutes > 0) listOf(reminderMinutes) else emptyList(),
+                                    reminderMinutes =
+                                        if (reminderMinutes > 0) {
+                                            listOf(
+                                                reminderMinutes,
+                                            )
+                                        } else {
+                                            emptyList()
+                                        },
                                     color =
                                         selectedCalendar?.color
                                             ?: convertStringToColor("defaultColor", 255),
@@ -184,6 +191,7 @@ fun AddEventDialog(
             onValueChange = { title = it },
             textStyle = MaterialTheme.typography.headlineSmall,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            interactionSource = interactionSource,
             colors =
                 TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
@@ -621,140 +629,291 @@ private fun formatTime(dateTime: LocalDateTime): String {
     return "$hour:$minute $amPm"
 }
 
+private fun formatEventSubheading(event: Event): String {
+    val startDateTime = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
+    val endDateTime = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
+
+    // Format day of week (e.g., "Friday")
+    val dayOfWeek =
+        startDateTime.date.dayOfWeek.name
+            .lowercase()
+            .replaceFirstChar { it.titlecase() }
+
+    // Format day and month (e.g., "20 Jun")
+    val day = startDateTime.date.day
+    val month =
+        startDateTime.date.month.name
+            .take(3)
+            .lowercase()
+            .replaceFirstChar { it.titlecase() }
+
+    // Build the main date/time string
+    val mainLine =
+        if (event.isAllDay) {
+            "$dayOfWeek, $day $month"
+        } else {
+            // Format time range (e.g., "6-7PM")
+            val startHour =
+                if (startDateTime.hour == 0) {
+                    12
+                } else if (startDateTime.hour > 12) {
+                    startDateTime.hour - 12
+                } else {
+                    startDateTime.hour
+                }
+            val endHour =
+                if (endDateTime.hour == 0) {
+                    12
+                } else if (endDateTime.hour > 12) {
+                    endDateTime.hour - 12
+                } else {
+                    endDateTime.hour
+                }
+            val startMinute =
+                if (startDateTime.minute == 0) {
+                    ""
+                } else {
+                    ":${
+                        startDateTime.minute.toString().padStart(2, '0')
+                    }"
+                }
+            val endMinute =
+                if (endDateTime.minute == 0) {
+                    ""
+                } else {
+                    ":${
+                        endDateTime.minute.toString().padStart(2, '0')
+                    }"
+                }
+
+            val timeRange =
+                when {
+                    // Same AM/PM period
+                    (startDateTime.hour < 12 && endDateTime.hour < 12) || (startDateTime.hour >= 12 && endDateTime.hour >= 12) -> {
+                        val amPm = if (endDateTime.hour >= 12) "PM" else "AM"
+                        "$startHour$startMinute-$endHour$endMinute$amPm"
+                    }
+                    // Different AM/PM periods
+                    else -> {
+                        val startAmPm = if (startDateTime.hour >= 12) "PM" else "AM"
+                        val endAmPm = if (endDateTime.hour >= 12) "PM" else "AM"
+                        "$startHour$startMinute$startAmPm-$endHour$endMinute$endAmPm"
+                    }
+                }
+
+            "$dayOfWeek, $day $month $timeRange"
+        }
+
+    // Add recurring information if applicable
+    return if (event.isRecurring && !event.recurringRule.isNullOrBlank()) {
+        val recurringText =
+            when {
+                event.recurringRule.contains("WEEKLY", ignoreCase = true) -> "Repeat every week"
+                event.recurringRule.contains("DAILY", ignoreCase = true) -> "Repeat every day"
+                event.recurringRule.contains("MONTHLY", ignoreCase = true) -> "Repeat every month"
+                event.recurringRule.contains("YEARLY", ignoreCase = true) -> "Repeat every year"
+                else -> "Recurring event"
+            }
+        "$mainLine\n$recurringText"
+    } else {
+        mainLine
+    }
+}
+
 @Composable
 fun EventDetailsDialog(
     event: Event,
     onEdit: (Event) -> Unit,
-    onDelete: (Event) -> Unit,
-    onDismiss: () -> Unit,
+    onDismiss: () -> Unit = {},
 ) {
-    val startDateTime = event.startTime.toLocalDateTime(TimeZone.currentSystemDefault())
-    val endDateTime = event.endTime.toLocalDateTime(TimeZone.currentSystemDefault())
-
-    val formattedDate =
-        "${startDateTime.date.month.name} ${startDateTime.date.day}, ${startDateTime.date.year}"
-    val formattedStartTime = "${startDateTime.hour % 12}:${
-        startDateTime.minute.toString().padStart(2, '0')
-    } ${if (startDateTime.hour >= 12) "PM" else "AM"}"
-    val formattedEndTime = "${endDateTime.hour % 12}:${
-        endDateTime.minute.toString().padStart(2, '0')
-    } ${if (endDateTime.hour >= 12) "PM" else "AM"}"
-
-    AlertDialog(onDismissRequest = onDismiss, title = null, text = {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Event color bar
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Times,
+                contentDescription = "Close",
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .clickable { onDismiss() },
+                tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            )
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Edit,
+                contentDescription = "Edit",
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .clickable { onEdit(event) },
+                tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Box(
                 modifier =
                     Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .background(Color(event.color)),
+                        .width(16.dp)
+                        .height(16.dp)
+                        .background(
+                            Color(event.color),
+                            RoundedCornerShape(2.dp),
+                        ),
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Event title
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = event.title,
                 style = XCalendarTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = formatEventSubheading(event),
+            style = XCalendarTheme.typography.bodyMedium,
+            color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            modifier = Modifier.padding(start = 52.dp, end = 16.dp),
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.LocationArrow,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = XCalendarTheme.colorScheme.primary,
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            // Date and time
+            Text(
+                text = "Join with Google Meet",
+                style = XCalendarTheme.typography.bodyMedium,
+                color = XCalendarTheme.colorScheme.primary,
+            )
+        }
+
+        // Location section
+        event.location?.let { location ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
             ) {
                 Icon(
-                    imageVector = FontAwesomeIcons.Solid.Bars,
+                    imageVector = FontAwesomeIcons.Solid.LocationArrow,
                     contentDescription = null,
+                    modifier = Modifier.size(16.dp),
                     tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(16.dp))
 
-                Column {
-                    Text(
-                        text = formattedDate,
-                        style = XCalendarTheme.typography.bodyMedium,
-                    )
-
-                    if (!event.isAllDay) {
-                        Text(
-                            text = "$formattedStartTime - $formattedEndTime",
-                            style = XCalendarTheme.typography.bodyMedium,
-                        )
-                    } else {
-                        Text(
-                            text = "All day",
-                            style = XCalendarTheme.typography.bodyMedium,
-                        )
-                    }
-                }
+                Text(
+                    text = location,
+                    style = XCalendarTheme.typography.bodyMedium,
+                    color = XCalendarTheme.colorScheme.onSurface,
+                )
             }
+        }
 
-            // Location if available
-            event.location?.let { location ->
-                Spacer(modifier = Modifier.height(16.dp))
+        // Time section
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Bell,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            )
 
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = "10 minutes before",
+                style = XCalendarTheme.typography.bodyMedium,
+                color = XCalendarTheme.colorScheme.onSurface,
+            )
+        }
+
+        // Guest list section
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+        ) {
+            Icon(
+                imageVector = FontAwesomeIcons.Solid.Bars,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = "The full guest list has been hidden at the organiser's request.",
+                style = XCalendarTheme.typography.bodyMedium,
+                color = XCalendarTheme.colorScheme.onSurface,
+            )
+        }
+
+        // Description if available
+        event.description?.let { description ->
+            if (description.isNotEmpty()) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                 ) {
                     Icon(
-                        imageVector = FontAwesomeIcons.Solid.LocationArrow,
+                        imageVector = FontAwesomeIcons.Solid.Bars,
                         contentDescription = null,
+                        modifier = Modifier.size(16.dp).padding(top = 2.dp),
                         tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = location,
-                        style = XCalendarTheme.typography.bodySmall,
-                    )
-                }
-            }
-
-            // Description if available
-            event.description?.let { description ->
-                if (description.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
                     Text(
                         text = description,
-                        style = XCalendarTheme.typography.bodySmall,
+                        style = XCalendarTheme.typography.bodyMedium,
+                        color = XCalendarTheme.colorScheme.onSurface,
                     )
                 }
             }
         }
-    }, confirmButton = {
-        Row {
-            TextButton(onClick = { onDelete(event) }) {
-                Icon(
-                    imageVector = FontAwesomeIcons.Solid.Trash,
-                    contentDescription = "Delete",
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Delete")
-            }
-
-            TextButton(onClick = { onEdit(event) }) {
-                Icon(
-                    imageVector = FontAwesomeIcons.Solid.Edit,
-                    contentDescription = "Edit",
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Edit")
-            }
-        }
-    }, dismissButton = {
-        TextButton(onClick = onDismiss) {
-            Text("Close")
-        }
-    })
+    }
 }

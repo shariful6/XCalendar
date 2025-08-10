@@ -74,7 +74,8 @@ fun CalendarApp(
     val navController = rememberNavController()
     val currentRoute by navController.currentBackStackEntryAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var showAddBottomSheet by remember { mutableStateOf(false) }
+    var showDetailsBottomSheet by remember { mutableStateOf(false) }
 
     // Extract drawer-specific state to prevent unnecessary recompositions
     val drawerAccounts = remember(calendarUiState.accounts) { calendarUiState.accounts }
@@ -143,7 +144,7 @@ fun CalendarApp(
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { showBottomSheet = true }) {
+                FloatingActionButton(onClick = { showAddBottomSheet = true }) {
                     Icon(
                         modifier = Modifier.size(20.dp),
                         imageVector = FontAwesomeIcons.Solid.Plus,
@@ -189,7 +190,10 @@ fun CalendarApp(
                         dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) },
+                        onEventClick = { event ->
+                            viewModel.selectEvent(event)
+                            showDetailsBottomSheet = true
+                        },
                         onDateClickCallback = {
                             navController.navigate(CalendarView.Day.toString())
                         },
@@ -201,7 +205,10 @@ fun CalendarApp(
                         dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) },
+                        onEventClick = { event ->
+                            viewModel.selectEvent(event)
+                            showDetailsBottomSheet = true
+                        },
                     )
                 }
                 composable(route = CalendarView.ThreeDay.toString()) {
@@ -210,7 +217,10 @@ fun CalendarApp(
                         dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) },
+                        onEventClick = { event ->
+                            viewModel.selectEvent(event)
+                            showDetailsBottomSheet = true
+                        },
                         onDateClickCallback = {
                             navController.navigate(CalendarView.Day.toString())
                         },
@@ -222,13 +232,16 @@ fun CalendarApp(
                         dateStateHolder = dateStateHolder,
                         events = calendarUiState.events,
                         holidays = calendarUiState.holidays,
-                        onEventClick = { event -> viewModel.selectEvent(event) },
+                        onEventClick = { event ->
+                            viewModel.selectEvent(event)
+                            showDetailsBottomSheet = true
+                        },
                     )
                 }
             }
-            if (showBottomSheet) {
+            if (showAddBottomSheet) {
                 ModalBottomSheet(
-                    onDismissRequest = { showBottomSheet = false },
+                    onDismissRequest = { showAddBottomSheet = false },
                     sheetState = sheetState,
                     properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
                 ) {
@@ -237,24 +250,37 @@ fun CalendarApp(
                         calendars = visibleCalendars,
                         selectedDate = dataState.currentDate,
                         onSave = { event ->
-                            // Handle saving the event
                             viewModel.addEvent(event)
-                            showBottomSheet = false
+                            showAddBottomSheet = false
                         },
                         onDismiss = {
-                            showBottomSheet = false
+                            showAddBottomSheet = false
                         },
                     )
                 }
             }
 
-            calendarUiState.selectedEvent?.let { event ->
-                EventDetailsDialog(
-                    event = event,
-                    onEdit = { viewModel.editEvent(it) },
-                    onDelete = { viewModel.deleteEvent(it) },
-                    onDismiss = { viewModel.clearSelectedEvent() },
-                )
+            if (showDetailsBottomSheet) {
+                calendarUiState.selectedEvent?.let { event ->
+                    ModalBottomSheet(
+                        onDismissRequest = { showDetailsBottomSheet = false },
+                        sheetState = sheetState,
+                        properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
+                    ) {
+                        EventDetailsDialog(
+                            event = event,
+                            onEdit = {
+                                viewModel.editEvent(it)
+                                viewModel.clearSelectedEvent()
+                                showDetailsBottomSheet = false
+                            },
+                            onDismiss = {
+                                viewModel.clearSelectedEvent()
+                                showDetailsBottomSheet = false
+                            },
+                        )
+                    }
+                }
             }
         }
     }
