@@ -6,6 +6,34 @@ A modern, cross-platform calendar application built with **Kotlin Multiplatform*
 
 XCalendar is a feature-rich calendar application that provides multiple viewing modes (day, week, month, 3-day, and schedule views) with seamless event management capabilities. Built using modern Android development practices, it offers a native experience across both Android and iOS platforms.
 
+## 📱 Screenshots & Demo
+
+### **App Overview**
+| Feature | Android | iOS |
+|---------|---------|-----|
+| **App Demo** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android.gif" width="200" height="400" alt="Android Demo"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios.gif" width="200" height="400" alt="iOS Demo"> |
+
+### **Calendar Views**
+| View | Android | iOS |
+|------|---------|-----|
+| **Month View** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_month.png" width="200" height="400" alt="Android Month"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_month.png" width="200" height="400" alt="iOS Month"> |
+| **Week View** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_week.png" width="200" height="400" alt="Android Week"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_week.png" width="200" height="400" alt="iOS Week"> |
+| **Day View** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_day.png" width="200" height="400" alt="Android Day"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_day.png" width="200" height="400" alt="iOS Day"> |
+| **3-Day View** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_three_day.png" width="200" height="400" alt="Android 3-Day"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_three_day.png" width="200" height="400" alt="iOS 3-Day"> |
+| **Schedule View** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_schedule.png" width="200" height="400" alt="Android Schedule"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_schedule.png" width="200" height="400" alt="iOS Schedule"> |
+
+### **Event Management**
+| Feature | Android | iOS |
+|---------|---------|-----|
+| **Add Event** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_add_event.png" width="200" height="400" alt="Android Add Event"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_add_event.png" width="200" height="400" alt="iOS Add Event"> |
+| **View Event** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_view_event.png" width="200" height="400" alt="Android View Event"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_view_event.png" width="200" height="400" alt="iOS View Event"> |
+
+### **Navigation & UI**
+| Component | Android | iOS |
+|-----------|---------|-----|
+| **App Bar** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_app_bar.png" width="200" height="400" alt="Android App Bar"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_app_bar.png" width="200" height="400" alt="iOS App Bar"> |
+| **Sidebar** | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/android_sidebar.png" width="200" height="400" alt="Android Sidebar"> | <img src="https://github.com/Debanshu777/XCalendar/raw/main/assets/screenshots/ios_sidebar.png" width="200" height="400" alt="iOS Sidebar"> |
+
 ## ✨ Key Features
 
 - **Multiple Calendar Views**
