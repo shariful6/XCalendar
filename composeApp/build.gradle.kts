@@ -105,7 +105,7 @@ ksp {
     arg("KOIN_CONFIG_CHECK", "true")
     arg("KOIN_DEFAULT_MODULE", "false")
 }
-
+//
 // project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
 //    if (name != "kspCommonMainKotlinMetadata") {
 //        dependsOn("kspCommonMainKotlinMetadata")
