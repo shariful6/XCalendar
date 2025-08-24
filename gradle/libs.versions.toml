@@ -20,6 +20,7 @@ composeIcons = "1.1.1"
 materialKolor = "3.0.1"
 config = "0.17.1"
 store = "5.1.0-alpha06"
+kotlinx-coroutines = "1.10.2"
 
 [libraries]
 landscapist-coil3 = { module = "com.github.skydoves:landscapist-coil3", version.ref = "coil3" }
@@ -29,6 +30,7 @@ ktor-client-core = { module = "io.ktor:ktor-client-core" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation" }
 
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
