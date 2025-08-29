@@ -83,6 +83,8 @@ kotlin {
             implementation(libs.icons)
             implementation(libs.materialKolor)
             implementation(libs.store)
+
+            implementation(libs.material3.adaptive)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
