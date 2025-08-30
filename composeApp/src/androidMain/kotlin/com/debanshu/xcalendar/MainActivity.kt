@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         isDarkMode = resources.configuration.isNightModeActive
         enableEdgeToEdge(transparentBarStyle, transparentBarStyle)
         setContent {
-            App()
+            CalendarApp()
         }
     }
 }
