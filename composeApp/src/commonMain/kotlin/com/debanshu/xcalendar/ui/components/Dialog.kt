@@ -19,15 +19,18 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +66,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AddEventDialog(
     user: User,
@@ -79,6 +82,7 @@ fun AddEventDialog(
     var isAllDay by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     var selectedEventType by remember { mutableStateOf(EventType.EVENT) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var startDateTime by remember {
         mutableStateOf(
             LocalDateTime(
@@ -104,173 +108,180 @@ fun AddEventDialog(
     var showMoreOptions by remember { mutableStateOf(false) }
     var reminderMinutes by remember { mutableStateOf(10) }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
+    ModalBottomSheet(
+        onDismissRequest = { onDismiss() },
+        sheetState = sheetState,
+        properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(
-                "Cancel",
-                modifier =
-                    Modifier.clickable {
-                        onDismiss()
-                    },
-                color = XCalendarTheme.colorScheme.primary,
-            )
-            Text(
-                "Save",
-                style = XCalendarTheme.typography.bodyLargeEmphasized,
-                modifier =
-                    Modifier.clickable {
-                        if (title.isNotBlank()) {
-                            val selectedCalendar = calendars.find { it.id == selectedCalendarId }
-                            val event =
-                                Event(
-                                    id = "",
-                                    calendarId = selectedCalendarId,
-                                    calendarName = selectedCalendar?.name ?: "",
-                                    title = title,
-                                    description = description.takeIf { it.isNotBlank() },
-                                    location = location.takeIf { it.isNotBlank() },
-                                    startTime =
-                                        if (isAllDay) {
-                                            LocalDateTime(
-                                                selectedDate.year,
-                                                selectedDate.month,
-                                                selectedDate.day,
-                                                0,
-                                                0,
-                                            ).toInstant(TimeZone.currentSystemDefault())
-                                                .toEpochMilliseconds()
-                                        } else {
-                                            startDateTime
-                                                .toInstant(TimeZone.currentSystemDefault())
-                                                .toEpochMilliseconds()
-                                        },
-                                    endTime =
-                                        if (isAllDay) {
-                                            LocalDateTime(
-                                                selectedDate.year,
-                                                selectedDate.month,
-                                                selectedDate.day,
-                                                23,
-                                                59,
-                                            ).toInstant(TimeZone.currentSystemDefault())
-                                                .toEpochMilliseconds()
-                                        } else {
-                                            endDateTime
-                                                .toInstant(TimeZone.currentSystemDefault())
-                                                .toEpochMilliseconds()
-                                        },
-                                    isAllDay = isAllDay,
-                                    reminderMinutes =
-                                        if (reminderMinutes > 0) {
-                                            listOf(
-                                                reminderMinutes,
-                                            )
-                                        } else {
-                                            emptyList()
-                                        },
-                                    color =
-                                        selectedCalendar?.color
-                                            ?: convertStringToColor("defaultColor", 255),
-                                )
-                            onSave(event)
-                        }
-                    },
-                color = XCalendarTheme.colorScheme.primary,
-            )
-        }
-
-        TextField(
-            modifier = Modifier.fillMaxWidth().padding(start = 40.dp),
-            value = title,
-            onValueChange = { title = it },
-            textStyle = MaterialTheme.typography.headlineSmall,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            interactionSource = interactionSource,
-            colors =
-                TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
-                    errorContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                ),
-            placeholder = {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
-                    text = "Add title",
-                    color = XCalendarTheme.colorScheme.onSurface,
-                    style = XCalendarTheme.typography.headlineSmall,
+                    "Cancel",
+                    modifier =
+                        Modifier.clickable {
+                            onDismiss()
+                        },
+                    color = XCalendarTheme.colorScheme.primary,
                 )
-            },
-        )
+                Text(
+                    "Save",
+                    style = XCalendarTheme.typography.bodyLarge,
+                    modifier =
+                        Modifier.clickable {
+                            if (title.isNotBlank()) {
+                                val selectedCalendar =
+                                    calendars.find { it.id == selectedCalendarId }
+                                val event =
+                                    Event(
+                                        id = "",
+                                        calendarId = selectedCalendarId,
+                                        calendarName = selectedCalendar?.name ?: "",
+                                        title = title,
+                                        description = description.takeIf { it.isNotBlank() },
+                                        location = location.takeIf { it.isNotBlank() },
+                                        startTime =
+                                            if (isAllDay) {
+                                                LocalDateTime(
+                                                    selectedDate.year,
+                                                    selectedDate.month,
+                                                    selectedDate.day,
+                                                    0,
+                                                    0,
+                                                ).toInstant(TimeZone.currentSystemDefault())
+                                                    .toEpochMilliseconds()
+                                            } else {
+                                                startDateTime
+                                                    .toInstant(TimeZone.currentSystemDefault())
+                                                    .toEpochMilliseconds()
+                                            },
+                                        endTime =
+                                            if (isAllDay) {
+                                                LocalDateTime(
+                                                    selectedDate.year,
+                                                    selectedDate.month,
+                                                    selectedDate.day,
+                                                    23,
+                                                    59,
+                                                ).toInstant(TimeZone.currentSystemDefault())
+                                                    .toEpochMilliseconds()
+                                            } else {
+                                                endDateTime
+                                                    .toInstant(TimeZone.currentSystemDefault())
+                                                    .toEpochMilliseconds()
+                                            },
+                                        isAllDay = isAllDay,
+                                        reminderMinutes =
+                                            if (reminderMinutes > 0) {
+                                                listOf(
+                                                    reminderMinutes,
+                                                )
+                                            } else {
+                                                emptyList()
+                                            },
+                                        color =
+                                            selectedCalendar?.color
+                                                ?: convertStringToColor("defaultColor", 255),
+                                    )
+                                onSave(event)
+                            }
+                        },
+                    color = XCalendarTheme.colorScheme.primary,
+                )
+            }
 
-        EventTypeSelector(
-            selectedType = selectedEventType,
-            onTypeSelected = { selectedEventType = it },
-        )
+            TextField(
+                modifier = Modifier.fillMaxWidth().padding(start = 40.dp),
+                value = title,
+                onValueChange = { title = it },
+                textStyle = MaterialTheme.typography.headlineSmall,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                interactionSource = interactionSource,
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
+                placeholder = {
+                    Text(
+                        text = "Add title",
+                        color = XCalendarTheme.colorScheme.onSurface,
+                        style = XCalendarTheme.typography.headlineSmall,
+                    )
+                },
+            )
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
+            EventTypeSelector(
+                selectedType = selectedEventType,
+                onTypeSelected = { selectedEventType = it },
+            )
 
-        CaladerTimeSection(
-            isAllDayBase = isAllDay,
-            selectedDate = selectedDate,
-            startDateTime = startDateTime,
-            endDateTime = endDateTime,
-            onSwitchAllDayChange = {
-                isAllDay = it
-            },
-        )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
+            CaladerTimeSection(
+                isAllDayBase = isAllDay,
+                selectedDate = selectedDate,
+                startDateTime = startDateTime,
+                endDateTime = endDateTime,
+                onSwitchAllDayChange = {
+                    isAllDay = it
+                },
+            )
 
-        CalenderSelectionSection(
-            user,
-            calendars,
-            selectedCalendarId,
-            onCalendarSelected =
-                { selectedCalendarId = it },
-        )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
+            CalenderSelectionSection(
+                user,
+                calendars,
+                selectedCalendarId,
+                onCalendarSelected =
+                    { selectedCalendarId = it },
+            )
 
-        AddEventOption(
-            icon = FontAwesomeIcons.Solid.LocationArrow,
-            text = "Add location",
-            onClick = {
-                showMoreOptions = !showMoreOptions
-            },
-        )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
 
-        if (showMoreOptions) {
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = location,
-                onValueChange = { location = it },
-                placeholder = { Text("Enter location") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+            AddEventOption(
+                icon = FontAwesomeIcons.Solid.LocationArrow,
+                text = "Add location",
+                onClick = {
+                    showMoreOptions = !showMoreOptions
+                },
+            )
+
+            if (showMoreOptions) {
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = location,
+                    onValueChange = { location = it },
+                    placeholder = { Text("Enter location") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
+            NotificationRow(
+                reminderMinutes = reminderMinutes,
+                onReminderChange = { reminderMinutes = it },
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
+            AddEventOption(
+                icon = FontAwesomeIcons.Solid.Bars,
+                text = "Add description",
+                onClick = { /* Handle add description */ },
             )
         }
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
-        NotificationRow(
-            reminderMinutes = reminderMinutes,
-            onReminderChange = { reminderMinutes = it },
-        )
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 1.dp)
-        AddEventOption(
-            icon = FontAwesomeIcons.Solid.Bars,
-            text = "Add description",
-            onClick = { /* Handle add description */ },
-        )
     }
 }
 
@@ -448,7 +459,6 @@ enum class EventType(
     OUT_OF_OFFICE("Out of office"),
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun EventTypeSelector(
     selectedType: EventType,
@@ -491,7 +501,7 @@ private fun EventTypeSelector(
                         } else {
                             XCalendarTheme.colorScheme.onSurfaceVariant
                         },
-                    style = XCalendarTheme.typography.bodyMediumEmphasized,
+                    style = XCalendarTheme.typography.bodyMedium,
                 )
             }
         }
@@ -720,102 +730,84 @@ private fun formatEventSubheading(event: Event): String {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDetailsDialog(
     event: Event,
     onEdit: (Event) -> Unit,
     onDismiss: () -> Unit = {},
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(
+        onDismissRequest = { onDismiss() },
+        sheetState = sheetState,
+        properties = ModalBottomSheetProperties(shouldDismissOnBackPress = true),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            Icon(
-                imageVector = FontAwesomeIcons.Solid.Times,
-                contentDescription = "Close",
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.Times,
+                    contentDescription = "Close",
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .clickable { onDismiss() },
+                    tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                )
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.Edit,
+                    contentDescription = "Edit",
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .clickable { onEdit(event) },
+                    tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
                 modifier =
                     Modifier
-                        .size(24.dp)
-                        .clickable { onDismiss() },
-                tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            )
-            Icon(
-                imageVector = FontAwesomeIcons.Solid.Edit,
-                contentDescription = "Edit",
-                modifier =
-                    Modifier
-                        .size(24.dp)
-                        .clickable { onEdit(event) },
-                tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier =
-                    Modifier
-                        .width(16.dp)
-                        .height(16.dp)
-                        .background(
-                            Color(event.color),
-                            RoundedCornerShape(2.dp),
-                        ),
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = event.title,
-                style = XCalendarTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-        }
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier =
+                        Modifier
+                            .width(16.dp)
+                            .height(16.dp)
+                            .background(
+                                Color(event.color),
+                                RoundedCornerShape(2.dp),
+                            ),
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = event.title,
+                    style = XCalendarTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+            }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = formatEventSubheading(event),
-            style = XCalendarTheme.typography.bodyMedium,
-            color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            modifier = Modifier.padding(start = 52.dp, end = 16.dp),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-        ) {
-            Icon(
-                imageVector = FontAwesomeIcons.Solid.LocationArrow,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = XCalendarTheme.colorScheme.primary,
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Join with Google Meet",
+                text = formatEventSubheading(event),
                 style = XCalendarTheme.typography.bodyMedium,
-                color = XCalendarTheme.colorScheme.primary,
+                color = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                modifier = Modifier.padding(start = 52.dp, end = 16.dp),
             )
-        }
 
-        // Location section
-        event.location?.let { location ->
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier =
@@ -826,6 +818,56 @@ fun EventDetailsDialog(
                 Icon(
                     imageVector = FontAwesomeIcons.Solid.LocationArrow,
                     contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    tint = XCalendarTheme.colorScheme.primary,
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = "Join with Google Meet",
+                    style = XCalendarTheme.typography.bodyMedium,
+                    color = XCalendarTheme.colorScheme.primary,
+                )
+            }
+
+            // Location section
+            event.location?.let { location ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                ) {
+                    Icon(
+                        imageVector = FontAwesomeIcons.Solid.LocationArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(
+                        text = location,
+                        style = XCalendarTheme.typography.bodyMedium,
+                        color = XCalendarTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+
+            // Time section
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+            ) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.Bell,
+                    contentDescription = null,
                     modifier = Modifier.size(16.dp),
                     tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 )
@@ -833,85 +875,61 @@ fun EventDetailsDialog(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = location,
+                    text = "10 minutes before",
                     style = XCalendarTheme.typography.bodyMedium,
                     color = XCalendarTheme.colorScheme.onSurface,
                 )
             }
-        }
 
-        // Time section
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-        ) {
-            Icon(
-                imageVector = FontAwesomeIcons.Solid.Bell,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            )
+            // Guest list section
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+            ) {
+                Icon(
+                    imageVector = FontAwesomeIcons.Solid.Bars,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                )
 
-            Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(16.dp))
 
-            Text(
-                text = "10 minutes before",
-                style = XCalendarTheme.typography.bodyMedium,
-                color = XCalendarTheme.colorScheme.onSurface,
-            )
-        }
+                Text(
+                    text = "The full guest list has been hidden at the organiser's request.",
+                    style = XCalendarTheme.typography.bodyMedium,
+                    color = XCalendarTheme.colorScheme.onSurface,
+                )
+            }
 
-        // Guest list section
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-        ) {
-            Icon(
-                imageVector = FontAwesomeIcons.Solid.Bars,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            )
+            // Description if available
+            event.description?.let { description ->
+                if (description.isNotEmpty()) {
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                    ) {
+                        Icon(
+                            imageVector = FontAwesomeIcons.Solid.Bars,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp).padding(top = 2.dp),
+                            tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        )
 
-            Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
 
-            Text(
-                text = "The full guest list has been hidden at the organiser's request.",
-                style = XCalendarTheme.typography.bodyMedium,
-                color = XCalendarTheme.colorScheme.onSurface,
-            )
-        }
-
-        // Description if available
-        event.description?.let { description ->
-            if (description.isNotEmpty()) {
-                Row(
-                    verticalAlignment = Alignment.Top,
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                ) {
-                    Icon(
-                        imageVector = FontAwesomeIcons.Solid.Bars,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp).padding(top = 2.dp),
-                        tint = XCalendarTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Text(
-                        text = description,
-                        style = XCalendarTheme.typography.bodyMedium,
-                        color = XCalendarTheme.colorScheme.onSurface,
-                    )
+                        Text(
+                            text = description,
+                            style = XCalendarTheme.typography.bodyMedium,
+                            color = XCalendarTheme.colorScheme.onSurface,
+                        )
+                    }
                 }
             }
         }
